@@ -101,9 +101,6 @@ enum Commands {
         #[arg(conflicts_with_all = ["all", "tag"])]
         slugs: Vec<String>,
 
-        /// Re-clone repos even if a local cache already exists
-        #[arg(long)]
-        refresh: bool,
     },
 }
 
@@ -186,27 +183,6 @@ fn entry_path_parts(gh: &GithubFile) -> (String, String, String) {
     (gh.owner.clone(), gh.repo.clone(), script_name(gh))
 }
 
-// ---------------------------------------------------------------------------
-// Docker output shapes
-// ---------------------------------------------------------------------------
-
-/// Output from parse mode (parse.py via Docker).
-#[derive(Debug, Deserialize)]
-struct ParseOutput {
-    _file_path: String,
-    #[serde(default)]
-    reserved_words: BTreeMap<String, u64>,
-    #[serde(default)]
-    jets: BTreeMap<String, u64>,
-    #[serde(default)]
-    builtins: BTreeMap<String, u64>,
-    #[serde(default)]
-    types: BTreeMap<String, u64>,
-    #[serde(default)]
-    macros: BTreeMap<String, u64>,
-}
-
-
 /// Output from compile mode — merged simc + hal-simplicity + parse.py output.
 #[derive(Debug, Deserialize)]
 struct SimcOutput {
@@ -286,61 +262,6 @@ struct EntryMeta {
 // Docker
 // ---------------------------------------------------------------------------
 
-// ---------------------------------------------------------------------------
-// Repo cache
-// ---------------------------------------------------------------------------
-
-/// Returns the local cache path for a given repo URL + branch.
-fn repo_cache_path(clone_url: &str, branch: &str) -> PathBuf {
-    const FNV_OFFSET: u64 = 0xcbf29ce484222325;
-    const FNV_PRIME: u64 = 0x100000001b3;
-    let mut hash = FNV_OFFSET;
-    for b in clone_url.bytes().chain(std::iter::once(b'|')).chain(branch.bytes()) {
-        hash ^= b as u64;
-        hash = hash.wrapping_mul(FNV_PRIME);
-    }
-    std::env::temp_dir()
-        .join("simplicity-catalog-repos")
-        .join(format!("{:016x}", hash))
-}
-
-/// Clone or reuse a cached local clone of the repo.
-/// Pass `refresh = true` to delete the cache and re-clone.
-fn ensure_repo_cached(clone_url: &str, branch: &str, refresh: bool) -> Result<PathBuf> {
-    let path = repo_cache_path(clone_url, branch);
-    if refresh && path.exists() {
-        fs::remove_dir_all(&path)?;
-    }
-    if path.join(".git").exists() {
-        return Ok(path);
-    }
-    println!("Cloning {clone_url} ({branch}) …");
-    fs::create_dir_all(&path)?;
-    let status = Command::new("git")
-        .args(["clone", "--depth", "1", "--branch", branch, clone_url])
-        .arg(&path)
-        .status()
-        .context("failed to run git — is it installed and on PATH?")?;
-    if !status.success() {
-        bail!("git clone failed for {clone_url}");
-    }
-    Ok(path)
-}
-
-/// Convert a host path to the format Docker expects for `-v` mounts.
-/// On Windows, converts `C:\foo\bar` → `/c/foo/bar`.
-fn to_docker_volume_path(path: &Path) -> String {
-    let s = path.to_string_lossy();
-    #[cfg(windows)]
-    {
-        if s.len() >= 3 && s.as_bytes()[1] == b':' {
-            let drive = s.chars().next().unwrap().to_ascii_lowercase();
-            return format!("/{}/{}", drive, s[3..].replace('\\', "/"));
-        }
-    }
-    s.replace('\\', "/")
-}
-
 fn ensure_docker_image(tag: &str) -> Result<()> {
     let check = Command::new("docker")
         .args(["image", "inspect", tag])
@@ -372,19 +293,21 @@ fn ensure_docker_image(tag: &str) -> Result<()> {
     Ok(())
 }
 
-fn run_docker<T>(mode: &str, clone_url: &str, branch: &str, local_repo: &Path, file_paths: &[&str]) -> Result<Vec<T>>
+fn run_docker<T>(
+    mode: &str,
+    clone_url: &str,
+    branch: &str,
+    file_paths: &[&str],
+) -> Result<Vec<T>>
 where
     T: serde::de::DeserializeOwned,
 {
     let tag = image_tag();
     ensure_docker_image(&tag)?;
 
-    let vol = format!("{}:/workspace/repo:ro", to_docker_volume_path(local_repo));
-
     let output = Command::new("docker")
         .arg("run")
         .arg("--rm")
-        .arg("-v").arg(&vol)
         .arg(&tag)
         .arg(mode)
         .arg(clone_url)
@@ -674,7 +597,16 @@ fn select_tomls(
 }
 
 /// `(toml_path, file_path, witnesses, args, arg_values)` — name→value maps
-type RepoGroup = BTreeMap<(String, String), Vec<(PathBuf, String, BTreeMap<String, String>, BTreeMap<String, String>, BTreeMap<String, String>)>>;
+type RepoGroup = BTreeMap<
+    (String, String),
+    Vec<(
+        PathBuf,
+        String,
+        BTreeMap<String, String>,
+        BTreeMap<String, String>,
+        BTreeMap<String, String>,
+    )>,
+>;
 
 fn group_by_repo(paths: &[PathBuf]) -> Result<RepoGroup> {
     let mut groups: RepoGroup = BTreeMap::new();
@@ -684,10 +616,13 @@ fn group_by_repo(paths: &[PathBuf]) -> Result<RepoGroup> {
         let meta: EntryMeta = toml_edit::de::from_str(&raw)
             .with_context(|| format!("cannot parse {}", path.display()))?;
         let clone_url = meta.clone_url.or(meta.repo).unwrap_or_default();
-        groups
-            .entry((clone_url, meta.branch))
-            .or_default()
-            .push((path.to_owned(), meta.file_path, meta.example_witnesses, meta.example_args, meta.example_arg_values));
+        groups.entry((clone_url, meta.branch)).or_default().push((
+            path.to_owned(),
+            meta.file_path,
+            meta.example_witnesses,
+            meta.example_args,
+            meta.example_arg_values,
+        ));
     }
     Ok(groups)
 }
@@ -722,7 +657,15 @@ fn cmd_add(
     let commit = fetch_file_commit(&gh)?;
     println!("{}", &commit[..12]);
 
-    write_skeleton_toml(&out_path, &gh, tags, &commit, example_witnesses, example_args, example_arg_values)?;
+    write_skeleton_toml(
+        &out_path,
+        &gh,
+        tags,
+        &commit,
+        example_witnesses,
+        example_args,
+        example_arg_values,
+    )?;
 
     println!("Added:  data/programs/{org}/{repo}/{name}.toml");
     if !tags.is_empty() {
@@ -732,7 +675,7 @@ fn cmd_add(
     Ok(())
 }
 
-fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) -> Result<()> {
+fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
     if !all && tag.is_none() && slugs.is_empty() {
         bail!("specify --all, --tag <tag>, or one or more slugs");
     }
@@ -767,23 +710,15 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) ->
         }
         let file_args: Vec<&str> = encoded.iter().map(|s| s.as_str()).collect();
 
-        let local_repo = match ensure_repo_cached(clone_url, branch, refresh) {
-            Ok(p) => p,
-            Err(e) => {
-                eprintln!("error cloning {clone_url}: {e:#}");
-                failed += entries.len();
-                continue;
-            }
-        };
-
-        let results: Vec<SimcOutput> = match run_docker("compile", clone_url, branch, &local_repo, &file_args) {
-            Ok(r) => r,
-            Err(e) => {
-                eprintln!("error compiling {clone_url}: {e:#}");
-                failed += entries.len();
-                continue;
-            }
-        };
+        let results: Vec<SimcOutput> =
+            match run_docker("compile", clone_url, branch, &file_args) {
+                Ok(r) => r,
+                Err(e) => {
+                    eprintln!("error compiling {clone_url}: {e:#}");
+                    failed += entries.len();
+                    continue;
+                }
+            };
 
         for (toml_path, file_path, witnesses, args, arg_values) in entries {
             let stem = toml_path
@@ -800,7 +735,9 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) ->
 
             let meta_result = base_result.or_else(|| {
                 if !args.is_empty() || !arg_values.is_empty() {
-                    results.iter().find(|r| &r._file_path == file_path && r._kind == "args")
+                    results
+                        .iter()
+                        .find(|r| &r._file_path == file_path && r._kind == "args")
                 } else {
                     None
                 }
@@ -831,7 +768,10 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) ->
                 if let Some(r) = results.iter().find(|r| {
                     &r._file_path == file_path && r._kind == "wit" && &r._item_name == item_name
                 }) {
-                    write_simb(&toml_path.with_file_name(format!("{stem}.{item_name}.simb")), r)?;
+                    write_simb(
+                        &toml_path.with_file_name(format!("{stem}.{item_name}.simb")),
+                        r,
+                    )?;
                     println!("  compiled witness: {stem}.{item_name}");
                 } else {
                     eprintln!("warning: no witness result for {file_path} (wit: {item_name})");
@@ -843,7 +783,10 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) ->
                 if let Some(r) = results.iter().find(|r| {
                     &r._file_path == file_path && r._kind == "args" && &r._item_name == item_name
                 }) {
-                    write_simb(&toml_path.with_file_name(format!("{stem}.args.{item_name}.simb")), r)?;
+                    write_simb(
+                        &toml_path.with_file_name(format!("{stem}.args.{item_name}.simb")),
+                        r,
+                    )?;
                     println!("  compiled args: {stem}.args.{item_name}");
                 } else {
                     eprintln!("warning: no args result for {file_path} (args: {item_name})");
@@ -855,7 +798,10 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], refresh: bool) ->
                 if let Some(r) = results.iter().find(|r| {
                     &r._file_path == file_path && r._kind == "args" && r._item_name == "default"
                 }) {
-                    write_simb(&toml_path.with_file_name(format!("{stem}.args.default.simb")), r)?;
+                    write_simb(
+                        &toml_path.with_file_name(format!("{stem}.args.default.simb")),
+                        r,
+                    )?;
                     println!("  compiled arg-values: {stem}.args.default");
                 } else {
                     eprintln!("warning: no arg-values result for {file_path}");
@@ -876,13 +822,9 @@ fn cmd_debug(url: &str) -> Result<()> {
     let gh = parse_github_url(url)?;
     let tag = image_tag();
     ensure_docker_image(&tag)?;
-    let local_repo = ensure_repo_cached(&gh.clone_url, &gh.branch, false)?;
-    let vol = format!("{}:/workspace/repo:ro", to_docker_volume_path(&local_repo));
-
     let status = Command::new("docker")
         .arg("run")
         .arg("--rm")
-        .arg("-v").arg(&vol)
         .arg(&tag)
         .arg("compile")
         .arg(&gh.clone_url)
@@ -935,7 +877,7 @@ fn main() {
             cmd_add(&url, &tags, &witnesses, &args, &arg_values, force)
         }
         Commands::Debug { url } => cmd_debug(&url),
-        Commands::Compile { all, tag, slugs, refresh } => cmd_compile(all, tag.as_deref(), &slugs, refresh),
+        Commands::Compile { all, tag, slugs } => cmd_compile(all, tag.as_deref(), &slugs),
     };
     if let Err(e) = result {
         eprintln!("error: {e:#}");

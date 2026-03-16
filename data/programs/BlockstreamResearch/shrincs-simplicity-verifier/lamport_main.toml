@@ -1,0 +1,60 @@
+url = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/lamport/lamport_main.simf"
+name = "lamport_main"
+repo = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier.git"
+branch = "main"
+file_path = "examples/lamport/lamport_main.simf"
+commit = "51a5a127d761d48fc02924fdad9296537094fe35"
+fetched_at = "2026-03-16T16:37:14.128325400+00:00"
+compile_error = "  |"
+witnesses = ["MESSAGE_HASH", "SIGNATURE", "PUBLIC_KEY"]
+
+[example_witnesses]
+default = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/lamport/lamport_main.wit"
+
+[jets]
+add_32 = 2
+add_8 = 5
+and_64 = 1
+div_mod_8 = 1
+eq_1 = 2
+eq_256 = 2
+eq_32 = 1
+eq_8 = 6
+left_shift_32 = 3
+left_shift_64 = 4
+lt_64 = 1
+lt_8 = 20
+modulo_8 = 5
+or_32 = 3
+or_64 = 3
+right_shift_32 = 4
+right_shift_64 = 4
+sha_256_ctx_8_add_32 = 3
+sha_256_ctx_8_finalize = 3
+sha_256_ctx_8_init = 3
+subtract_8 = 3
+
+[builtins]
+array_fold = 2
+
+[macros]
+"assert!" = 3
+
+[reserved_words]
+false = 27
+match = 27
+true = 27
+type = 19
+
+[types]
+Ctx8 = 6
+Either = 1
+List = 1
+bool = 12
+u1 = 7
+u128 = 26
+u16 = 6
+u256 = 124
+u32 = 33
+u64 = 27
+u8 = 85

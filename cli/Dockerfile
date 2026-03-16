@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
     git curl unzip build-essential pkg-config \
-    libssl-dev ca-certificates python3 \
+    libssl-dev ca-certificates python3 mcpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust

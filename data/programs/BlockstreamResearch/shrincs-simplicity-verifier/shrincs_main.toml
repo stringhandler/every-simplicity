@@ -1,0 +1,11 @@
+url = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main.simf"
+name = "shrincs_main"
+repo = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier.git"
+branch = "main"
+file_path = "examples/shrincs/shrincs_main.simf"
+commit = "254e6a24de1b4a7fdf65c266b608a22c8971b489"
+fetched_at = "2026-03-16T17:08:25.968975100+00:00"
+
+[example_witnesses]
+stateful = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main_stateful.wit"
+stateless = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main_stateless.wit"

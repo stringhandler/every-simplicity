@@ -71,6 +71,15 @@ case "$MODE" in
         fi
       fi
 
+      # Preprocess with mcpp if the file contains #include directives
+      COMPILE_FILE="$FILE_PATH"
+      TMP_PREPROCESSED=""
+      if grep -q '^[[:space:]]*#include' "$FILE_PATH" 2>/dev/null; then
+        TMP_PREPROCESSED=$(mktemp --suffix=.simf)
+        mcpp "$FILE_PATH" -o "$TMP_PREPROCESSED"
+        COMPILE_FILE="$TMP_PREPROCESSED"
+      fi
+
       # Build simc flags based on kind
       SIMC_EXTRA_ARGS=()
       if [[ "$KIND" == "wit" && -n "$ITEM_VALUE" ]]; then
@@ -87,8 +96,8 @@ case "$MODE" in
         TMP_FILE=""
       fi
 
-      simc_out=$(simc "$FILE_PATH" "${SIMC_EXTRA_ARGS[@]}" --json 2>/tmp/simc_stderr) || {
-        err=$(head -1 /tmp/simc_stderr | tr '"\\' "''")
+      simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" --json 2>/tmp/simc_stderr) || {
+        err=$(grep -m1 'error' /tmp/simc_stderr | tr '"\\' "''" || head -1 /tmp/simc_stderr | tr '"\\' "''")
         [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
 
         # On simc failure: still run parse.py so jets/types/etc are captured,
@@ -96,9 +105,10 @@ case "$MODE" in
         if [[ -n "${PARSE_CACHE[$FILE_PATH]+x}" ]]; then
           parse_out="${PARSE_CACHE[$FILE_PATH]}"
         else
-          parse_out=$(python3 /parse.py "$FILE_PATH")
+          parse_out=$(python3 /parse.py "$COMPILE_FILE")
           PARSE_CACHE[$FILE_PATH]="$parse_out"
         fi
+        [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
         TMP_PARSE=$(mktemp)
         echo "$parse_out" > "$TMP_PARSE"
         python3 - "$TMP_PARSE" "$FILE_PATH" "$KIND" "$ITEM_NAME" "$err" <<'PYEOF'
@@ -119,9 +129,10 @@ PYEOF
       if [[ -n "${PARSE_CACHE[$FILE_PATH]+x}" ]]; then
         parse_out="${PARSE_CACHE[$FILE_PATH]}"
       else
-        parse_out=$(python3 /parse.py "$FILE_PATH")
+        parse_out=$(python3 /parse.py "$COMPILE_FILE")
         PARSE_CACHE[$FILE_PATH]="$parse_out"
       fi
+      [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
 
       # Extract program from simc output
       program=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$simc_out")
