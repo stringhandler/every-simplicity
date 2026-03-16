@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T12:16:14.857613800+00:00"
 cmr = "e65e19e139a13583a0a7efb24be13c20d578f06f51b2a7fe7c7b9097072dbabe"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "(((unit; const 0x10 ) & (unit; const 0x01 )) & iden); (((unit; const 0x1001 ) & iden); (((((IOH & OH); jet_eq_16 ); jet_verify ) & ((((unit; const 0b1011 ) & (unit; const 0b1101 )) & iden); (((unit; const 0xbd ) & iden); (((((IOH & OH); jet_eq_8 ); jet_verify ) & unit); IH)))); IH))"
 liquid_address = "ex1p305439usq06f4maelan8txnxshktvayu9z5gnwu6zrrxm9vmlufqef9ldr"
 liquid_testnet_address = "tex1p305439usq06f4maelan8txnxshktvayu9z5gnwu6zrrxm9vmlufqcshcuv"
 is_redeem = false

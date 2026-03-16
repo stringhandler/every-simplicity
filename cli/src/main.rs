@@ -227,9 +227,6 @@ struct SimcOutput {
     // --- hal-simplicity ---
     #[serde(default)]
     cmr: Option<String>,
-    /// Human-readable decoded program
-    #[serde(default)]
-    commit_decode: Option<String>,
     /// Type signature e.g. "1 → 1"
     #[serde(default)]
     type_arrow: Option<String>,
@@ -554,9 +551,7 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput) {
     if let Some(js) = &s.jet_set {
         doc["jet_set"] = sv(js);
     }
-    if let Some(cd) = &s.commit_decode {
-        doc["commit_decode"] = sv(cd);
-    }
+
     if let Some(la) = &s.liquid_address_unconf {
         doc["liquid_address"] = sv(la);
     }

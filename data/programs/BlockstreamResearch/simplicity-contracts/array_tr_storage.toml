@@ -1,0 +1,49 @@
+url = "https://github.com/BlockstreamResearch/simplicity-contracts/blob/main/crates/contracts/src/state_management/array_tr_storage/source_simf/array_tr_storage.simf"
+name = "array_tr_storage"
+repo = "https://github.com/BlockstreamResearch/simplicity-contracts.git"
+branch = "main"
+file_path = "crates/contracts/src/state_management/array_tr_storage/source_simf/array_tr_storage.simf"
+commit = "ec8773cc8c92053e0fa513a6f2b50feeafd1b88c"
+fetched_at = "2026-03-16T16:14:26.058747300+00:00"
+cmr = "05515e5196d4f7fe1a9787c13bdd62e22ac726e5365d9097ba07e36989e3158a"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1pkd04g67er0wmnm5k34nlajrce0a74ak0yz2hjhhf6sxq4pyz4uvstucrnz"
+liquid_testnet_address = "tex1pkd04g67er0wmnm5k34nlajrce0a74ak0yz2hjhhf6sxq4pyz4uvs292yzd"
+witnesses = ["STATE", "CHANGED_INDEX"]
+comments = ["There may be arbitrary logic here", "Segwit v1, length 32", 'Assert that the input is correct, i.e. "load".', 'Assert that the output is correct, i.e. "store".', "Extends `bytes32_tr_storage` using `array_fold` for larger buffers.", "Optimized for small, fixed-size states where linear hashing is more efficient", "than Merkle Trees. By avoiding proof overhead like sibling hashes, we reduce", "witness size and simplify contract logic for small N.", "This approach is particularly advantageous when updating all slots within every transaction."]
+
+[jets]
+build_tapbranch = 1
+build_taptweak = 1
+current_index = 2
+eq_16 = 1
+eq_256 = 2
+increment_16 = 2
+input_script_hash = 1
+output_script_hash = 1
+sha_256_ctx_8_add_2 = 1
+sha_256_ctx_8_add_32 = 4
+sha_256_ctx_8_finalize = 2
+sha_256_ctx_8_init = 1
+tapdata_init = 1
+tapleaf_hash = 1
+
+[builtins]
+array_fold = 2
+
+[macros]
+"assert!" = 2
+
+[reserved_words]
+false = 1
+match = 2
+true = 1
+
+[types]
+Ctx8 = 10
+Option = 1
+bool = 2
+u16 = 12
+u256 = 12
+u64 = 9

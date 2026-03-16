@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T13:51:50.308773800+00:00"
 cmr = "8cff025821200dfc5878a25fb8ccb91eddd70b88071232f84cffa620e1e62da6"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "(witness  & iden); (((unit; const 0x132f39a98c31baaddba6525f5d43f2954472097fa15265f45130bfdb70e51def ) & iden); (((IOH; (((unit; jet_sha_256_ctx_8_init ) & iden); ((((OH & IH); jet_sha_256_ctx_8_add_32 ) & iden); (OH; jet_sha_256_ctx_8_finalize )))) & iden); (((((OH & IOH); jet_eq_256 ); jet_verify ) & (((unit; jet_sig_all_hash ) & iden); (((IIIOH & OH) & witness ); jet_bip_0340_verify ))); IH)))"
 liquid_address = "ex1pw79dvnyf5r3uh9rays5s0fx4k3zdl5m5dsa3afaa7lj4pt384epqtdaw4k"
 liquid_testnet_address = "tex1pw79dvnyf5r3uh9rays5s0fx4k3zdl5m5dsa3afaa7lj4pt384epq250fye"
 witnesses = ["PK", "SIG"]

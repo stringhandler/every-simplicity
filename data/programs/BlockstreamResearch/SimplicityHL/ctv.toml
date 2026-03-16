@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T12:17:16.186521+00:00"
 cmr = "045c75f74aa4c9f68e535e8853c08ee4ed74c67d83845c3b45dc870ab48eeca0"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "((unit; jet_sha_256_ctx_8_init ) & iden); ((((OH & (unit; jet_version )); jet_sha_256_ctx_8_add_4 ) & iden); ((((OH & (unit; jet_lock_time )); jet_sha_256_ctx_8_add_4 ) & iden); ((((OH & (unit; jet_input_script_sigs_hash )); jet_sha_256_ctx_8_add_32 ) & iden); ((((OH & (unit; jet_num_inputs )); jet_sha_256_ctx_8_add_4 ) & iden); ((((OH & (unit; jet_input_sequences_hash )); jet_sha_256_ctx_8_add_32 ) & iden); ((((OH & (unit; jet_num_outputs )); jet_sha_256_ctx_8_add_4 ) & iden); ((((OH & (unit; jet_outputs_hash )); jet_sha_256_ctx_8_add_32 ) & iden); ((((OH & (unit; jet_current_index )); jet_sha_256_ctx_8_add_4 ) & iden); (((OH; jet_sha_256_ctx_8_finalize ) & iden); (((unit; const 0xae3d019b30529c6044d2b3d7ee2e0ee5db51a7f05ed5db8f089cd5d455f1fc5d ) & iden); (((((IOH & OH); jet_eq_256 ); jet_verify ) & unit); IH)))))))))))"
 liquid_address = "ex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegq9x8cf3"
 liquid_testnet_address = "tex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegqyl4lc7"
 is_redeem = false

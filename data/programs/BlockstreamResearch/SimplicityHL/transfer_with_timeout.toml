@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T14:23:16.023092900+00:00"
 cmr = "e47633744baf8a4c3aacfc03f2860f0d4fe6731fb96ad0bf5e0b9fb8cf8c48c6"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "(witness  & iden); ((witness  & iden); case ((IOH; (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & (((unit; const 0x000003e8 ) & iden); (((OH; jet_check_lock_height ) & unit); IH))); IH)))) (((IOH & OH); (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IOH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((((OH & IIIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH))); IH)))))"
 liquid_address = "ex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eq9hu2lg"
 liquid_testnet_address = "tex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eqywwdw8"
 witnesses = ["SENDER_SIG", "TRANSFER_OR_TIMEOUT"]

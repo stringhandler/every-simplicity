@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T13:52:15.565171300+00:00"
 cmr = "b51aaa70da13d19b35022e69806dcb40ea2adaef5de83dcbaa5356a3ec0abd2b"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "(witness  & iden); case ((OH; (((unit; const 0x03e8 ) & iden); (((OH; jet_check_lock_distance ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH))); IH)))) ((OH; (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((OH & IH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))))))"
 liquid_address = "ex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23sl0vr03"
 liquid_testnet_address = "tex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23s7k7y77"
 witnesses = ["HOT_OR_COLD"]

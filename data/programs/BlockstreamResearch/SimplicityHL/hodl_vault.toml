@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T12:59:07.394714+00:00"
 cmr = "14530d3f4b76a39c158f4fc99b4d298e612c1e80f7d9a152112b1c2c42377c5f"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "((unit; const 0x000003e8 ) & iden); ((witness  & iden); (((((IOH & OH); jet_le_32 ); jet_verify ) & (((OH; jet_check_lock_height ) & (((unit; const 0x000186a0 ) & iden); ((witness  & iden); (((((IOH & OH); jet_le_32 ); jet_verify ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((witness  & iden); ((((IOH & ((IIIIOH & IIOH) & OH)); ((IOH & iden); (((unit; jet_sha_256_ctx_8_init ) & iden); ((((OH & IOOH); jet_sha_256_ctx_8_add_4 ) & iden); ((((OH & IIOIH); jet_sha_256_ctx_8_add_4 ) & iden); (((OH; jet_sha_256_ctx_8_finalize ) & iden); (((((IIIIIOH & OH) & IIIIIIIH); jet_bip_0340_verify ) & unit); IH))))))) & (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((witness  & iden); ((((IOH & OH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH)))); IH)))); IH)))); IH)); IH))"
 liquid_address = "ex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqgjzvfe"
 liquid_testnet_address = "tex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqftstck"
 witnesses = ["ORACLE_HEIGHT", "ORACLE_PRICE", "ORACLE_SIG", "OWNER_SIG"]

@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T12:59:20.246929400+00:00"
 cmr = "1cf9b3bf158655c66c4c2fbe3812e849fea98266a2dfca58622c31be7b473651"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "(witness  & iden); case (((OH & iden); ((((OOH & OIH); (((OH; (((unit; jet_sha_256_ctx_8_init ) & iden); ((((OH & IH); jet_sha_256_ctx_8_add_32 ) & iden); (OH; jet_sha_256_ctx_8_finalize )))) & iden); (((unit; const 0x66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925 ) & iden); (((((IOH & OH); jet_eq_256 ); jet_verify ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IIIIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH))); IH)))) & unit); IH))) ((OH; (((unit; const 0x000003e8 ) & iden); (((OH; jet_check_lock_height ) & (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((OH & IIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))))); IH))))"
 liquid_address = "ex1pw9xaf867l85gsu0u8pn4jzh9mcuk07xceaupfn457rmpmjvl3nsqhqw95c"
 liquid_testnet_address = "tex1pw9xaf867l85gsu0u8pn4jzh9mcuk07xceaupfn457rmpmjvl3nsqkeuz9h"
 witnesses = ["COMPLETE_OR_CANCEL"]

@@ -8,7 +8,6 @@ fetched_at = "2026-03-16T11:27:37.752761800+00:00"
 cmr = "4701fe90a2884d41b38cf6bbbedf41f77a85f0d5ef5d06a0fc086b66a4e70c73"
 type_arrow = "1 → 1"
 jet_set = "core"
-commit_decode = "((((unit; const 0x00000001 ) & ((unit; const 0x00000002 ) & (unit; const 0x00000003 ))) & (((unit; const 0x00000004 ) & (unit; const 0x00000005 )) & ((unit; const 0x00000006 ) & (unit; const 0x00000007 )))) & iden); ((((OH & (unit; const 0x00000000 )); ((OIH & ((OOH & IH); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH))))); ((OIH & ((OOH & IH); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH)))); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH))))) & iden); (((((OH & (unit; const 0x0000001c )); jet_eq_32 ); jet_verify ) & unit); IH))"
 liquid_address = "ex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pq0clqml"
 liquid_testnet_address = "tex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pqwpd82s"
 is_redeem = false
