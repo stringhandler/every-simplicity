@@ -385,6 +385,14 @@ function buildHtml(programs) {
     }
     .mermaid-modal-close:hover { color: #e6edf3; }
 
+    footer {
+      border-top: 1px solid #21262d;
+      padding: 1.25rem 2rem;
+      font-size: 0.8rem;
+      color: #8b949e;
+      line-height: 1.6;
+    }
+
     .tabs {
       display: flex;
       gap: 0;
@@ -603,6 +611,13 @@ function buildHtml(programs) {
       </table>
     </div>
   </div>
+
+  <footer>
+    <strong style="color:#c9d1d9">Disclaimer:</strong>
+    This is an independent, community project and is <strong style="color:#c9d1d9">not officially endorsed by, affiliated with, or associated with Blockstream</strong>.
+    Programs indexed here are sourced from public third-party repositories and have not been audited by this project.
+    This is not financial advice. Do not use these contracts with real funds without independent professional review. Use at your own risk.
+  </footer>
 
   <div class="ext-modal" id="ext-modal">
     <div class="ext-modal-inner">

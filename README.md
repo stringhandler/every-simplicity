@@ -2,6 +2,8 @@
 
 A searchable catalog of every `.simplicityhl` file on the internet.
 
+> **Disclaimer:** This is an independent, community project and is not officially endorsed by, affiliated with, or associated with Blockstream. Simplicity programs indexed here are sourced from public third-party repositories and have not been audited. This is not financial advice. Use at your own risk. See [DISCLAIMER.md](DISCLAIMER.md) for full details.
+
 ## Adding a program
 
 Requires: Docker (running), Rust/Cargo.

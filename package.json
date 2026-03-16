@@ -2,6 +2,7 @@
   "name": "every-simplicity",
   "version": "0.1.0",
   "description": "A searchable catalog of every .simplicityhl file on the internet",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
