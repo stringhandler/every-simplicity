@@ -1,0 +1,32 @@
+url = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/presigned_vault.simf"
+name = "presigned_vault"
+repo = "https://github.com/BlockstreamResearch/SimplicityHL.git"
+branch = "master"
+file_path = "examples/presigned_vault.simf"
+commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
+fetched_at = "2026-03-16T13:52:15.565171300+00:00"
+cmr = "b51aaa70da13d19b35022e69806dcb40ea2adaef5de83dcbaa5356a3ec0abd2b"
+type_arrow = "1 → 1"
+jet_set = "core"
+commit_decode = "(witness  & iden); case ((OH; (((unit; const 0x03e8 ) & iden); (((OH; jet_check_lock_distance ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH))); IH)))) ((OH; (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((OH & IH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))))))"
+liquid_address = "ex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23sl0vr03"
+liquid_testnet_address = "tex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23s7k7y77"
+witnesses = ["HOT_OR_COLD"]
+comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend", "1 * G", "2 * G", "PRESIGNED VAULT", "The coins move after a timeout if the hot key signs.", "Alternatively, the cold key can sweep the coins at any time.", "This contract can be used to construct a vault that works without covenants:", "1) The cold key creates a presigned transaction that moves the vaulted coins", "into the contract.", "2) The presigned transaction is kept alongside the hot key.", "3) To unvault the coins, the presigned transaction is broadcast. The coins", "move into the contract. The coins cannot be moved until the timeout.", "4) If the hot key is compromised, then the cold key can cancel the", "unvaulting process and move the coins into a new vault.", "5) After the timeout, the hot key can withdraw the coins.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend"]
+
+[example_witnesses]
+default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/presigned_vault.complete.wit"
+
+[jets]
+bip_0340_verify = 1
+check_lock_distance = 1
+sig_all_hash = 1
+
+[reserved_words]
+Left = 1
+Right = 1
+match = 1
+
+[types]
+Signature = 5
+u256 = 1

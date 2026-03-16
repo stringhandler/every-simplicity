@@ -1,0 +1,90 @@
+flowchart TD
+  node0["witness(0)"]
+  node1["iden"]
+  node2["pair"]
+  node2 --> node0
+  node2 --> node1
+  node3["iden"]
+  node4["take"]
+  node4 --> node3
+  node5["unit"]
+  node6["jet(sha_256_ctx_8_init)"]
+  node7["comp"]
+  node7 --> node5
+  node7 --> node6
+  node8["iden"]
+  node9["pair"]
+  node9 --> node7
+  node9 --> node8
+  node10["iden"]
+  node11["take"]
+  node11 --> node10
+  node12["iden"]
+  node13["drop"]
+  node13 --> node12
+  node14["pair"]
+  node14 --> node11
+  node14 --> node13
+  node15["jet(sha_256_ctx_8_add_32)"]
+  node16["comp"]
+  node16 --> node14
+  node16 --> node15
+  node17["iden"]
+  node18["pair"]
+  node18 --> node16
+  node18 --> node17
+  node19["iden"]
+  node20["take"]
+  node20 --> node19
+  node21["jet(sha_256_ctx_8_finalize)"]
+  node22["comp"]
+  node22 --> node20
+  node22 --> node21
+  node23["comp"]
+  node23 --> node18
+  node23 --> node22
+  node24["comp"]
+  node24 --> node9
+  node24 --> node23
+  node25["comp"]
+  node25 --> node4
+  node25 --> node24
+  node26["iden"]
+  node27["pair"]
+  node27 --> node25
+  node27 --> node26
+  node28["iden"]
+  node29["take"]
+  node29 --> node28
+  node30["drop"]
+  node30 --> node29
+  node31["iden"]
+  node32["take"]
+  node32 --> node31
+  node33["pair"]
+  node33 --> node30
+  node33 --> node32
+  node34["jet(eq_256)"]
+  node35["comp"]
+  node35 --> node33
+  node35 --> node34
+  node36["jet(verify)"]
+  node37["comp"]
+  node37 --> node35
+  node37 --> node36
+  node38["unit"]
+  node39["pair"]
+  node39 --> node37
+  node39 --> node38
+  node40["iden"]
+  node41["drop"]
+  node41 --> node40
+  node42["comp"]
+  node42 --> node39
+  node42 --> node41
+  node43["comp"]
+  node43 --> node27
+  node43 --> node42
+  node44["comp"]
+  node44 --> node2
+  node44 --> node43

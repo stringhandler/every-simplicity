@@ -1,0 +1,13 @@
+{
+  "name": "every-simplicity",
+  "version": "0.1.0",
+  "description": "A searchable catalog of every .simplicityhl file on the internet",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node site/build.js"
+  },
+  "dependencies": {
+    "smol-toml": "^1.3.1"
+  }
+}

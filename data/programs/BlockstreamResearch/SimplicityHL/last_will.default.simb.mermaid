@@ -1,0 +1,464 @@
+flowchart TD
+  node0["witness(0)"]
+  node1["iden"]
+  node2["pair"]
+  node2 --> node0
+  node2 --> node1
+  node3["iden"]
+  node4["take"]
+  node4 --> node3
+  node5["unit"]
+  node6["word(0x6540)"]
+  node7["comp"]
+  node7 --> node5
+  node7 --> node6
+  node8["iden"]
+  node9["pair"]
+  node9 --> node7
+  node9 --> node8
+  node10["iden"]
+  node11["take"]
+  node11 --> node10
+  node12["jet(check_lock_distance)"]
+  node13["comp"]
+  node13 --> node11
+  node13 --> node12
+  node14["unit"]
+  node15["word(0x79b...1798)"]
+  node16["comp"]
+  node16 --> node14
+  node16 --> node15
+  node17["iden"]
+  node18["pair"]
+  node18 --> node16
+  node18 --> node17
+  node19["iden"]
+  node20["take"]
+  node20 --> node19
+  node21["iden"]
+  node22["drop"]
+  node22 --> node21
+  node23["drop"]
+  node23 --> node22
+  node24["pair"]
+  node24 --> node20
+  node24 --> node23
+  node25["unit"]
+  node26["jet(sig_all_hash)"]
+  node27["comp"]
+  node27 --> node25
+  node27 --> node26
+  node28["iden"]
+  node29["pair"]
+  node29 --> node27
+  node29 --> node28
+  node30["iden"]
+  node31["take"]
+  node31 --> node30
+  node32["drop"]
+  node32 --> node31
+  node33["iden"]
+  node34["take"]
+  node34 --> node33
+  node35["pair"]
+  node35 --> node32
+  node35 --> node34
+  node36["iden"]
+  node37["drop"]
+  node37 --> node36
+  node38["drop"]
+  node38 --> node37
+  node39["pair"]
+  node39 --> node35
+  node39 --> node38
+  node40["jet(bip_0340_verify)"]
+  node41["comp"]
+  node41 --> node39
+  node41 --> node40
+  node42["unit"]
+  node43["pair"]
+  node43 --> node41
+  node43 --> node42
+  node44["iden"]
+  node45["drop"]
+  node45 --> node44
+  node46["comp"]
+  node46 --> node43
+  node46 --> node45
+  node47["comp"]
+  node47 --> node29
+  node47 --> node46
+  node48["comp"]
+  node48 --> node24
+  node48 --> node47
+  node49["unit"]
+  node50["pair"]
+  node50 --> node48
+  node50 --> node49
+  node51["iden"]
+  node52["drop"]
+  node52 --> node51
+  node53["comp"]
+  node53 --> node50
+  node53 --> node52
+  node54["comp"]
+  node54 --> node18
+  node54 --> node53
+  node55["pair"]
+  node55 --> node13
+  node55 --> node54
+  node56["iden"]
+  node57["drop"]
+  node57 --> node56
+  node58["comp"]
+  node58 --> node55
+  node58 --> node57
+  node59["comp"]
+  node59 --> node9
+  node59 --> node58
+  node60["comp"]
+  node60 --> node4
+  node60 --> node59
+  node61["iden"]
+  node62["take"]
+  node62 --> node61
+  node63["iden"]
+  node64["pair"]
+  node64 --> node62
+  node64 --> node63
+  node65["iden"]
+  node66["take"]
+  node66 --> node65
+  node67["unit"]
+  node68["word(0xc60...9ee5)"]
+  node69["comp"]
+  node69 --> node67
+  node69 --> node68
+  node70["iden"]
+  node71["pair"]
+  node71 --> node69
+  node71 --> node70
+  node72["iden"]
+  node73["take"]
+  node73 --> node72
+  node74["iden"]
+  node75["drop"]
+  node75 --> node74
+  node76["pair"]
+  node76 --> node73
+  node76 --> node75
+  node77["unit"]
+  node78["jet(sig_all_hash)"]
+  node79["comp"]
+  node79 --> node77
+  node79 --> node78
+  node80["iden"]
+  node81["pair"]
+  node81 --> node79
+  node81 --> node80
+  node82["iden"]
+  node83["take"]
+  node83 --> node82
+  node84["drop"]
+  node84 --> node83
+  node85["iden"]
+  node86["take"]
+  node86 --> node85
+  node87["pair"]
+  node87 --> node84
+  node87 --> node86
+  node88["iden"]
+  node89["drop"]
+  node89 --> node88
+  node90["drop"]
+  node90 --> node89
+  node91["pair"]
+  node91 --> node87
+  node91 --> node90
+  node92["jet(bip_0340_verify)"]
+  node93["comp"]
+  node93 --> node91
+  node93 --> node92
+  node94["unit"]
+  node95["pair"]
+  node95 --> node93
+  node95 --> node94
+  node96["iden"]
+  node97["drop"]
+  node97 --> node96
+  node98["comp"]
+  node98 --> node95
+  node98 --> node97
+  node99["comp"]
+  node99 --> node81
+  node99 --> node98
+  node100["comp"]
+  node100 --> node76
+  node100 --> node99
+  node101["unit"]
+  node102["pair"]
+  node102 --> node100
+  node102 --> node101
+  node103["iden"]
+  node104["drop"]
+  node104 --> node103
+  node105["comp"]
+  node105 --> node102
+  node105 --> node104
+  node106["comp"]
+  node106 --> node71
+  node106 --> node105
+  node107["comp"]
+  node107 --> node66
+  node107 --> node106
+  node108["iden"]
+  node109["take"]
+  node109 --> node108
+  node110["unit"]
+  node111["word(0xf93...36f9)"]
+  node112["comp"]
+  node112 --> node110
+  node112 --> node111
+  node113["iden"]
+  node114["pair"]
+  node114 --> node112
+  node114 --> node113
+  node115["iden"]
+  node116["take"]
+  node116 --> node115
+  node117["iden"]
+  node118["drop"]
+  node118 --> node117
+  node119["pair"]
+  node119 --> node116
+  node119 --> node118
+  node120["unit"]
+  node121["jet(sig_all_hash)"]
+  node122["comp"]
+  node122 --> node120
+  node122 --> node121
+  node123["iden"]
+  node124["pair"]
+  node124 --> node122
+  node124 --> node123
+  node125["iden"]
+  node126["take"]
+  node126 --> node125
+  node127["drop"]
+  node127 --> node126
+  node128["iden"]
+  node129["take"]
+  node129 --> node128
+  node130["pair"]
+  node130 --> node127
+  node130 --> node129
+  node131["iden"]
+  node132["drop"]
+  node132 --> node131
+  node133["drop"]
+  node133 --> node132
+  node134["pair"]
+  node134 --> node130
+  node134 --> node133
+  node135["jet(bip_0340_verify)"]
+  node136["comp"]
+  node136 --> node134
+  node136 --> node135
+  node137["unit"]
+  node138["pair"]
+  node138 --> node136
+  node138 --> node137
+  node139["iden"]
+  node140["drop"]
+  node140 --> node139
+  node141["comp"]
+  node141 --> node138
+  node141 --> node140
+  node142["comp"]
+  node142 --> node124
+  node142 --> node141
+  node143["comp"]
+  node143 --> node119
+  node143 --> node142
+  node144["unit"]
+  node145["unit"]
+  node146["jet(num_outputs)"]
+  node147["comp"]
+  node147 --> node145
+  node147 --> node146
+  node148["unit"]
+  node149["word(0x00000002)"]
+  node150["comp"]
+  node150 --> node148
+  node150 --> node149
+  node151["pair"]
+  node151 --> node147
+  node151 --> node150
+  node152["jet(eq_32)"]
+  node153["comp"]
+  node153 --> node151
+  node153 --> node152
+  node154["jet(verify)"]
+  node155["comp"]
+  node155 --> node153
+  node155 --> node154
+  node156["unit"]
+  node157["jet(current_script_hash)"]
+  node158["comp"]
+  node158 --> node156
+  node158 --> node157
+  node159["iden"]
+  node160["pair"]
+  node160 --> node158
+  node160 --> node159
+  node161["unit"]
+  node162["word(0x00000000)"]
+  node163["comp"]
+  node163 --> node161
+  node163 --> node162
+  node164["jet(output_script_hash)"]
+  node165["comp"]
+  node165 --> node163
+  node165 --> node164
+  node166["iden"]
+  node167["unit"]
+  node168["pair"]
+  node168 --> node166
+  node168 --> node167
+  node169["iden"]
+  node170["take"]
+  node170 --> node169
+  node171["assertr"]
+  node171 --> node170
+  node172["comp"]
+  node172 --> node168
+  node172 --> node171
+  node173["comp"]
+  node173 --> node165
+  node173 --> node172
+  node174["iden"]
+  node175["pair"]
+  node175 --> node173
+  node175 --> node174
+  node176["iden"]
+  node177["take"]
+  node177 --> node176
+  node178["drop"]
+  node178 --> node177
+  node179["iden"]
+  node180["take"]
+  node180 --> node179
+  node181["pair"]
+  node181 --> node178
+  node181 --> node180
+  node182["jet(eq_256)"]
+  node183["comp"]
+  node183 --> node181
+  node183 --> node182
+  node184["jet(verify)"]
+  node185["comp"]
+  node185 --> node183
+  node185 --> node184
+  node186["unit"]
+  node187["word(0x00000001)"]
+  node188["comp"]
+  node188 --> node186
+  node188 --> node187
+  node189["jet(output_is_fee)"]
+  node190["comp"]
+  node190 --> node188
+  node190 --> node189
+  node191["iden"]
+  node192["unit"]
+  node193["pair"]
+  node193 --> node191
+  node193 --> node192
+  node194["iden"]
+  node195["take"]
+  node195 --> node194
+  node196["assertr"]
+  node196 --> node195
+  node197["comp"]
+  node197 --> node193
+  node197 --> node196
+  node198["comp"]
+  node198 --> node190
+  node198 --> node197
+  node199["jet(verify)"]
+  node200["comp"]
+  node200 --> node198
+  node200 --> node199
+  node201["unit"]
+  node202["pair"]
+  node202 --> node200
+  node202 --> node201
+  node203["iden"]
+  node204["drop"]
+  node204 --> node203
+  node205["comp"]
+  node205 --> node202
+  node205 --> node204
+  node206["pair"]
+  node206 --> node185
+  node206 --> node205
+  node207["iden"]
+  node208["drop"]
+  node208 --> node207
+  node209["comp"]
+  node209 --> node206
+  node209 --> node208
+  node210["comp"]
+  node210 --> node175
+  node210 --> node209
+  node211["comp"]
+  node211 --> node160
+  node211 --> node210
+  node212["pair"]
+  node212 --> node155
+  node212 --> node211
+  node213["iden"]
+  node214["drop"]
+  node214 --> node213
+  node215["comp"]
+  node215 --> node212
+  node215 --> node214
+  node216["comp"]
+  node216 --> node144
+  node216 --> node215
+  node217["unit"]
+  node218["pair"]
+  node218 --> node216
+  node218 --> node217
+  node219["iden"]
+  node220["drop"]
+  node220 --> node219
+  node221["comp"]
+  node221 --> node218
+  node221 --> node220
+  node222["pair"]
+  node222 --> node143
+  node222 --> node221
+  node223["iden"]
+  node224["drop"]
+  node224 --> node223
+  node225["comp"]
+  node225 --> node222
+  node225 --> node224
+  node226["comp"]
+  node226 --> node114
+  node226 --> node225
+  node227["comp"]
+  node227 --> node109
+  node227 --> node226
+  node228{"case"}
+  node228 --> node107
+  node228 --> node227
+  node229["comp"]
+  node229 --> node64
+  node229 --> node228
+  node230{"case"}
+  node230 --> node60
+  node230 --> node229
+  node231["comp"]
+  node231 --> node2
+  node231 --> node230

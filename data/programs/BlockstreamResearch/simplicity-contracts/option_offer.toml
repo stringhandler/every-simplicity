@@ -1,0 +1,67 @@
+url = "https://github.com/BlockstreamResearch/simplicity-contracts/blob/main/crates/contracts/src/finance/option_offer/source_simf/option_offer.simf"
+name = "option_offer"
+repo = "https://github.com/BlockstreamResearch/simplicity-contracts.git"
+branch = "main"
+file_path = "crates/contracts/src/finance/option_offer/source_simf/option_offer.simf"
+commit = "ec8773cc8c92053e0fa513a6f2b50feeafd1b88c"
+fetched_at = "2026-03-16T14:38:16.381470400+00:00"
+cmr = "5419e1c3454fb338ee1da3a8eac78d2f6d11e38013a80944c77fba04e57084b3"
+type_arrow = "1 → 1"
+jet_set = "core"
+commit_decode = "(witness  & iden); ((witness  & iden); case (((OH & iden); ((OOH & OIH); ((((((unit; jet_current_index ) & (unit; const 0x00000001 )); jet_le_32 ); jet_verify ) & ((((unit; const 0x00000000 ); ((iden; jet_input_script_hash ); ((iden & unit); assertr OH))) & iden); (((((((unit; const 0x00000001 ); ((iden; jet_input_script_hash ); ((iden & unit); assertr OH))) & OH); jet_eq_256 ); jet_verify ) & ((((IOH & (unit; const 0x0000000000000064 )); jet_multiply_64 ) & iden); (((OH; iden) & iden); (((((OOH & (unit; const 0x0000000000000000 )); jet_eq_64 ); jet_verify ) & (((((unit; const 0x00000000 ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & IIIOH) & (IIOH & IIIIH))); (((OH; ((((iden; jet_input_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((((IOH; jet_input_script_hash ); ((iden & unit); assertr OH)) & IIIOH); jet_eq_256 ); jet_verify ) & ((IIIIH & iden); case ((((IIIOIH & IOIH); jet_eq_64 ); jet_verify )) ((((IIOH; (((((((iden; jet_input_script_hash ); ((iden & unit); assertr OH)) & ((iden; jet_output_script_hash ); ((iden & unit); assertr OH))); jet_eq_256 ); jet_verify ) & unit); IH)) & ((((IOIH & IIIOIH); jet_subtract_64 ) & iden); (((OOH; (((((iden & (unit; const 0b0 )); jet_eq_1 ); jet_verify ) & unit); IH)) & ((((IIIOH & (IIIIOOH & OIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & unit); IH)); IH))); IH)))); IH))) & (((((unit; const 0x00000001 ) & (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & OIH) & (IIOH & IIIIH))); (((OH; ((((iden; jet_input_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((((IOH; jet_input_script_hash ); ((iden & unit); assertr OH)) & IIIOH); jet_eq_256 ); jet_verify ) & ((IIIIH & iden); case ((((IIIOIH & IOIH); jet_eq_64 ); jet_verify )) ((((IIOH; (((((((iden; jet_input_script_hash ); ((iden & unit); assertr OH)) & ((iden; jet_output_script_hash ); ((iden & unit); assertr OH))); jet_eq_256 ); jet_verify ) & unit); IH)) & ((((IOIH & IIIOIH); jet_subtract_64 ) & iden); (((OOH; (((((iden & (unit; const 0b0 )); jet_eq_1 ); jet_verify ) & unit); IH)) & ((((IIIOH & (IIIIOOH & OIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & unit); IH)); IH))); IH)))); IH))) & ((((IIIIH & iden); case (((unit; const 0x00000000 ) & ((unit; const 0x00000001 ) & (unit; const 0x00000002 )))) (((unit; const 0x00000002 ) & ((unit; const 0x00000003 ) & (unit; const 0x00000004 ))))) & iden); ((((OOH & IIIOH); (((((((OH; jet_output_script_hash ); ((iden & unit); assertr OH)) & IH); jet_eq_256 ); jet_verify ) & unit); IH)) & (((OOH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & (unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 )); jet_eq_256 ); jet_verify ) & ((((OIH & ((unit; const 0x0000000000000064 ) & IIIIIOH)); ((((OH & IOH); jet_div_mod_64 ) & iden); (((((OOH & IIIH); jet_eq_64 ); jet_verify ) & (((((OIH & (unit; const 0x0000000000000000 )); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & ((((IOIOH & ((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & IIIIIOH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & ((((IOIIH & ((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & IIOIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & unit); IH)); IH)); IH)); IH))); IH))); IH)); IH)); IH)))); IH))); IH)))) (((OH & iden); case ((IIOH; ((((((unit; jet_current_index ) & (unit; const 0x00000000 )); jet_eq_32 ); jet_verify ) & ((((unit; const 0x00000000 ); ((((iden; jet_input_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & (unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 )); jet_eq_256 ); jet_verify ) & (((IH; (((unit; jet_sig_all_hash ) & iden); ((((((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & OH) & IH); jet_bip_0340_verify ) & unit); IH))) & (((((unit; const 0x00000000 ) & ((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & OIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & unit); IH)); IH)); IH))); IH))) ((IIOH; ((((unit; const 0x00000064 ); jet_check_lock_time ) & ((((((unit; jet_current_index ) & (unit; const 0x00000001 )); jet_le_32 ); jet_verify ) & ((((unit; const 0x00000000 ); ((iden; jet_input_script_hash ); ((iden & unit); assertr OH))) & iden); (((((((unit; const 0x00000001 ); ((iden; jet_input_script_hash ); ((iden & unit); assertr OH))) & OH); jet_eq_256 ); jet_verify ) & ((((unit; const 0x00000000 ); ((((iden; jet_input_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & (unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 )); jet_eq_256 ); jet_verify ) & ((((unit; const 0x00000001 ); ((((iden; jet_input_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & (unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 )); jet_eq_256 ); jet_verify ) & (((IIIH; (((unit; jet_sig_all_hash ) & iden); ((((((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & OH) & IH); jet_bip_0340_verify ) & unit); IH))) & (((((unit; const 0x00000000 ) & ((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & IOIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & (((((unit; const 0x00000001 ) & ((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & OIH)); (((OH; ((((iden; jet_output_amount ); ((iden & unit); assertr OH)) & iden); ((OH & iden); (((OOH; ((iden & unit); assertr OH)) & iden); (((IOIH; ((iden & unit); assertr OH)) & iden); (IOH & OH)))))) & iden); (((((OOH & IIOH); jet_eq_256 ); jet_verify ) & (((((OIH & IIIH); jet_eq_64 ); jet_verify ) & unit); IH)); IH))) & unit); IH)); IH)); IH)); IH))); IH))); IH))); IH)); IH))))))"
+liquid_address = "ex1pgutsc5altpvta84krk9n8wv2xhhtumf5cakadcljk8za2t5m5tjs8w7kjm"
+liquid_testnet_address = "tex1pgutsc5altpvta84krk9n8wv2xhhtumf5cakadcljk8za2t5m5tjsxhv3r5"
+witnesses = ["USER_SIGHASH_ALL", "PATH"]
+params = ["USER_PUBKEY", "PREMIUM_PER_COLLATERAL", "COLLATERAL_ASSET_ID", "PREMIUM_ASSET_ID", "SETTLEMENT_ASSET_ID", "COLLATERAL_PER_CONTRACT", "EXPIRY_TIME"]
+comments = ["/ Assert: a == b * expected_q, via divmod", "Check collateral changes", "Option Offer", "A covenant that allows a user to deposit collateral and premium assets,", "and have a counterparty swap settlement asset for both.", "The user can withdraw accumulated settlement asset at any time (with signature).", "After expiry, the user can reclaim any remaining collateral and premium (with signature).", "Paths:", "1. Exercise: Counterparty swaps settlement asset for collateral + premium (no time restriction, optional change)", "2. Withdraw: User withdraws settlement asset (no time restriction, signature required, full amount)", "3. Expiry: User reclaims collateral + premium (after expiry, signature required, full amount)", "Constraints:", "settlement_amount = COLLATERAL_PER_CONTRACT * collateral_amount", "premium_amount = PREMIUM_PER_COLLATERAL * collateral_amount", "Exercise Path", "Counterparty swaps settlement asset for collateral + premium.", "No time restriction - works before and after expiry.", "Layout:", "Both:", "Input[0]: Collateral from covenant", "Input[1]: Premium from covenant", "With change (partial swap):", "Output[0]: Collateral change → covenant", "Output[1]: Premium change → covenant", "Output[2]: Settlement asset → covenant", "Output[3]: Collateral → counterparty", "Output[4]: Premium → counterparty", "Without change (full swap):", "Output[0]: Settlement asset → covenant", "Output[1]: Collateral → counterparty", "Output[2]: Premium → counterparty", "Withdraw Path", "User withdraws accumulated settlement asset.", "No time restriction.", "Requires signature from USER_PUBKEY.", "No change - full withdrawal only.", "Input[0]: Settlement asset from covenant", "Output[0]: Settlement asset → user (any address)", "Expiry Path", "User reclaims remaining collateral and premium after expiry.", "Only allowed after EXPIRY_TIME.", "No change - full reclaim only.", "Output[0]: Collateral → user (any address)", "Output[1]: Premium → user (any address)"]
+
+[example_arg_values]
+COLLATERAL_ASSET_ID = "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798::Pubkey"
+PREMIUM_ASSET_ID = "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798::Pubkey"
+SETTLEMENT_ASSET_ID = "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798::Pubkey"
+COLLATERAL_PER_CONTRACT = "100::u64"
+EXPIRY_TIME = "100::u32"
+PREMIUM_PER_COLLATERAL = "100::u64"
+USER_PUBKEY = "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798::Pubkey"
+
+[jets]
+bip_0340_verify = 1
+check_lock_time = 1
+current_index = 3
+div_mod_64 = 1
+eq_1 = 1
+eq_256 = 10
+eq_32 = 1
+eq_64 = 5
+input_amount = 1
+input_script_hash = 3
+le_32 = 2
+multiply_64 = 1
+output_amount = 1
+output_script_hash = 2
+sig_all_hash = 1
+subtract_64 = 1
+
+[builtins]
+unwrap_right = 4
+
+[macros]
+"assert!" = 19
+"dbg!" = 1
+
+[reserved_words]
+Left = 2
+Right = 2
+false = 2
+match = 4
+true = 2
+
+[types]
+Either = 1
+Signature = 4
+bool = 7
+u1 = 4
+u128 = 2
+u256 = 22
+u32 = 10
+u64 = 23

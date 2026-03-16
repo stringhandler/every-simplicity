@@ -1,0 +1,31 @@
+url = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/transfer_with_timeout.simf"
+name = "transfer_with_timeout"
+repo = "https://github.com/BlockstreamResearch/SimplicityHL.git"
+branch = "master"
+file_path = "examples/transfer_with_timeout.simf"
+commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
+fetched_at = "2026-03-16T14:23:16.023092900+00:00"
+cmr = "e47633744baf8a4c3aacfc03f2860f0d4fe6731fb96ad0bf5e0b9fb8cf8c48c6"
+type_arrow = "1 → 1"
+jet_set = "core"
+commit_decode = "(witness  & iden); ((witness  & iden); case ((IOH; (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & (((unit; const 0x000003e8 ) & iden); (((OH; jet_check_lock_height ) & unit); IH))); IH)))) (((IOH & OH); (((unit; const 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798 ) & iden); ((((OH & IOH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & (((unit; const 0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5 ) & iden); ((((OH & IIIH); (((unit; jet_sig_all_hash ) & iden); (((((IOH & OH) & IIH); jet_bip_0340_verify ) & unit); IH))) & unit); IH))); IH)))))"
+liquid_address = "ex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eq9hu2lg"
+liquid_testnet_address = "tex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eqywwdw8"
+witnesses = ["SENDER_SIG", "TRANSFER_OR_TIMEOUT"]
+comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout", "1 * G", "2 * G", "TRANSFER WITH TIMEOUT", "The coins move if the sender and recipient agree to move them.", "If the recipient fails to cooperate, then the sender can recover", "the coins unilaterally after a timeout.", "This contract can be used to construct a one-way payment channel:", "The sender keeps increasing the amount of coins to the recipient,", "signing updated transactions with each channel update. The recipient", "broadcasts the transaction on the blockchain when they are ready.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout"]
+
+[example_witnesses]
+default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/transfer_with_timeout.transfer.wit"
+
+[jets]
+bip_0340_verify = 1
+check_lock_height = 1
+sig_all_hash = 1
+
+[reserved_words]
+match = 1
+
+[types]
+Height = 1
+Signature = 6
+u256 = 1

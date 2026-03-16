@@ -1,0 +1,29 @@
+url = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/array_fold_2n.simf"
+name = "array_fold_2n"
+repo = "https://github.com/BlockstreamResearch/SimplicityHL.git"
+branch = "master"
+file_path = "examples/array_fold_2n.simf"
+commit = "75b93b0660b1f8e829754742b76e889ed54fc01b"
+fetched_at = "2026-03-16T12:12:29.303795600+00:00"
+cmr = "d766ceac05bf19871d3c7edb4f7532e0475a6f27d3738b3fa623593d310d26f2"
+type_arrow = "1 → 1"
+jet_set = "core"
+commit_decode = "(((((unit; const 0x00000001 ) & (unit; const 0x00000001 )) & ((unit; const 0x00000001 ) & (unit; const 0x00000001 ))) & (((unit; const 0x00000001 ) & (unit; const 0x00000001 )) & ((unit; const 0x00000001 ) & (unit; const 0x00000001 )))) & iden); ((((OH & (unit; const 0x00000000 )); ((OIH & ((OOH & IH); ((OIH & ((OOH & IH); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH)))); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH))))); ((OIH & ((OOH & IH); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH)))); ((OIH & ((OOH & IH); ((((OH & IH); jet_add_32 ) & iden); OIH))); ((((OH & IH); jet_add_32 ) & iden); OIH))))) & iden); (((((OH & (unit; const 0x00000008 )); jet_eq_32 ); jet_verify ) & unit); IH))"
+liquid_address = "ex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s4thx70"
+liquid_testnet_address = "tex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s5j9p0q"
+is_redeem = false
+comments = ["From https://github.com/BlockstreamResearch/SimplicityHL/issues/153"]
+
+[jets]
+add_32 = 1
+eq_32 = 1
+
+[builtins]
+array_fold = 1
+
+[macros]
+"assert!" = 1
+
+[types]
+bool = 1
+u32 = 6
