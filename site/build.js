@@ -516,28 +516,35 @@ function buildHtml(programs) {
     .filter-btn:hover { color: #e6edf3; border-color: #8b949e; }
     .filter-btn.active { color: #f0f6fc; border-color: #58a6ff; background: #1c2d3f; }
 
+    .cloud-section { border-bottom: 1px solid #21262d; }
+
+    .cloud-label {
+      padding: 0.75rem 2rem 0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8b949e;
+    }
+
     .word-cloud {
-      padding: 1.25rem 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 0.75rem;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 1px solid #21262d;
+      position: relative;
+      overflow: hidden;
+      margin: 0 2rem;
     }
 
     .word-cloud-word {
+      position: absolute;
       background: none;
       border: none;
       cursor: pointer;
       font-family: monospace;
-      padding: 0.1rem 0.25rem;
-      border-radius: 3px;
-      line-height: 1.3;
+      padding: 0;
+      line-height: 1;
+      white-space: nowrap;
       transition: opacity 0.15s;
     }
 
-    .word-cloud-word:hover { opacity: 0.7; background: #21262d; }
+    .word-cloud-word:hover { opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -571,7 +578,10 @@ function buildHtml(programs) {
   </div>
 
   <div id="tab-jets" class="tab-panel">
-    <div id="jets-cloud" class="word-cloud"></div>
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="jets-cloud" class="word-cloud"></div>
+    </div>
     <div style="padding:1.25rem 2rem 0.5rem">
       <input type="search" id="jet-search" placeholder="Filter jets…" autocomplete="off"
         style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
@@ -585,7 +595,10 @@ function buildHtml(programs) {
   </div>
 
   <div id="tab-builtins" class="tab-panel">
-    <div id="builtins-cloud" class="word-cloud"></div>
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="builtins-cloud" class="word-cloud"></div>
+    </div>
     <div style="padding:1.25rem 2rem 0.5rem">
       <input type="search" id="builtins-search" placeholder="Filter built-ins…" autocomplete="off"
         style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
@@ -599,7 +612,10 @@ function buildHtml(programs) {
   </div>
 
   <div id="tab-types" class="tab-panel">
-    <div id="types-cloud" class="word-cloud"></div>
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="types-cloud" class="word-cloud"></div>
+    </div>
     <div style="padding:1.25rem 2rem 0.5rem">
       <input type="search" id="types-search" placeholder="Filter types…" autocomplete="off"
         style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
@@ -613,7 +629,10 @@ function buildHtml(programs) {
   </div>
 
   <div id="tab-macros" class="tab-panel">
-    <div id="macros-cloud" class="word-cloud"></div>
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="macros-cloud" class="word-cloud"></div>
+    </div>
     <div style="padding:1.25rem 2rem 0.5rem">
       <input type="search" id="macros-search" placeholder="Filter macros…" autocomplete="off"
         style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
@@ -627,7 +646,10 @@ function buildHtml(programs) {
   </div>
 
   <div id="tab-reserved" class="tab-panel">
-    <div id="reserved-cloud" class="word-cloud"></div>
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="reserved-cloud" class="word-cloud"></div>
+    </div>
     <div style="padding:1.25rem 2rem 0.5rem">
       <input type="search" id="reserved-search" placeholder="Filter reserved words…" autocomplete="off"
         style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
@@ -839,7 +861,10 @@ function buildHtml(programs) {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
         document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
         btn.classList.add("active");
-        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+        const panel = document.getElementById("tab-" + btn.dataset.tab);
+        panel.classList.add("active");
+        const cloudEl = panel.querySelector('.word-cloud');
+        if (cloudEl) _placeCloud(cloudEl.id);
       });
     });
 
@@ -884,28 +909,87 @@ function buildHtml(programs) {
       btn.nextElementSibling.style.display = expanded ? "none" : "block";
     };
 
-    function renderWordCloud(rows, cloudId, searchId) {
+    // --- Word Cloud (spiral placement) ---
+    const _cloudRegistry = {};
+
+    function _wordHash(s) {
+      let h = 5381;
+      for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+      return h;
+    }
+
+    function _placeCloud(cloudId) {
+      const entry = _cloudRegistry[cloudId];
+      if (!entry || entry.rendered) return;
+      const { rows, searchId } = entry;
       const cloud = document.getElementById(cloudId);
-      if (!rows.length) { cloud.style.display = 'none'; return; }
+      const W = cloud.offsetWidth;
+      if (W < 10) return;
+      const searchEl = document.getElementById(searchId);
       const counts = rows.map(([, p]) => p.length);
       const minC = Math.min(...counts), maxC = Math.max(...counts);
-      const minSize = 0.75, maxSize = 2.2;
-      const searchEl = document.getElementById(searchId);
-      cloud.innerHTML = rows.map(([label, progs]) => {
+      const minPx = 11, maxPx = 42;
+      const items = rows.map(([label, progs]) => {
         const c = progs.length;
         const t = maxC > minC ? (c - minC) / (maxC - minC) : 1;
-        const size = (minSize + t * (maxSize - minSize)).toFixed(2);
-        const r = Math.round(0x8b + t * (0x58 - 0x8b));
-        const g = Math.round(0x94 + t * (0xa6 - 0x94));
-        const b = Math.round(0x9e + t * (0xff - 0x9e));
-        return \`<button class="word-cloud-word" style="font-size:\${size}rem;color:rgb(\${r},\${g},\${b})" data-word="\${escAttr(label)}" title="\${escAttr(label)}: \${c} script\${c !== 1 ? 's' : ''}">\${escHtml(label)}</button>\`;
-      }).join("");
+        const px = Math.round(minPx + t * (maxPx - minPx));
+        const hash = _wordHash(label);
+        const hue = hash % 360;
+        const sat = Math.round(40 + t * 40);
+        const lit = Math.round(40 + t * 28);
+        return { label, count: c, px, color: \`hsl(\${hue},\${sat}%,\${lit}%)\`, t };
+      });
+      const CHAR_W = 0.6, LINE_H = 1.3, PAD = 6;
+      const placed = [];
+      const out = [];
+      const cx = W / 2;
+      function fits(x, y, w, h) {
+        if (x < 2 || x + w > W - 2) return false;
+        for (const p of placed) {
+          if (x < p.x + p.w + PAD && x + w + PAD > p.x &&
+              y < p.y + p.h + PAD && y + h + PAD > p.y) return false;
+        }
+        return true;
+      }
+      for (const item of items) {
+        const iw = item.label.length * item.px * CHAR_W;
+        const ih = item.px * LINE_H;
+        let ox = 0, oy = 0, ok = false;
+        for (let step = 0; step < 1200 && !ok; step++) {
+          const angle = step * 0.28;
+          const r = step * 1.4;
+          const tx = cx + Math.cos(angle) * r * 1.7 - iw / 2;
+          const ty = Math.sin(angle) * r - ih / 2;
+          if (fits(tx, ty, iw, ih)) { ox = tx; oy = ty; ok = true; }
+        }
+        if (ok) {
+          placed.push({ x: ox, y: oy, w: iw, h: ih });
+          out.push({ item, x: ox, y: oy });
+        }
+      }
+      if (!out.length) return;
+      const minY = Math.min(...out.map(o => o.y));
+      const shift = 12 - minY;
+      const maxY = Math.max(...out.map(o => o.y + o.item.px * LINE_H)) + shift + 12;
+      cloud.style.height = Math.max(120, Math.ceil(maxY)) + 'px';
+      cloud.innerHTML = out.map(({ item, x, y }) => \`<button class="word-cloud-word"
+        style="left:\${x.toFixed(1)}px;top:\${(y+shift).toFixed(1)}px;font-size:\${item.px}px;color:\${item.color};font-weight:\${Math.round(400+item.t*300)}"
+        data-word="\${escAttr(item.label)}"
+        title="\${escAttr(item.label)}: \${item.count} script\${item.count !== 1 ? 's' : ''}"
+      >\${escHtml(item.label)}</button>\`).join('');
       cloud.querySelectorAll('.word-cloud-word').forEach(btn => {
         btn.addEventListener('click', () => {
           searchEl.value = btn.dataset.word;
           searchEl.dispatchEvent(new Event('input'));
         });
       });
+      entry.rendered = true;
+    }
+
+    function renderWordCloud(rows, cloudId, searchId) {
+      const cloud = document.getElementById(cloudId);
+      if (!rows.length) { cloud.closest('.cloud-section').style.display = 'none'; return; }
+      _cloudRegistry[cloudId] = { rows, searchId, rendered: false };
     }
 
     function wireTab(field, tbodyId, searchId, cloudId) {
