@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/hodl_vault.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T12:59:07.394714+00:00"
+manual_tags = []
 cmr = "14530d3f4b76a39c158f4fc99b4d298e612c1e80f7d9a152112b1c2c42377c5f"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqgjzvfe
 liquid_testnet_address = "tex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqftstck"
 witnesses = ["ORACLE_HEIGHT", "ORACLE_PRICE", "ORACLE_SIG", "OWNER_SIG"]
 comments = ["laser eyes until 100k", "1 * G", "2 * G", "HODL VAULT", "Lock your coins until the Bitcoin price exceeds a threshold.", "An oracle signs a message with the current block height and the current", "Bitcoin price. The block height is compared with a minimum height to prevent", "the use of old data. The transaction is timelocked to the oracle height,", "which means that the transaction becomes valid after the oracle height."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/hodl_vault.wit"

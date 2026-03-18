@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/p2pkh.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T13:51:50.308773800+00:00"
+manual_tags = []
 cmr = "8cff025821200dfc5878a25fb8ccb91eddd70b88071232f84cffa620e1e62da6"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pw79dvnyf5r3uh9rays5s0fx4k3zdl5m5dsa3afaa7lj4pt384epqtdaw4k
 liquid_testnet_address = "tex1pw79dvnyf5r3uh9rays5s0fx4k3zdl5m5dsa3afaa7lj4pt384epq250fye"
 witnesses = ["PK", "SIG"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickeyhash", "sha2(1 * G)", "PAY TO PUBLIC KEY HASH", "The coins move if the person with the public key that matches the given hash", "signs the transaction.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickeyhash"]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2pkh.wit"

@@ -1,0 +1,35 @@
+url = "https://github.com/hazbase/simplicity/blob/main/src/presets/htlc.simf.tmpl"
+name = "htlc"
+repo = "https://github.com/hazbase/simplicity.git"
+branch = "main"
+file_path = "src/presets/htlc.simf.tmpl"
+commit = "f106f47ce3a8ea39775fbfe0f226927bd0c1a578"
+fetched_at = "2026-03-18T08:53:39.778415+00:00"
+autodetected_tags = ["tmpl", "transpiled"]
+manual_tags = []
+compile_error = "Parameter `SENDER_XONLY` is missing an argument"
+witnesses = ["COMPLETE_OR_CANCEL"]
+params = ["EXPECTED_HASH", "RECIPIENT_XONLY", "TIMEOUT_HEIGHT", "SENDER_XONLY"]
+
+[jets]
+bip_0340_verify = 1
+check_lock_height = 1
+eq_256 = 1
+sha_256_ctx_8_add_32 = 1
+sha_256_ctx_8_finalize = 1
+sha_256_ctx_8_init = 1
+sig_all_hash = 1
+
+[macros]
+"assert!" = 1
+
+[reserved_words]
+Left = 1
+Right = 1
+match = 1
+
+[types]
+Ctx8 = 2
+Height = 1
+Signature = 6
+u256 = 8

@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/escrow_with_delay.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T12:22:09.056711200+00:00"
+manual_tags = []
 
 cmr = "2f5013d58254ed0196cc670ee79922c24f50fb684ba1bb8992bd2a25b36cb2e3"
 type_arrow = "1 → 1"
@@ -13,6 +14,7 @@ liquid_address = "ex1pphcc2shlqhzvnavkmq9960umzx94k7jgr6x3gnpkcnc38xyjf9pqc9stus
 liquid_testnet_address = "tex1pphcc2shlqhzvnavkmq9960umzx94k7jgr6x3gnpkcnc38xyjf9pqeuzvdl"
 witnesses = ["TRANSFER_OR_TIMEOUT"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay", "1 * G", "2 * G", "3 * G", "ESCROW WITH DELAY", "An escrow agent can approve the movement of coins in cooperation with the", "sender or the recipient. The escrow agent cannot steal the coins for himself.", "The sender can refund her coins after a timeout.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay"]
+autodetected_tags = []
 [example_witnesses]
 default = ""
 

@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/p2pk.simf"
 commit = "c5ea02a9480682bb221c542b6290b93b6a9dea9f"
 fetched_at = "2026-03-16T13:32:50.354928500+00:00"
+manual_tags = []
 cmr = "1abc423d746ee0fff5bb8ad259bec3b89d319f08a425d6b8092e9c1c5ec7d465"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -13,6 +14,7 @@ liquid_testnet_address = "tex1peavhc0s5wcm0ans49jxg445enyh6uuwl8radea7expf2syt5r
 witnesses = ["ALICE_SIGNATURE"]
 params = ["ALICE_PUBLIC_KEY"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickey", "PAY TO PUBLIC KEY", "The coins move if the person with the given public key signs the transaction.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickey"]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2pk.wit"

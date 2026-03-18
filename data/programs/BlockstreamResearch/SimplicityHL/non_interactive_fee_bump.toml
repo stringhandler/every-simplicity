@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/non_interactive_fee_bump.simf"
 commit = "f2ccc62ca0dc22cb889e9d4b1aba3d04219b3faa"
 fetched_at = "2026-03-16T13:05:13.923486200+00:00"
+manual_tags = []
 cmr = "b0910b04c75ffaab741f93b11e16830634a80c31b046a448ac5626ae6de916e3"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1p6ycrprw9u50ffxn43n4q5khsxlm79u4xa99a7ac20r4g842w8qvqj76hty
 liquid_testnet_address = "tex1p6ycrprw9u50ffxn43n4q5khsxlm79u4xa99a7ac20r4g842w8qvqn8gs6t"
 witnesses = ["ALICE_SIGNATURE"]
 comments = ["This function computes a signature hash for transactions that allows non-interactive fee bumping.", "It omits certain fields from the transaction that can be modified by anyone,", "specifically nLockTime and change/fee outputs amounts.", "Note that nlocktime is not signed.", "Add the hash of the first output (assumed the ONLY non-change output)", "Add all output script pubkeys to the hash, including change and fee outputs script pubkeys", "Combines the transaction hash with additional taproot-related data to form the overall transaction signature hash.", "Add the transaction-specific hash computed earlier", "Helper function to ensure the provided boolean value is not negative.", "Enforces a linear increase in transaction fee over time by adjusting the maximum fee allowed before a transaction is mined.", "[ELEMENTS]:Asset type for the transaction fee (explicitly specifying asset type, typically BTC asset)", "Dec 23 ~8:33am PST", "Check for negative time difference, which shouldn't happen", "Base fee at the time of broadcast", "Calculate the maximum allowed fee as a function of elapsed time", "Ensure there's no overflow in fee calculation", "Assert that the current fees are less than the maximum allowed fee", "Optionally, you could limit the total fee here", "NON-INTERACTIVE FEE BUMPING", "This feature allows anyone, including miners, to increase a transaction's fee by reducing the change amount,", "following a predefined rule that adds 1 satoshi to the fee every second.", "Allowed modifications without affecting the signature:", "- Increase the transaction's nLockTime, delaying its inclusion in a block.", "- Decrease the change output or increase the fee output.", "This enables miners to maximize their fees from transactions without needing external fee bumping services like", "sponsors, Child-Pays-For-Parent (CPFP), or anchor outputs, simplifying fee management for transaction inclusion."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/non_interactive_fee_bump.wit"

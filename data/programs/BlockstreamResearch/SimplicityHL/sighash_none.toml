@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/sighash_none.simf"
 commit = "160800d072c2c6985a62fd32d361d42e155f21b0"
 fetched_at = "2026-03-16T14:22:32.361037400+00:00"
+manual_tags = []
 cmr = "5ad56d3d3cdfbda4ef370c381200716c1cd606ec296101b3063fc90ac2096a52"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pv59zny83x48z6szzm4jv3nywycxr62ph8f97aahe2sy2x3yyprsqpu3455
 liquid_testnet_address = "tex1pv59zny83x48z6szzm4jv3nywycxr62ph8f97aahe2sy2x3yyprsqq9rj9m"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "All inputs", "No outputs", "Current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_NONE."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/sighash_none.wit"

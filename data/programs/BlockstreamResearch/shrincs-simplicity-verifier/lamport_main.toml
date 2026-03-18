@@ -5,8 +5,14 @@ branch = "main"
 file_path = "examples/lamport/lamport_main.simf"
 commit = "51a5a127d761d48fc02924fdad9296537094fe35"
 fetched_at = "2026-03-16T16:37:14.128325400+00:00"
-compile_error = "  |"
+manual_tags = []
+cmr = "ba64842b06f4e7cd648b5689e849a7f47606f14e6f50f4ee859dd72ecbffc79e"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1p704h2xhqfqxc7lst69khhw8jynnvvnlkgykj9g2t8zrm0808px6secmn0v"
+liquid_testnet_address = "tex1p704h2xhqfqxc7lst69khhw8jynnvvnlkgykj9g2t8zrm0808px6scpf57r"
 witnesses = ["MESSAGE_HASH", "SIGNATURE", "PUBLIC_KEY"]
+autodetected_tags = ["user-defined-type"]
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/shrincs-simplicity-verifier/blob/main/examples/lamport/lamport_main.wit"

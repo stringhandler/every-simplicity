@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/sighash_all_anyprevout.simf"
 commit = "ea3b4405c7c7c8febc2bf559ee78fbf3e5bd5edf"
 fetched_at = "2026-03-16T14:21:56.574449900+00:00"
+manual_tags = []
 cmr = "8df5401a6afa279fb966915622af9bb3f8d4b0c38602912af2bb9deeaf7fa0f6"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pm62t8wlsqxtud5t3kw7yrm4mkdg6cca2gu72z5z8uy6haqy4uzdqwsjkn6
 liquid_testnet_address = "tex1pm62t8wlsqxtud5t3kw7yrm4mkdg6cca2gu72z5z8uy6haqy4uzdq0fq3z4"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "Current input without outpoint", "All outputs", "No current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_ALL | SIGHASH_ANYPREVOUT."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/sighash_all_anyprevout.wit"

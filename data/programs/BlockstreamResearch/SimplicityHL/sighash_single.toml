@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/sighash_single.simf"
 commit = "2dec51bea03c6defe111a667a60f797659a9e475"
 fetched_at = "2026-03-16T14:22:56.487065800+00:00"
+manual_tags = []
 cmr = "fdd984432e9d188fa1299acc9ed755dbfb4107c7df61b2523ff5853548b09c31"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pfvn96y8d9yfvcdmqd2c0qn3rduhhvta4mc4mu2uas4wge4mpfpzsupcwpp
 liquid_testnet_address = "tex1pfvn96y8d9yfvcdmqd2c0qn3rduhhvta4mc4mu2uas4wge4mpfpzsac2fsw"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "All inputs", "Current output", "Current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_SINGLE."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/sighash_single.wit"

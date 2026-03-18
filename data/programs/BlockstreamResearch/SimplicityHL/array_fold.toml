@@ -5,12 +5,14 @@ branch = "master"
 file_path = "examples/array_fold.simf"
 commit = "8c4fd1bc8117b26ad601a1fc292a2c61ab4b92b0"
 fetched_at = "2026-03-16T11:27:37.752761800+00:00"
+manual_tags = []
 cmr = "4701fe90a2884d41b38cf6bbbedf41f77a85f0d5ef5d06a0fc086b66a4e70c73"
 type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pq0clqml"
 liquid_testnet_address = "tex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pqwpd82s"
 is_redeem = false
+autodetected_tags = []
 
 [jets]
 add_32 = 1

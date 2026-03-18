@@ -23,6 +23,7 @@ RUN git clone --depth 1 --branch feat/add-simplicity-graph https://github.com/st
 
 COPY entrypoint.sh /entrypoint.sh
 COPY parse.py /parse.py
+COPY transpile.py /transpile.py
 RUN chmod +x /entrypoint.sh
 
 WORKDIR /workspace

@@ -45,28 +45,11 @@ function loadPrograms() {
           src: join(dir, e),
         };
       });
-    // Attach mermaid path to each simb if a companion .simb.mermaid file exists
-    const simbMermaidSrc = simbSrc + ".mermaid";
-    const simbMermaid = existsSync(simbMermaidSrc) ? data._slug + ".simb.mermaid" : null;
-
-    const witnessSimbsWithMermaid = witnessSimbs.map(w => {
-      const mermaidSrc = w.src + ".mermaid";
-      return {
-        name: w.name,
-        path: w.path,
-        src: w.src,
-        mermaid: existsSync(mermaidSrc) ? w.path + ".mermaid" : null,
-        mermaidSrc: existsSync(mermaidSrc) ? mermaidSrc : null,
-      };
-    });
-
-    data._simb_mermaid = simbMermaid;
-    data._witness_simbs = witnessSimbsWithMermaid.map(({ name, path, mermaid }) => ({ name, path, mermaid }));
+    data._witness_simbs = witnessSimbs.map(({ name, path }) => ({ name, path }));
 
     return {
       _simbSrc: simbSrc,
-      _simbMermaidSrc: simbMermaidSrc,
-      _witnessSimbs: witnessSimbsWithMermaid,
+      _witnessSimbs: witnessSimbs,
       ...data,
     };
   });
@@ -80,7 +63,6 @@ function buildHtml(programs) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Every Simplicity</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -257,20 +239,7 @@ function buildHtml(programs) {
 
     .hidden { display: none; }
 
-    .graph-btn {
-      font-size: 0.75rem;
-      font-family: monospace;
-      color: #8b949e;
-      background: none;
-      border: 1px solid #30363d;
-      border-radius: 4px;
-      padding: 0.1rem 0.5rem;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .graph-btn:hover { color: #e6edf3; border-color: #8b949e; }
-
-    .ext-modal, .mermaid-modal {
+    .ext-modal {
       display: none;
       position: fixed;
       inset: 0;
@@ -279,7 +248,7 @@ function buildHtml(programs) {
       align-items: center;
       justify-content: center;
     }
-    .ext-modal.open, .mermaid-modal.open { display: flex; }
+    .ext-modal.open { display: flex; }
 
     .ext-modal-inner {
       background: #161b22;
@@ -344,46 +313,6 @@ function buildHtml(programs) {
       padding: 0.4rem 1rem;
     }
     .ext-btn-proceed:hover { background: #2d1b1b; border-color: #f85149; }
-
-    .mermaid-modal-inner {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 1.5rem;
-      width: 92vw;
-      height: 88vh;
-      overflow: auto;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #mermaid-render {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
-    }
-
-    #mermaid-render svg {
-      max-width: 100%;
-      max-height: 100%;
-      height: auto;
-    }
-
-    .mermaid-modal-close {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      background: none;
-      border: none;
-      color: #8b949e;
-      font-size: 1.25rem;
-      cursor: pointer;
-      line-height: 1;
-    }
-    .mermaid-modal-close:hover { color: #e6edf3; }
 
     footer {
       border-top: 1px solid #21262d;
@@ -464,15 +393,44 @@ function buildHtml(programs) {
       padding: 0.4rem 0 0.75rem 1.5rem;
     }
 
-    .jet-scripts a {
-      display: block;
-      font-size: 0.8rem;
-      color: #58a6ff;
-      text-decoration: none;
+    .jet-script-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
       padding: 0.15rem 0;
     }
 
-    .jet-scripts a:hover { text-decoration: underline; }
+    .jet-script-link {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #58a6ff;
+      padding: 0;
+      text-align: left;
+    }
+    .jet-script-link:hover { text-decoration: underline; }
+
+    .jet-script-ext {
+      font-size: 0.7rem;
+      color: #8b949e;
+      text-decoration: none;
+      line-height: 1;
+      padding: 0.1rem 0.3rem;
+      border: 1px solid #30363d;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .jet-script-ext:hover { color: #e6edf3; border-color: #8b949e; }
+
+    .card-highlight {
+      outline: 2px solid #388bfd;
+      transition: outline-color 0.8s ease;
+    }
+    .card-highlight-fade {
+      outline: 2px solid transparent;
+      transition: outline-color 0.8s ease;
+    }
 
     .badge {
       font-size: 0.7rem;
@@ -545,12 +503,22 @@ function buildHtml(programs) {
     }
 
     .word-cloud-word:hover { opacity: 0.6; }
+
+    .prog-tag {
+      font-size: 0.7rem;
+      font-family: monospace;
+      background: #1c2d3f;
+      border: 1px solid #388bfd40;
+      border-radius: 10px;
+      padding: 0.1rem 0.5rem;
+      color: #79c0ff;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Every Simplicity</h1>
-    <p>A catalog of every .simplicityhl program found on the internet</p>
+    <p>A catalog of every SimplicityHL program found on the internet</p>
   </header>
 
   <div class="tabs">
@@ -560,6 +528,7 @@ function buildHtml(programs) {
     <button class="tab-btn" data-tab="types">Types</button>
     <button class="tab-btn" data-tab="macros">Macros</button>
     <button class="tab-btn" data-tab="reserved">Reserved Words</button>
+    <button class="tab-btn" data-tab="tags">Tags</button>
   </div>
 
   <div id="tab-programs" class="tab-panel active">
@@ -662,6 +631,23 @@ function buildHtml(programs) {
     </div>
   </div>
 
+  <div id="tab-tags" class="tab-panel">
+    <div class="cloud-section">
+      <div class="cloud-label">Word Cloud</div>
+      <div id="tags-cloud" class="word-cloud"></div>
+    </div>
+    <div style="padding:1.25rem 2rem 0.5rem">
+      <input type="search" id="tags-search" placeholder="Filter tags…" autocomplete="off"
+        style="width:100%;max-width:320px;padding:0.5rem 0.75rem;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:0.875rem;outline:none;">
+    </div>
+    <div style="padding:0 2rem 2rem">
+      <table class="jets-table">
+        <thead><tr><th>Tag</th><th></th><th>Scripts</th></tr></thead>
+        <tbody id="tags-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <footer>
     <strong style="color:#c9d1d9">Disclaimer:</strong>
     This is an independent, community project and is <strong style="color:#c9d1d9">not officially endorsed by, affiliated with, or associated with Blockstream</strong>.
@@ -681,15 +667,13 @@ function buildHtml(programs) {
     </div>
   </div>
 
-  <div class="mermaid-modal" id="mermaid-modal" onclick="closeMermaidModal(event)">
-    <div class="mermaid-modal-inner">
-      <button class="mermaid-modal-close" onclick="closeMermaidModal()">×</button>
-      <div id="mermaid-render"></div>
-    </div>
-  </div>
-
   <script>
     const PROGRAMS = ${dataJson.replace(/<\/script>/gi, '<\\/script>')};
+
+    // Pre-compute combined tag list on each program for the Tags tab index.
+    for (const p of PROGRAMS) {
+      p._all_tags = [...new Set([...(p.autodetected_tags || []), ...(p.manual_tags || [])])];
+    }
 
     function tags(obj) {
       if (!obj) return [];
@@ -705,6 +689,7 @@ function buildHtml(programs) {
       const params = p.params || [];
       const witnesses = p.witnesses || [];
       const comments = p.comments || [];
+      const ptags = [...new Set([...(p.autodetected_tags || []), ...(p.manual_tags || [])])];
       const compileError = p.compile_error || null;
 
       const none = '<span style="color:#8b949e;font-size:0.75rem">none</span>';
@@ -713,13 +698,10 @@ function buildHtml(programs) {
         : none;
 
       const witnessSimbs = p._witness_simbs || [];
-      const graphBtn = (mermaidPath) => mermaidPath
-        ? \`<button class="graph-btn" onclick="openMermaidModal('\${escAttr(mermaidPath)}')">graph</button>\`
-        : "";
       const compiledHtml = (p._simb || witnessSimbs.length)
         ? \`<div style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
-            \${p._simb ? \`<a class="simb-link" href="\${escAttr(p._simb)}" download>↓ compiled (.simb)</a>\${graphBtn(p._simb_mermaid)}\` : ""}
-            \${witnessSimbs.map(w => \`<a class="simb-link" href="\${escAttr(w.path)}" download>↓ \${escHtml(w.name)} (.simb)</a>\${graphBtn(w.mermaid)}\`).join("")}
+            \${p._simb ? \`<a class="simb-link" href="\${escAttr(p._simb)}" download>↓ compiled (.simb)</a>\` : ""}
+            \${witnessSimbs.map(w => \`<a class="simb-link" href="\${escAttr(w.path)}" download>↓ \${escHtml(w.name)} (.simb)</a>\`).join("")}
           </div>\`
         : "";
 
@@ -733,12 +715,13 @@ function buildHtml(programs) {
           ? \`<span title="compiled" style="color:#3fb950;font-size:1rem;line-height:1" aria-label="compiled">✓</span>\`
           : \`<span title="not yet compiled" style="color:#d29922;font-size:1rem;line-height:1" aria-label="not compiled">!</span>\`;
 
-      return \`<div class="card" data-search="\${escAttr(searchText(p))}">
+      return \`<div class="card" data-slug="\${escAttr(p._slug)}" data-search="\${escAttr(searchText(p))}">
         <div class="card-header">
           \${statusBadge}
           <span class="program-name">\${escHtml(p.name || p._slug)}</span>
           \${orgRepo ? \`<span style="font-size:0.75rem;color:#8b949e;font-family:monospace">\${escHtml(orgRepo)}</span>\` : ""}
           <a class="source-link ext-link" href="\${escAttr(p.url)}" data-url="\${escAttr(p.url)}">source ↗</a>
+          \${ptags.map(t => \`<span class="prog-tag">\${escHtml(t)}</span>\`).join("")}
           \${p.cmr ? \`<span class="cmr" title="CMR">CMR: \${escHtml(p.cmr)}</span>\` : ""}
           \${p.amr ? \`<span class="cmr" title="AMR">AMR: \${escHtml(p.amr)}</span>\` : ""}
           \${p.imr ? \`<span class="cmr" title="IMR">IMR: \${escHtml(p.imr)}</span>\` : ""}
@@ -789,6 +772,8 @@ function buildHtml(programs) {
         ...Object.keys(p.reserved_words || {}),
         ...(p.params || []),
         ...(p.witnesses || []),
+        ...(p.autodetected_tags || []),
+        ...(p.manual_tags || []),
         ...(p.comments || []),
         p.compile_error || "",
       ];
@@ -856,17 +841,37 @@ function buildHtml(programs) {
     });
 
     // --- Tabs ---
+    function activateTab(tabName, pushState) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      const btn = document.querySelector(\`.tab-btn[data-tab="\${tabName}"]\`);
+      const panel = document.getElementById("tab-" + tabName);
+      if (!btn || !panel) return;
+      btn.classList.add("active");
+      panel.classList.add("active");
+      const cloudEl = panel.querySelector('.word-cloud');
+      if (cloudEl) _placeCloud(cloudEl.id);
+      if (pushState) {
+        history.pushState({ tab: tabName }, "", "#" + tabName);
+      }
+    }
+
     document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-        btn.classList.add("active");
-        const panel = document.getElementById("tab-" + btn.dataset.tab);
-        panel.classList.add("active");
-        const cloudEl = panel.querySelector('.word-cloud');
-        if (cloudEl) _placeCloud(cloudEl.id);
-      });
+      btn.addEventListener("click", () => activateTab(btn.dataset.tab, true));
     });
+
+    window.addEventListener("popstate", e => {
+      const tab = (e.state && e.state.tab) || "programs";
+      activateTab(tab, false);
+    });
+
+    // Initialise from URL hash on load, without pushing a new history entry.
+    {
+      const initial = location.hash.replace("#", "") || "programs";
+      const valid = document.querySelector(\`.tab-btn[data-tab="\${initial}"]\`);
+      activateTab(valid ? initial : "programs", false);
+      history.replaceState({ tab: valid ? initial : "programs" }, "");
+    }
 
     // --- Indexed tabs (Jets / Built-ins / Types / Macros) ---
     function buildIndex(field) {
@@ -892,7 +897,10 @@ function buildHtml(programs) {
               <span style="font-family:monospace">\${escHtml(label)}</span>
             </button>
             <div class="jet-scripts">
-              \${progs.map(p => \`<a href="\${escAttr(p.url)}" target="_blank" rel="noopener">\${escHtml(p.name || p._slug)}</a>\`).join("")}
+              \${progs.map(p => \`<div class="jet-script-row">
+                <button class="jet-script-link" onclick="goToProgram('\${escAttr(p._slug)}')">\${escHtml(p.name || p._slug)}</button>
+                <a class="jet-script-ext" href="\${escAttr(p.url)}" target="_blank" rel="noopener" title="Open source">↗</a>
+              </div>\`).join("")}
             </div>
           </td>
           <td class="bar-cell">
@@ -907,6 +915,26 @@ function buildHtml(programs) {
       const expanded = btn.getAttribute("aria-expanded") === "true";
       btn.setAttribute("aria-expanded", String(!expanded));
       btn.nextElementSibling.style.display = expanded ? "none" : "block";
+    };
+
+    window.goToProgram = function(slug) {
+      activateTab("programs", true);
+
+      const card = document.querySelector(\`.card[data-slug="\${CSS.escape(slug)}"]\`);
+      if (!card) return;
+
+      // Unhide in case a filter is active
+      card.classList.remove("hidden");
+
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // Flash highlight
+      card.classList.remove("card-highlight-fade");
+      card.classList.add("card-highlight");
+      setTimeout(() => {
+        card.classList.replace("card-highlight", "card-highlight-fade");
+        setTimeout(() => card.classList.remove("card-highlight-fade"), 900);
+      }, 600);
     };
 
     // --- Word Cloud (spiral placement) ---
@@ -1003,11 +1031,34 @@ function buildHtml(programs) {
       });
     }
 
+    function buildArrayIndex(field) {
+      const idx = {};
+      for (const p of PROGRAMS) {
+        for (const key of (p[field] || [])) {
+          if (!idx[key]) idx[key] = [];
+          idx[key].push(p);
+        }
+      }
+      return Object.entries(idx).sort((a, b) => b[1].length - a[1].length);
+    }
+
+    function wireArrayTab(field, tbodyId, searchId, cloudId) {
+      const rows = buildArrayIndex(field);
+      const tbodyEl = document.getElementById(tbodyId);
+      renderIndexRows(tbodyEl, rows);
+      renderWordCloud(rows, cloudId, searchId);
+      document.getElementById(searchId).addEventListener("input", function() {
+        const q = this.value.toLowerCase().trim();
+        renderIndexRows(tbodyEl, q ? rows.filter(([k]) => k.toLowerCase().includes(q)) : rows);
+      });
+    }
+
     wireTab("jets",           "jets-tbody",     "jet-search",      "jets-cloud");
     wireTab("builtins",       "builtins-tbody", "builtins-search", "builtins-cloud");
     wireTab("types",          "types-tbody",    "types-search",    "types-cloud");
     wireTab("macros",         "macros-tbody",   "macros-search",   "macros-cloud");
     wireTab("reserved_words", "reserved-tbody", "reserved-search", "reserved-cloud");
+    wireArrayTab("_all_tags", "tags-tbody",     "tags-search",     "tags-cloud");
 
     // --- External link modal ---
     window.openExtModal = function(event, anchor) {
@@ -1031,35 +1082,8 @@ function buildHtml(programs) {
       if (e.target === this) closeExtModal();
     });
 
-    // --- Mermaid modal ---
-    mermaid.initialize({ startOnLoad: false, theme: "dark" });
-
-    let _mermaidId = 0;
-
-    window.openMermaidModal = async function(path) {
-      const modal = document.getElementById("mermaid-modal");
-      const render = document.getElementById("mermaid-render");
-      render.innerHTML = '<span style="color:#8b949e;font-size:0.875rem">Loading…</span>';
-      modal.classList.add("open");
-
-      try {
-        const text = await fetch(path).then(r => r.text());
-        const id = "mermaid-graph-" + (++_mermaidId);
-        const { svg } = await mermaid.render(id, text);
-        render.innerHTML = svg;
-      } catch (e) {
-        render.innerHTML = \`<span style="color:#f85149;font-size:0.875rem">Failed to render graph: \${escHtml(String(e))}</span>\`;
-      }
-    };
-
-    window.closeMermaidModal = function(event) {
-      if (!event || event.target === document.getElementById("mermaid-modal")) {
-        document.getElementById("mermaid-modal").classList.remove("open");
-      }
-    };
-
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape") { closeMermaidModal(); closeExtModal(); }
+      if (e.key === "Escape") { closeExtModal(); }
     });
   </script>
 </body>
@@ -1080,24 +1104,13 @@ for (const p of programs) {
     copyFileSync(p._simbSrc, dest);
     simbCount++;
   }
-  if (p._simb_mermaid && existsSync(p._simbMermaidSrc)) {
-    const dest = join(OUT_DIR, p._simb_mermaid);
-    mkdirSync(dirname(dest), { recursive: true });
-    copyFileSync(p._simbMermaidSrc, dest);
-  }
   for (const w of (p._witnessSimbs || [])) {
     const dest = join(OUT_DIR, w.path);
     mkdirSync(dirname(dest), { recursive: true });
     copyFileSync(w.src, dest);
     simbCount++;
-    if (w.mermaid && w.mermaidSrc) {
-      const mDest = join(OUT_DIR, w.mermaid);
-      mkdirSync(dirname(mDest), { recursive: true });
-      copyFileSync(w.mermaidSrc, mDest);
-    }
   }
   delete p._simbSrc;
-  delete p._simbMermaidSrc;
   delete p._witnessSimbs;
 }
 

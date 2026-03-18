@@ -1,0 +1,86 @@
+url = "https://github.com/stringhandler/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main.simf"
+name = "shrincs_main"
+repo = "https://github.com/stringhandler/shrincs-simplicity-verifier.git"
+branch = "main"
+file_path = "examples/shrincs/shrincs_main.simf"
+commit = "254e6a24de1b4a7fdf65c266b608a22c8971b489"
+fetched_at = "2026-03-17T07:14:23.256255700+00:00"
+manual_tags = []
+cmr = "895bb077c88ea9a05b11c8e4388893c69916dd368fbe89e6edeabbbf5b601bc3"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1ppnn2ndy7lqqlh5z3zxa2a26u9ylzemsg9pu3hl024gmg2w8e3q9qzru7u0"
+liquid_testnet_address = "tex1ppnn2ndy7lqqlh5z3zxa2a26u9ylzemsg9pu3hl024gmg2w8e3q9qr6wedq"
+witnesses = ["PROOF"]
+autodetected_tags = ["user-defined-type"]
+
+[example_witnesses]
+stateless = "https://github.com/stringhandler/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main_stateless.wit"
+stateful = "https://github.com/stringhandler/shrincs-simplicity-verifier/blob/main/examples/shrincs/shrincs_main_stateful.wit"
+
+[jets]
+add_32 = 8
+add_64 = 1
+add_8 = 4
+and_32 = 3
+and_64 = 1
+div_mod_32 = 2
+div_mod_8 = 1
+divide_8 = 1
+eq_256 = 1
+eq_32 = 6
+eq_8 = 11
+left_shift_32 = 5
+left_shift_64 = 4
+lt_64 = 1
+lt_8 = 21
+modulo_8 = 6
+multiply_32 = 1
+multiply_8 = 1
+or_32 = 3
+or_64 = 3
+right_shift_32 = 7
+right_shift_64 = 4
+sha_256_ctx_8_add_16 = 26
+sha_256_ctx_8_add_32 = 6
+sha_256_ctx_8_add_4 = 48
+sha_256_ctx_8_add_8 = 15
+sha_256_ctx_8_finalize = 12
+sha_256_ctx_8_init = 5
+subtract_32 = 1
+subtract_8 = 4
+
+[builtins]
+array_fold = 5
+fold = 1
+for_while = 1
+unwrap_left = 1
+
+[macros]
+"assert!" = 7
+
+[reserved_words]
+Left = 2
+Right = 2
+false = 33
+fold = 1
+left = 8
+match = 33
+right = 8
+true = 33
+type = 19
+
+[types]
+Ctx8 = 81
+Either = 2
+List = 1
+bool = 24
+u1 = 1
+u128 = 222
+u16 = 10
+u2 = 7
+u256 = 59
+u32 = 338
+u4 = 1
+u64 = 100
+u8 = 83

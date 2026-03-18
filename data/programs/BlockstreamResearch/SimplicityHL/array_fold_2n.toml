@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/array_fold_2n.simf"
 commit = "75b93b0660b1f8e829754742b76e889ed54fc01b"
 fetched_at = "2026-03-16T12:12:29.303795600+00:00"
+manual_tags = []
 cmr = "d766ceac05bf19871d3c7edb4f7532e0475a6f27d3738b3fa623593d310d26f2"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s4thx70
 liquid_testnet_address = "tex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s5j9p0q"
 is_redeem = false
 comments = ["From https://github.com/BlockstreamResearch/SimplicityHL/issues/153"]
+autodetected_tags = []
 
 [jets]
 add_32 = 1

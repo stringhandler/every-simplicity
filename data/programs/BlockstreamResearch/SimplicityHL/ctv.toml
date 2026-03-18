@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/ctv.simf"
 commit = "6cac2b974f2767745bf4e3258741523a5171ed19"
 fetched_at = "2026-03-16T12:17:16.186521+00:00"
+manual_tags = []
 cmr = "045c75f74aa4c9f68e535e8853c08ee4ed74c67d83845c3b45dc870ab48eeca0"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegq9x8cf3
 liquid_testnet_address = "tex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegqyl4lc7"
 is_redeem = false
 comments = ["This program is an emulation of CTV using simplicity", "Instead of specifying the template hash as in BIP CTV,", "we require the user to specify all the components of the sighash", "that they want to commit."]
+autodetected_tags = []
 
 [jets]
 current_index = 1

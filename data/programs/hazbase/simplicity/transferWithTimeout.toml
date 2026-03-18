@@ -1,0 +1,25 @@
+url = "https://github.com/hazbase/simplicity/blob/main/src/presets/transferWithTimeout.simf.tmpl"
+name = "transferWithTimeout"
+repo = "https://github.com/hazbase/simplicity.git"
+branch = "main"
+file_path = "src/presets/transferWithTimeout.simf.tmpl"
+commit = "f106f47ce3a8ea39775fbfe0f226927bd0c1a578"
+fetched_at = "2026-03-18T10:49:10.417225300+00:00"
+manual_tags = []
+compile_error = "Parameter `RECIPIENT_XONLY` is missing an argument"
+witnesses = ["SENDER_SIG", "TRANSFER_OR_TIMEOUT"]
+params = ["SENDER_XONLY", "RECIPIENT_XONLY", "TIMEOUT_HEIGHT"]
+autodetected_tags = ["tmpl", "transpiled"]
+
+[jets]
+bip_0340_verify = 1
+check_lock_height = 1
+sig_all_hash = 1
+
+[reserved_words]
+match = 1
+
+[types]
+Height = 1
+Signature = 6
+u256 = 1

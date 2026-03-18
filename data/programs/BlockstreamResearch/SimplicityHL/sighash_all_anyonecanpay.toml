@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/sighash_all_anyonecanpay.simf"
 commit = "7602e8ad7cc177398f539010bacbd089021b5902"
 fetched_at = "2026-03-16T14:21:29.980715600+00:00"
+manual_tags = []
 cmr = "63ecb490cd35f116b68060588bdeae34074e6d1db2cc660c7a7d69cf56c148be"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1p7wuxp0p8xaandq7ur7m8lseq78mzyxrthk5xsqp5v4d789tyf53q0628ae
 liquid_testnet_address = "tex1p7wuxp0p8xaandq7ur7m8lseq78mzyxrthk5xsqp5v4d789tyf53qwrcqvk"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "Current input", "All outputs", "No current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_ALL | SIGHASH_ANYONECANPAY."]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/sighash_all_anyonecanpay.wit"

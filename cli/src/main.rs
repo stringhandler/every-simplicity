@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
 use std::fs;
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
+use std::thread;
 
 use chrono::Utc;
 use serde_json::Value as JsonValue;
@@ -14,6 +16,7 @@ use toml_edit::{Array, DocumentMut, Item, Table, Value};
 const DOCKERFILE: &str = include_str!("../Dockerfile");
 const ENTRYPOINT_SH: &str = include_str!("../entrypoint.sh");
 const PARSE_PY: &str = include_str!("../parse.py");
+const TRANSPILE_PY: &str = include_str!("../transpile.py");
 
 /// FNV-1a hash of all Docker context files baked in at compile time.
 /// Changes whenever Dockerfile, entrypoint.sh, or parse.py changes,
@@ -26,6 +29,7 @@ fn image_tag() -> String {
         .bytes()
         .chain(ENTRYPOINT_SH.bytes())
         .chain(PARSE_PY.bytes())
+        .chain(TRANSPILE_PY.bytes())
     {
         hash ^= b as u64;
         hash = hash.wrapping_mul(FNV_PRIME);
@@ -72,6 +76,12 @@ enum Commands {
         #[arg(long = "arg-value", value_name = "NAME=VALUE::TYPE")]
         example_arg_values: Vec<String>,
 
+        /// Transpiler to apply before compilation.
+        /// Use "template" for {{PARAM}} → param::PARAM syntax.
+        /// Auto-detected from .simf.tmpl extension if omitted.
+        #[arg(long, value_name = "TYPE")]
+        transpiler: Option<String>,
+
         /// Overwrite the entry if it already exists
         #[arg(long, short)]
         force: bool,
@@ -81,6 +91,14 @@ enum Commands {
     /// Useful for inspecting the real simc JSON schema.
     Debug {
         /// GitHub URL of the .simplicityhl file
+        url: String,
+    },
+
+    /// Run mcpp on a file and print the fully preprocessed output.
+    /// Useful for inspecting the result of #include expansion.
+    Preprocess {
+        /// GitHub URL of the .simplicityhl file
+        /// e.g. https://github.com/owner/repo/blob/master/path/to/file.simf
         url: String,
     },
 
@@ -174,6 +192,7 @@ fn script_name(gh: &GithubFile) -> String {
         .last()
         .unwrap_or(&gh.file_path)
         .trim_end_matches(".simplicityhl")
+        .trim_end_matches(".simf.tmpl")
         .trim_end_matches(".simf")
         .to_string()
 }
@@ -233,9 +252,6 @@ struct SimcOutput {
     /// Compile error from simc, if compilation failed.
     #[serde(default)]
     _error: Option<String>,
-    /// Mermaid graph source from `hal-simplicity simplicity graph --format mermaid`
-    #[serde(default)]
-    _mermaid: String,
 }
 
 /// Fields we need to read back from an existing TOML to run Docker.
@@ -254,8 +270,21 @@ struct EntryMeta {
     /// Inline arg values: param_name → "actual_value::Type", stored as `[example_arg_values]`.
     #[serde(default)]
     example_arg_values: BTreeMap<String, String>,
+    /// Param names required by this program (from `params = [...]` in the TOML).
+    /// If non-empty and no example_args/arg_values are provided, base compile is skipped.
     #[serde(default)]
-    tags: Vec<String>,
+    params: Vec<String>,
+    /// Auto-computed tags — overwritten on each compile.
+    #[serde(default)]
+    autodetected_tags: Vec<String>,
+    /// User-assigned tags — never overwritten by the CLI.
+    #[serde(default)]
+    manual_tags: Vec<String>,
+    /// Optional transpiler to run before compilation.
+    /// "template" converts {{PARAM}} syntax to param::PARAM.
+    /// If absent, auto-detected from file extension (.simf.tmpl → template).
+    #[serde(default)]
+    transpiler: Option<String>,
 }
 
 // ---------------------------------------------------------------------------
@@ -279,6 +308,7 @@ fn ensure_docker_image(tag: &str) -> Result<()> {
     fs::write(tmp.join("Dockerfile"), DOCKERFILE)?;
     fs::write(tmp.join("entrypoint.sh"), ENTRYPOINT_SH)?;
     fs::write(tmp.join("parse.py"), PARSE_PY)?;
+    fs::write(tmp.join("transpile.py"), TRANSPILE_PY)?;
 
     let status = Command::new("docker")
         .args(["build", "-t", tag, "."])
@@ -305,7 +335,7 @@ where
     let tag = image_tag();
     ensure_docker_image(&tag)?;
 
-    let output = Command::new("docker")
+    let mut child = Command::new("docker")
         .arg("run")
         .arg("--rm")
         .arg(&tag)
@@ -313,19 +343,42 @@ where
         .arg(clone_url)
         .arg(branch)
         .args(file_paths)
-        .output()
-        .context("failed to run docker container")?;
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .context("failed to spawn docker container")?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        bail!("container exited with error:\n{stderr}");
+    // Stream stderr to the terminal live so the user sees progress and errors
+    // as they happen, rather than only after the container exits.
+    let stderr = child.stderr.take().expect("stderr piped");
+    let stderr_thread = thread::spawn(move || {
+        for line in BufReader::new(stderr).lines() {
+            if let Ok(line) = line {
+                eprintln!("  {line}");
+            }
+        }
+    });
+
+    // Collect stdout (NDJSON) while stderr is streaming on the other thread.
+    let mut stdout_lines: Vec<String> = Vec::new();
+    if let Some(stdout) = child.stdout.take() {
+        for line in BufReader::new(stdout).lines() {
+            match line {
+                Ok(l) if !l.trim().is_empty() => stdout_lines.push(l),
+                _ => {}
+            }
+        }
     }
 
-    let stdout = String::from_utf8(output.stdout).context("container output is not valid UTF-8")?;
+    stderr_thread.join().ok();
+    let status = child.wait().context("failed to wait for docker container")?;
 
-    stdout
-        .lines()
-        .filter(|l| !l.trim().is_empty())
+    if !status.success() {
+        bail!("container exited with non-zero status");
+    }
+
+    stdout_lines
+        .iter()
         .map(|line| {
             serde_json::from_str(line)
                 .with_context(|| format!("failed to parse JSON from container output:\n{line}"))
@@ -373,11 +426,12 @@ fn build_arg_values_json(arg_values: &BTreeMap<String, String>) -> Result<String
 fn write_skeleton_toml(
     path: &Path,
     gh: &GithubFile,
-    tags: &[String],
+    manual_tags: &[String],
     commit: &str,
     example_witnesses: &[(String, String)],
     example_args: &[(String, String)],
     example_arg_values: &[(String, String)],
+    transpiler: Option<&str>,
 ) -> Result<()> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
@@ -392,6 +446,7 @@ fn write_skeleton_toml(
         .last()
         .unwrap_or(&gh.file_path)
         .trim_end_matches(".simplicityhl")
+        .trim_end_matches(".simf.tmpl")
         .trim_end_matches(".simf"));
     doc["repo"] = sv(&gh.clone_url);
     doc["branch"] = sv(&gh.branch);
@@ -423,27 +478,42 @@ fn write_skeleton_toml(
         doc["example_arg_values"] = Item::Table(t);
     }
 
-    if !tags.is_empty() {
+    // autodetected_tags: derived from file extension / transpiler at add time.
+    {
+        let mut auto: Vec<&str> = Vec::new();
+        let is_tmpl = gh.file_path.ends_with(".simf.tmpl")
+            || transpiler == Some("template");
+        if is_tmpl {
+            auto.extend_from_slice(&["tmpl", "transpiled"]);
+        } else if transpiler.is_some() {
+            auto.push("transpiled");
+        }
         let mut arr = Array::new();
-        for t in tags {
+        for t in &auto {
+            arr.push(*t);
+        }
+        doc["autodetected_tags"] = Item::Value(Value::Array(arr));
+    }
+
+    // manual_tags: user-supplied via --tag, never overwritten.
+    {
+        let mut arr = Array::new();
+        for t in manual_tags {
             arr.push(t.as_str());
         }
-        doc["tags"] = Item::Value(Value::Array(arr));
+        doc["manual_tags"] = Item::Value(Value::Array(arr));
+    }
+
+    if let Some(t) = transpiler {
+        doc["transpiler"] = sv(t);
     }
 
     fs::write(path, doc.to_string()).with_context(|| format!("failed to write {}", path.display()))
 }
 
-/// Write a compiled program to `simb_path` and, if mermaid content is present,
-/// write `<simb_path>.mermaid` alongside it.
 fn write_simb(simb_path: &Path, result: &SimcOutput) -> Result<()> {
     if let Some(program) = &result.program {
         fs::write(simb_path, program)?;
-        if !result._mermaid.is_empty() {
-            let mut mermaid_path = simb_path.as_os_str().to_owned();
-            mermaid_path.push(".mermaid");
-            fs::write(PathBuf::from(mermaid_path), &result._mermaid)?;
-        }
     }
     Ok(())
 }
@@ -461,7 +531,19 @@ fn apply_counts(doc: &mut DocumentMut, key: &str, counts: &BTreeMap<String, u64>
     doc[key] = Item::Table(t);
 }
 
-fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput) {
+/// Compute autodetected_tags from file path and transpiler setting.
+fn compute_auto_tags(file_path: &str, transpiler: &Option<String>) -> Vec<String> {
+    let mut tags = Vec::new();
+    if file_path.ends_with(".simf.tmpl") || transpiler.as_deref() == Some("template") {
+        tags.push("tmpl".to_string());
+        tags.push("transpiled".to_string());
+    } else if transpiler.is_some() {
+        tags.push("transpiled".to_string());
+    }
+    tags
+}
+
+fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput, auto_tags: &[String]) {
     let sv = |v: &str| Item::Value(Value::from(v));
 
     // program is written to a separate .simb file, not the TOML
@@ -527,6 +609,22 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput) {
     apply_counts(doc, "macros", &s.macros);
     apply_counts(doc, "reserved_words", &s.reserved_words);
     apply_counts(doc, "types", &s.types);
+
+    // Recompute autodetected_tags: base tags + jet/keyword-derived tags.
+    // manual_tags is intentionally never touched here.
+    let mut all_auto: Vec<String> = auto_tags.to_vec();
+    if s.jets.contains_key("output_script_hash") && !all_auto.contains(&"covenant".to_string()) {
+        all_auto.push("covenant".to_string());
+    }
+    if s.reserved_words.contains_key("type") && !all_auto.contains(&"user-defined-type".to_string()) {
+        all_auto.push("user-defined-type".to_string());
+    }
+    doc.remove("autodetected_tags");
+    let mut arr = Array::new();
+    for t in &all_auto {
+        arr.push(t.as_str());
+    }
+    doc["autodetected_tags"] = Item::Value(Value::Array(arr));
 }
 
 // ---------------------------------------------------------------------------
@@ -582,7 +680,8 @@ fn select_tomls(
             if let Some(filter_tag) = tag {
                 if let Ok(raw) = fs::read_to_string(path) {
                     if let Ok(meta) = toml_edit::de::from_str::<EntryMeta>(&raw) {
-                        return meta.tags.iter().any(|t| t == filter_tag);
+                        return meta.manual_tags.iter().any(|t| t == filter_tag)
+                            || meta.autodetected_tags.iter().any(|t| t == filter_tag);
                     }
                 }
             }
@@ -596,7 +695,7 @@ fn select_tomls(
     Ok(selected)
 }
 
-/// `(toml_path, file_path, witnesses, args, arg_values)` — name→value maps
+/// `(toml_path, file_path, witnesses, args, arg_values, params, transpiler)` — name→value maps
 type RepoGroup = BTreeMap<
     (String, String),
     Vec<(
@@ -605,6 +704,8 @@ type RepoGroup = BTreeMap<
         BTreeMap<String, String>,
         BTreeMap<String, String>,
         BTreeMap<String, String>,
+        Vec<String>,
+        Option<String>,
     )>,
 >;
 
@@ -622,6 +723,8 @@ fn group_by_repo(paths: &[PathBuf]) -> Result<RepoGroup> {
             meta.example_witnesses,
             meta.example_args,
             meta.example_arg_values,
+            meta.params,
+            meta.transpiler,
         ));
     }
     Ok(groups)
@@ -633,10 +736,11 @@ fn group_by_repo(paths: &[PathBuf]) -> Result<RepoGroup> {
 
 fn cmd_add(
     url: &str,
-    tags: &[String],
+    manual_tags: &[String],
     example_witnesses: &[(String, String)],
     example_args: &[(String, String)],
     example_arg_values: &[(String, String)],
+    transpiler: Option<&str>,
     force: bool,
 ) -> Result<()> {
     let gh = parse_github_url(url)?;
@@ -660,16 +764,17 @@ fn cmd_add(
     write_skeleton_toml(
         &out_path,
         &gh,
-        tags,
+        manual_tags,
         &commit,
         example_witnesses,
         example_args,
         example_arg_values,
+        transpiler,
     )?;
 
     println!("Added:  data/programs/{org}/{repo}/{name}.toml");
-    if !tags.is_empty() {
-        println!("Tags:   {}", tags.join(", "));
+    if !manual_tags.is_empty() {
+        println!("Tags:   {}", manual_tags.join(", "));
     }
     println!("Run `simplicity-catalog compile {org}/{repo}/{name}` to compile.");
     Ok(())
@@ -690,25 +795,48 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
 
     for ((clone_url, branch), entries) in &groups {
         // Encoding: "file"  |  "file:::wit:::name:::value"  |  "file:::args:::name:::value"
+        // With optional transpiler prefix:  "T:type:::file"  |  "T:type:::file:::wit:::..."
         let mut encoded: Vec<String> = Vec::new();
-        for (_, fp, witnesses, args, arg_values) in entries.iter() {
+        for (toml_path, fp, witnesses, args, arg_values, params, transpiler) in entries.iter() {
+            // Emit the T:type::: prefix when an explicit transpiler is set and
+            // the file extension doesn't already auto-detect it (e.g. .simf.tmpl → template).
+            let xpile_prefix = match transpiler.as_deref() {
+                Some(t) if !(t == "template" && fp.ends_with(".simf.tmpl")) => {
+                    format!("T:{t}:::")
+                }
+                _ => String::new(),
+            };
+
             // Only do a base (no-args) compile if the program has no example_args/arg_values.
             // Programs that require args cannot be compiled without them.
             if args.is_empty() && arg_values.is_empty() {
-                encoded.push(fp.clone());
+                if !params.is_empty() {
+                    let stem = toml_path
+                        .file_stem()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("?");
+                    eprintln!("  skipped:  {stem}  — requires params but no example_arg_values defined");
+                } else {
+                    encoded.push(format!("{xpile_prefix}{fp}"));
+                }
             }
             for (name, value) in witnesses {
-                encoded.push(format!("{fp}:::wit:::{name}:::{value}"));
+                encoded.push(format!("{xpile_prefix}{fp}:::wit:::{name}:::{value}"));
             }
             for (name, value) in args {
-                encoded.push(format!("{fp}:::args:::{name}:::{value}"));
+                encoded.push(format!("{xpile_prefix}{fp}:::args:::{name}:::{value}"));
             }
             if !arg_values.is_empty() {
                 let json = build_arg_values_json(arg_values)?;
-                encoded.push(format!("{fp}:::args:::default:::{json}"));
+                encoded.push(format!("{xpile_prefix}{fp}:::args:::default:::{json}"));
             }
         }
         let file_args: Vec<&str> = encoded.iter().map(|s| s.as_str()).collect();
+
+        if file_args.is_empty() {
+            continue;
+        }
+        println!("  → {clone_url}  ({} item(s))", file_args.len());
 
         let results: Vec<SimcOutput> =
             match run_docker("compile", clone_url, branch, &file_args) {
@@ -720,12 +848,13 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
                 }
             };
 
-        for (toml_path, file_path, witnesses, args, arg_values) in entries {
+        for (toml_path, file_path, witnesses, args, arg_values, _params, transpiler) in entries {
             let stem = toml_path
                 .file_stem()
                 .and_then(|s| s.to_str())
                 .unwrap_or("?")
                 .to_string();
+            let auto_tags = compute_auto_tags(file_path, transpiler);
 
             // Base compile result: _kind == ""
             // For args-only programs, fall back to the first args result for TOML metadata.
@@ -751,15 +880,25 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
                 Some(simc_out) => {
                     let raw = fs::read_to_string(toml_path)?;
                     let mut doc: DocumentMut = raw.parse()?;
-                    apply_simc_to_toml(&mut doc, simc_out);
+                    apply_simc_to_toml(&mut doc, simc_out, &auto_tags);
                     fs::write(toml_path, doc.to_string())?;
 
-                    // Only write a base .simb for programs that don't require args
-                    if simc_out._kind.is_empty() {
-                        write_simb(&toml_path.with_extension("simb"), simc_out)?;
+                    if let Some(err) = &simc_out._error {
+                        if !err.is_empty() {
+                            eprintln!("  failed:   {stem}  — {err}");
+                            failed += 1;
+                        } else {
+                            eprintln!("  failed:   {stem}  — (no error message captured; run `debug` for details)");
+                            failed += 1;
+                        }
+                    } else {
+                        // Only write a base .simb for programs that don't require args
+                        if simc_out._kind.is_empty() {
+                            write_simb(&toml_path.with_extension("simb"), simc_out)?;
+                        }
+                        println!("  compiled: {stem}");
+                        compiled += 1;
                     }
-                    println!("  compiled: {stem}");
-                    compiled += 1;
                 }
             }
 
@@ -818,6 +957,27 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
 // Entry point
 // ---------------------------------------------------------------------------
 
+fn cmd_preprocess(url: &str) -> Result<()> {
+    let gh = parse_github_url(url)?;
+    let tag = image_tag();
+    ensure_docker_image(&tag)?;
+    let status = Command::new("docker")
+        .arg("run")
+        .arg("--rm")
+        .arg(&tag)
+        .arg("preprocess")
+        .arg(&gh.clone_url)
+        .arg(&gh.branch)
+        .arg(&gh.file_path)
+        .status()
+        .context("failed to run docker container")?;
+
+    if !status.success() {
+        bail!("container exited with non-zero status");
+    }
+    Ok(())
+}
+
 fn cmd_debug(url: &str) -> Result<()> {
     let gh = parse_github_url(url)?;
     let tag = image_tag();
@@ -858,6 +1018,7 @@ fn main() {
             example_witnesses,
             example_args,
             example_arg_values,
+            transpiler,
             force,
         } => {
             let parse_pairs = |v: Vec<String>| -> Vec<(String, String)> {
@@ -874,9 +1035,10 @@ fn main() {
             let witnesses = parse_pairs(example_witnesses);
             let args = parse_pairs(example_args);
             let arg_values = parse_pairs(example_arg_values);
-            cmd_add(&url, &tags, &witnesses, &args, &arg_values, force)
+            cmd_add(&url, &tags, &witnesses, &args, &arg_values, transpiler.as_deref(), force)
         }
         Commands::Debug { url } => cmd_debug(&url),
+        Commands::Preprocess { url } => cmd_preprocess(&url),
         Commands::Compile { all, tag, slugs } => cmd_compile(all, tag.as_deref(), &slugs),
     };
     if let Err(e) = result {

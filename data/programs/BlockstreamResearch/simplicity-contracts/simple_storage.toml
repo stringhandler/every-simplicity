@@ -5,6 +5,7 @@ branch = "main"
 file_path = "crates/contracts/src/state_management/simple_storage/source_simf/simple_storage.simf"
 commit = "ec8773cc8c92053e0fa513a6f2b50feeafd1b88c"
 fetched_at = "2026-03-16T16:17:36.951720300+00:00"
+manual_tags = []
 cmr = "c5463f035dc5a2503aa7dc7ede774b7212ec55ca444457efbf837d24bd9bec8a"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -13,6 +14,7 @@ liquid_testnet_address = "tex1pr9vxfvdvuln7w0mt9dstnsl5nhd7nkdywvsvqp4kc6wlnk2s8
 witnesses = ["NEW_VALUE", "USER_SIGNATURE"]
 params = ["SLOT_ID", "USER"]
 comments = ["github.com/ElementsProject/elements/blob/master/src/consensus/amount.h", "github.com/ElementsProject/rust-elements/blob/f6ffc7800df14b81c0f5ae1c94368a78b99612b9/src/blind.rs#L471", "burn", "mint", "Simple Storage Program for Liquid", "Only the owner of the storage can modify the value.", "==== IMPORTANT ====", "Based on the following resources:", "https://github.com/ElementsProject/elements/blob/master/src/consensus/amount.h", "https://github.com/ElementsProject/rust-elements/blob/f6ffc7800df14b81c0f5ae1c94368a78b99612b9/src/blind.rs#L471", "The maximum allowed amount is 2,100,000,000,000,000", "(i.e., 21,000,000 × 10^8), which is approximately 51 bits."]
+autodetected_tags = ["covenant"]
 
 
 [example_arg_values]

@@ -5,6 +5,7 @@ branch = "main"
 file_path = "crates/contracts/src/finance/option_offer/source_simf/option_offer.simf"
 commit = "ec8773cc8c92053e0fa513a6f2b50feeafd1b88c"
 fetched_at = "2026-03-16T14:38:16.381470400+00:00"
+manual_tags = []
 cmr = "5419e1c3454fb338ee1da3a8eac78d2f6d11e38013a80944c77fba04e57084b3"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -13,6 +14,7 @@ liquid_testnet_address = "tex1pgutsc5altpvta84krk9n8wv2xhhtumf5cakadcljk8za2t5m5
 witnesses = ["USER_SIGHASH_ALL", "PATH"]
 params = ["USER_PUBKEY", "PREMIUM_PER_COLLATERAL", "COLLATERAL_ASSET_ID", "PREMIUM_ASSET_ID", "SETTLEMENT_ASSET_ID", "COLLATERAL_PER_CONTRACT", "EXPIRY_TIME"]
 comments = ["/ Assert: a == b * expected_q, via divmod", "Check collateral changes", "Option Offer", "A covenant that allows a user to deposit collateral and premium assets,", "and have a counterparty swap settlement asset for both.", "The user can withdraw accumulated settlement asset at any time (with signature).", "After expiry, the user can reclaim any remaining collateral and premium (with signature).", "Paths:", "1. Exercise: Counterparty swaps settlement asset for collateral + premium (no time restriction, optional change)", "2. Withdraw: User withdraws settlement asset (no time restriction, signature required, full amount)", "3. Expiry: User reclaims collateral + premium (after expiry, signature required, full amount)", "Constraints:", "settlement_amount = COLLATERAL_PER_CONTRACT * collateral_amount", "premium_amount = PREMIUM_PER_COLLATERAL * collateral_amount", "Exercise Path", "Counterparty swaps settlement asset for collateral + premium.", "No time restriction - works before and after expiry.", "Layout:", "Both:", "Input[0]: Collateral from covenant", "Input[1]: Premium from covenant", "With change (partial swap):", "Output[0]: Collateral change → covenant", "Output[1]: Premium change → covenant", "Output[2]: Settlement asset → covenant", "Output[3]: Collateral → counterparty", "Output[4]: Premium → counterparty", "Without change (full swap):", "Output[0]: Settlement asset → covenant", "Output[1]: Collateral → counterparty", "Output[2]: Premium → counterparty", "Withdraw Path", "User withdraws accumulated settlement asset.", "No time restriction.", "Requires signature from USER_PUBKEY.", "No change - full withdrawal only.", "Input[0]: Settlement asset from covenant", "Output[0]: Settlement asset → user (any address)", "Expiry Path", "User reclaims remaining collateral and premium after expiry.", "Only allowed after EXPIRY_TIME.", "No change - full reclaim only.", "Output[0]: Collateral → user (any address)", "Output[1]: Premium → user (any address)"]
+autodetected_tags = ["covenant"]
 
 [example_arg_values]
 COLLATERAL_ASSET_ID = "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798::Pubkey"

@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/reveal_fix_point.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T14:21:01.729537300+00:00"
+manual_tags = []
 cmr = "af54461ac319d267d0f7ea2dd2227c5bf265c979b3ff695394a593e2d18e86f3"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1pyjh267v7kg44avzr7289vrfahj4k5f5yudzg5uh9mte7wj306hxquwezew
 liquid_testnet_address = "tex1pyjh267v7kg44avzr7289vrfahj4k5f5yudzg5uh9mte7wj306hxqaht9gp"
 witnesses = ["STRING"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealfixedpoint", "REVEAL FIX POINT", "The coins move if someone is able to provide a SHA2 fix point, e.g.,", "a byte string that hashes to itself.", "We cannot test this program because no SHA2 fix point is known :)", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealfixedpoint"]
+autodetected_tags = []
 
 [jets]
 eq_256 = 1

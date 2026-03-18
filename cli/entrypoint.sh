@@ -46,11 +46,27 @@ case "$MODE" in
   parse)
     python3 /parse.py "${FILE_PATHS[@]}"
     ;;
+  preprocess)
+    FILE_PATH="${FILE_PATHS[0]}"
+    if grep -q '^[[:space:]]*#include' "$FILE_PATH" 2>/dev/null; then
+      mcpp "$FILE_PATH" | grep -v '^#line '
+    else
+      cat "$FILE_PATH"
+    fi
+    ;;
   compile)
     # Cache parse.py output per unique file path
     declare -A PARSE_CACHE
 
     for ENCODED in "${FILE_PATHS[@]}"; do
+      # Check for explicit transpiler prefix:  T:type:::rest
+      XPILE_KIND=""
+      if [[ "$ENCODED" == T:*:::* ]]; then
+        XPILE_PART="${ENCODED%%:::*}"
+        XPILE_KIND="${XPILE_PART#T:}"
+        ENCODED="${ENCODED#*:::}"
+      fi
+
       # Decode: file_path  |  file_path:::kind:::name:::value
       FILE_PATH="${ENCODED%%:::*}"
       REMAINDER="${ENCODED#*:::}"
@@ -76,8 +92,22 @@ case "$MODE" in
       TMP_PREPROCESSED=""
       if grep -q '^[[:space:]]*#include' "$FILE_PATH" 2>/dev/null; then
         TMP_PREPROCESSED=$(mktemp --suffix=.simf)
-        mcpp "$FILE_PATH" -o "$TMP_PREPROCESSED"
+        mcpp "$FILE_PATH" | grep -v '^#line ' > "$TMP_PREPROCESSED"
         COMPILE_FILE="$TMP_PREPROCESSED"
+      fi
+
+      # Auto-detect template transpiler from .simf.tmpl extension
+      if [[ -z "$XPILE_KIND" && "$FILE_PATH" == *.simf.tmpl ]]; then
+        XPILE_KIND="template"
+      fi
+
+      # Run transpiler if needed, producing a standard .simf file
+      TMP_TRANSPILED=""
+      if [[ -n "$XPILE_KIND" ]]; then
+        TMP_TRANSPILED=$(mktemp --suffix=.simf)
+        python3 /transpile.py "$XPILE_KIND" "$COMPILE_FILE" > "$TMP_TRANSPILED"
+        [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED" && TMP_PREPROCESSED=""
+        COMPILE_FILE="$TMP_TRANSPILED"
       fi
 
       # Build simc flags based on kind
@@ -97,7 +127,20 @@ case "$MODE" in
       fi
 
       simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" --json 2>/tmp/simc_stderr) || {
-        err=$(grep -m1 'error' /tmp/simc_stderr | tr '"\\' "''" || head -1 /tmp/simc_stderr | tr '"\\' "''")
+        # 1. Try JSON error field from stdout
+        err=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('error',''))" "$simc_out" 2>/dev/null || true)
+        # 2. Fall back to full stderr content
+        if [[ -z "$err" ]]; then
+          err=$(cat /tmp/simc_stderr | tr '"\\' "''" | tr '\n' ' ' | xargs)
+        fi
+        # 3. Fall back to raw stdout (simc may print errors there without --json structure)
+        if [[ -z "$err" && -n "$simc_out" ]]; then
+          err=$(echo "$simc_out" | tr '"\\' "''" | head -3 | tr '\n' ' ' | xargs)
+        fi
+        # 4. Last resort
+        if [[ -z "$err" ]]; then
+          err="simc exited with no output (check docker image has correct simc version)"
+        fi
         [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
 
         # On simc failure: still run parse.py so jets/types/etc are captured,
@@ -109,6 +152,7 @@ case "$MODE" in
           PARSE_CACHE[$FILE_PATH]="$parse_out"
         fi
         [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
+        [[ -n "$TMP_TRANSPILED" ]] && rm -f "$TMP_TRANSPILED"
         TMP_PARSE=$(mktemp)
         echo "$parse_out" > "$TMP_PARSE"
         python3 - "$TMP_PARSE" "$FILE_PATH" "$KIND" "$ITEM_NAME" "$err" <<'PYEOF'
@@ -133,6 +177,7 @@ PYEOF
         PARSE_CACHE[$FILE_PATH]="$parse_out"
       fi
       [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
+      [[ -n "$TMP_TRANSPILED" ]] && rm -f "$TMP_TRANSPILED"
 
       # Extract program from simc output
       program=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$simc_out")
@@ -147,22 +192,19 @@ PYEOF
         else
           hal_out=$(hal-simplicity simplicity info "$program" 2>/dev/null || echo '{}')
         fi
-        mermaid_out=$(hal-simplicity simplicity graph "$program" --format mermaid 2>/dev/null || echo '')
       else
         hal_out='{}'
-        mermaid_out=''
       fi
 
-      # Merge: parse < simc < hal, inject _file_path / _kind / _item_name / _mermaid.
+      # Merge: parse < simc < hal, inject _file_path / _kind / _item_name.
       # Write large blobs to temp files to avoid "Argument list too long".
       # simc/hal emit 'jets' as a string (jet set name e.g. "core") which
       # would clobber parse.py's 'jets' count map — rename it to 'jet_set'.
-      TMP_PARSE=$(mktemp); TMP_SIMC=$(mktemp); TMP_HAL=$(mktemp); TMP_MERMAID=$(mktemp)
-      echo "$parse_out"   > "$TMP_PARSE"
-      echo "$simc_out"    > "$TMP_SIMC"
-      echo "$hal_out"     > "$TMP_HAL"
-      echo "$mermaid_out" > "$TMP_MERMAID"
-      python3 - "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL" "$FILE_PATH" "$KIND" "$ITEM_NAME" "$TMP_MERMAID" <<'PYEOF'
+      TMP_PARSE=$(mktemp); TMP_SIMC=$(mktemp); TMP_HAL=$(mktemp)
+      echo "$parse_out" > "$TMP_PARSE"
+      echo "$simc_out"  > "$TMP_SIMC"
+      echo "$hal_out"   > "$TMP_HAL"
+      python3 - "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL" "$FILE_PATH" "$KIND" "$ITEM_NAME" <<'PYEOF'
 import json, sys
 parse = json.loads(open(sys.argv[1]).read())
 simc  = json.loads(open(sys.argv[2]).read())
@@ -174,10 +216,9 @@ merged = {**parse, **simc, **hal}
 merged['_file_path']  = sys.argv[4]
 merged['_kind']       = sys.argv[5]
 merged['_item_name']  = sys.argv[6]
-merged['_mermaid']    = open(sys.argv[7]).read().strip()
 print(json.dumps(merged))
 PYEOF
-      rm -f "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL" "$TMP_MERMAID"
+      rm -f "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL"
     done
     ;;
   *)

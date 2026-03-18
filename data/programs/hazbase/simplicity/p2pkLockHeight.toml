@@ -1,0 +1,17 @@
+url = "https://github.com/hazbase/simplicity/blob/main/src/presets/p2pkLockHeight.simf.tmpl"
+name = "p2pkLockHeight"
+repo = "https://github.com/hazbase/simplicity.git"
+branch = "main"
+file_path = "src/presets/p2pkLockHeight.simf.tmpl"
+commit = "f106f47ce3a8ea39775fbfe0f226927bd0c1a578"
+fetched_at = "2026-03-18T10:48:55.262974500+00:00"
+manual_tags = []
+compile_error = "Parameter `SIGNER_XONLY` is missing an argument"
+witnesses = ["SIGNER_SIGNATURE"]
+params = ["MIN_HEIGHT", "SIGNER_XONLY"]
+autodetected_tags = ["tmpl", "transpiled"]
+
+[jets]
+bip_0340_verify = 1
+check_lock_height = 1
+sig_all_hash = 1

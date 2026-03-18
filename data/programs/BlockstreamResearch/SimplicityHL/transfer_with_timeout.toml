@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/transfer_with_timeout.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T14:23:16.023092900+00:00"
+manual_tags = []
 cmr = "e47633744baf8a4c3aacfc03f2860f0d4fe6731fb96ad0bf5e0b9fb8cf8c48c6"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eq9hu2lg
 liquid_testnet_address = "tex1p0v9mrhmuqu4v0s97f9slvl736697luu46ka3m0vsygvzxur9s6eqywwdw8"
 witnesses = ["SENDER_SIG", "TRANSFER_OR_TIMEOUT"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout", "1 * G", "2 * G", "TRANSFER WITH TIMEOUT", "The coins move if the sender and recipient agree to move them.", "If the recipient fails to cooperate, then the sender can recover", "the coins unilaterally after a timeout.", "This contract can be used to construct a one-way payment channel:", "The sender keeps increasing the amount of coins to the recipient,", "signing updated transactions with each channel update. The recipient", "broadcasts the transaction on the blockchain when they are ready.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout"]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/transfer_with_timeout.transfer.wit"

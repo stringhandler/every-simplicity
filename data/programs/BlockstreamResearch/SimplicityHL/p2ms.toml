@@ -5,6 +5,7 @@ branch = "master"
 file_path = "examples/p2ms.simf"
 commit = "3e2ef1e405b99691971c2c11ce01563be09344b5"
 fetched_at = "2026-03-16T13:05:33.481623600+00:00"
+manual_tags = []
 cmr = "af5b897effb80a06fa19362347b7807dc0e774eaf4271d6526545965b44ddc3e"
 type_arrow = "1 → 1"
 jet_set = "core"
@@ -12,6 +13,7 @@ liquid_address = "ex1p8asjc8876dzv7xrpw7rymfygnrdtvtlgmfed2kt4hw4mqwwyxhmqryp5yu
 liquid_testnet_address = "tex1p8asjc8876dzv7xrpw7rymfygnrdtvtlgmfed2kt4hw4mqwwyxhmqzann4n"
 witnesses = ["MAYBE_SIGS"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig", "1 * G", "2 * G", "3 * G", "PAY TO MULTISIG", "The coins move if 2 of 3 people agree to move them. These people provide", "their signatures, of which exactly 2 are required.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig"]
+autodetected_tags = []
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2ms.wit"
