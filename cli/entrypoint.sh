@@ -126,7 +126,7 @@ case "$MODE" in
         TMP_FILE=""
       fi
 
-      simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" --json 2>/tmp/simc_stderr) || {
+      simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" ${SIMC_FLAGS} --json 2>/tmp/simc_stderr) || {
         # 1. Try JSON error field from stdout
         err=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('error',''))" "$simc_out" 2>/dev/null || true)
         # 2. Fall back to full stderr content

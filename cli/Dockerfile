@@ -9,8 +9,12 @@ RUN apt-get update && apt-get install -y \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
 ENV PATH="/root/.cargo/bin:$PATH"
 
-# Build simc from SimplicityHL master
-RUN git clone --depth 1 --branch master https://github.com/BlockstreamResearch/SimplicityHL /build/SimplicityHL \
+# Build simc from SimplicityHL
+ARG SIMPLICITY_HL_REPO=BlockstreamResearch
+ARG SIMPLICITY_HL_BRANCH=master
+ENV SIMPLICITY_HL_REPO=${SIMPLICITY_HL_REPO}
+ENV SIMPLICITY_HL_BRANCH=${SIMPLICITY_HL_BRANCH}
+RUN git clone --depth 1 --branch ${SIMPLICITY_HL_BRANCH} https://github.com/${SIMPLICITY_HL_REPO}/SimplicityHL /build/SimplicityHL \
     && cargo build --release --manifest-path /build/SimplicityHL/Cargo.toml \
     && cp /build/SimplicityHL/target/release/simc /usr/local/bin/simc \
     && rm -rf /build/SimplicityHL
