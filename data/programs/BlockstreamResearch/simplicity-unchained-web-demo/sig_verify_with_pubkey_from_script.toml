@@ -1,0 +1,28 @@
+url = "https://github.com/BlockstreamResearch/simplicity-unchained-web-demo/blob/main/public/presets/simplicity/sig_verify_with_pubkey_from_script.simf"
+name = "sig_verify_with_pubkey_from_script"
+repo = "https://github.com/BlockstreamResearch/simplicity-unchained-web-demo.git"
+branch = "main"
+file_path = "public/presets/simplicity/sig_verify_with_pubkey_from_script.simf"
+commit = "0a1cc96efa5d735f3b527e3f39a4500839cd3e0c"
+fetched_at = "2026-03-20T09:51:35.870748600+00:00"
+manual_tags = ["simplicity-unchained"]
+compile_error = "| 12 | let pubkey: Pubkey = jet::get_pubkey_from_script(35); | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Jet `get_pubkey_from_script` does not exist"
+witnesses = ["SIG"]
+comments = [
+    "SIGNATURE VERIFY WITH PUBKEY FROM SCRIPT",
+    "Test that X-only public keys can be extracted from a script",
+    "You can utilize pubkeys embedded in scripts to verify signatures against them.",
+    "Or do other cryptographic operations that require pubkeys.",
+    "Example values",
+]
+autodetected_tags = []
+
+[example_witnesses]
+default = "https://github.com/BlockstreamResearch/simplicity-unchained-web-demo/blob/main/public/presets/simplicity/sig_verify_with_pubkey_from_script.wit"
+
+[jets]
+bip_0340_verify = 1
+get_pubkey_from_script = 1
+
+[types]
+u256 = 1
