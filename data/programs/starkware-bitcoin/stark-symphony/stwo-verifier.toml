@@ -1,0 +1,60 @@
+url = "https://github.com/starkware-bitcoin/stark-symphony/blob/master/stwo-verifier/src/main.simf"
+name = "stwo-verifier"
+repo = "https://github.com/starkware-bitcoin/stark-symphony.git"
+branch = "master"
+file_path = "stwo-verifier/src/main.simf"
+commit = "3281b951f50c8c0100f0dd59abe465e429dfdeb4"
+fetched_at = "2026-03-23T12:42:06.714689+00:00"
+manual_tags = []
+compile_error = "| 605 | DEFINE_ZIP_ARR_1(query_decommitments, u32, Decommitment) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_ZIP_ARR_1 | 622 | DEFINE_MAP_ARR_1(QueryDecommitment, QueryResponse, QueryDecommitmentCtx, verify_query) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_MAP_ARR_1 | 690 | DEFINE_MAP_ARR_1(u256, FriLayer, ChannelState, fri_layer_commit) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_MAP_ARR_1 | 722 | DEFINE_ZIP_ARR_1(trace_evals, ColEvalsM31, ColEvalsQM31) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_ZIP_ARR_1 | 785 | DEFINE_FOLD_ARR_1((ColEvalsM31, ColEvalsQM31), NumeratorAcc, trace_quotient_numerator_aggregate) | ^^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_FOLD_ARR_1 | 804 | let zipped_cp_evals: [(M31, QM31); NUM_CP_PARTITIONS] = cp_evals_zip_arr_16(cp_evals, oods_cp_evals); | ^^^^^^^^^^^^^^^^^ Expected decimal number, found NUM_CP_PARTITIONS | 834 | DEFINE_MAP_ARR_1(QueryResponse, FriAnswer, QueryResponseCtx, fri_answer) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_MAP_ARR_1 | 865 | DEFINE_ZIP_ARR_1(fri_layer_data, FriAnswer, FriQueryDecommitment) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_ZIP_ARR_1 | 880 | DEFINE_MAP_ARR_1((FriAnswer, FriQueryDecommitment), FriAnswer, FriLayerContext, fri_verify_query) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_MAP_ARR_1 | 895 | DEFINE_ZIP_ARR_1(fri_inner_layer, FriLayer, FriLayerDecommitment) | ^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_ZIP_ARR_1 | 925 | DEFINE_FOLD_ARR_1((FriLayer, FriLayerDecommitment), FriLayerAccumulator, fri_verify_inner_layers) | ^^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_FOLD_ARR_1 | 939 | DEFINE_FOLD_ARR_1(FriAnswer, QM31, fri_verify_last_layer) | ^^^^^^^^^^^^^^^^^ Expected mod, found DEFINE_FOLD_ARR_1"
+witnesses = ["COMMITMENTS", "DECOMMITMENTS", "OODS_EVALS", "FRI_COMMITMENTS", "FRI_DECOMMITMENTS", "POW_NONCE"]
+autodetected_tags = ["user-defined-type"]
+
+[jets]
+add_32 = 4
+divide_32 = 1
+divides_32 = 1
+eq_32 = 1
+eq_8 = 1
+is_zero_32 = 2
+left_shift_32 = 1
+lt_32 = 2
+lt_64 = 1
+modulo_32 = 1
+modulo_64 = 1
+multiply_32 = 1
+sha_256_ctx_8_add_32 = 6
+sha_256_ctx_8_add_4 = 1
+sha_256_ctx_8_add_8 = 1
+sha_256_ctx_8_finalize = 5
+sha_256_ctx_8_init = 5
+subtract_32 = 1
+subtract_8 = 1
+
+[builtins]
+for_while = 3
+unwrap_left = 3
+
+[macros]
+"assert!" = 4
+"panic!" = 2
+
+[reserved_words]
+Left = 3
+Right = 3
+false = 23
+match = 15
+true = 17
+type = 27
+
+[types]
+Ctx8 = 16
+Either = 6
+Option = 2
+bool = 12
+u128 = 4
+u16 = 9
+u256 = 23
+u32 = 70
+u64 = 16
+u8 = 17

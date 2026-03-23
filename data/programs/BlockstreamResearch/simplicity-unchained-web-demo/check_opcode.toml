@@ -7,13 +7,7 @@ commit = "0a1cc96efa5d735f3b527e3f39a4500839cd3e0c"
 fetched_at = "2026-03-20T09:31:03.296434300+00:00"
 manual_tags = ["simplicity-unchained"]
 compile_error = "| 10 | assert!(jet::eq_8(jet::get_opcode_from_script(0), 0x52)); // 0x52 == OP_2 | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Jet `get_opcode_from_script` does not exist"
-comments = [
-    "CHECK OPCODE",
-    "This is a simple test to check that the opcode extraction from the script works correctly.",
-    "You can read any opcode from a script and build an additional branching logic on it.",
-    "Test that the opcode extraction works correctly",
-    "0x52 == OP_2",
-]
+comments = ["CHECK OPCODE", "This is a simple test to check that the opcode extraction from the script works correctly.", "You can read any opcode from a script and build an additional branching logic on it.", "Test that the opcode extraction works correctly", "0x52 == OP_2"]
 autodetected_tags = []
 
 [jets]

@@ -1,0 +1,60 @@
+url = "https://github.com/starkware-bitcoin/stark-symphony/blob/master/stark101/src/main.simf"
+name = "stark101"
+repo = "https://github.com/starkware-bitcoin/stark-symphony.git"
+branch = "master"
+file_path = "stark101/src/main.simf"
+commit = "47f65c47c0e0f1732d0c60e2d5a02ff537fe0650"
+fetched_at = "2026-03-23T12:42:25.668122+00:00"
+manual_tags = []
+compile_error = "| 674 | type Eval = (u32, MerkleProof32); | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Type alias `Eval` was defined multiple times"
+witnesses = ["P_MT_ROOT", "P_EVALS", "FRI_LAYERS", "FRI_LAST_LAYER"]
+autodetected_tags = ["user-defined-type"]
+
+[jets]
+add_32 = 7
+add_64 = 2
+divide_32 = 5
+divides_32 = 2
+eq_256 = 1305
+eq_32 = 34
+is_zero_32 = 2
+left_shift_64 = 1
+modulo_32 = 2
+modulo_64 = 3
+multiply_32 = 1
+sha_256_ctx_8_add_32 = 6
+sha_256_ctx_8_add_4 = 2
+sha_256_ctx_8_finalize = 5
+sha_256_ctx_8_init = 5
+subtract_32 = 1
+
+[builtins]
+fold = 3
+for_while = 2
+unwrap_left = 2
+
+[macros]
+"assert!" = 1339
+"list!" = 30
+
+[reserved_words]
+Left = 2
+Right = 2
+false = 4
+fold = 3
+left = 2
+match = 4
+right = 2
+true = 4
+type = 14
+
+[types]
+Ctx8 = 13
+Either = 4
+List = 5
+bool = 10
+u128 = 4
+u16 = 2
+u256 = 28
+u32 = 221
+u64 = 23

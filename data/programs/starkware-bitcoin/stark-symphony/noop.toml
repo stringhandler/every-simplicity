@@ -1,0 +1,14 @@
+url = "https://github.com/starkware-bitcoin/stark-symphony/blob/master/simfony-wallet/tests/data/noop.simf"
+name = "noop"
+repo = "https://github.com/starkware-bitcoin/stark-symphony.git"
+branch = "master"
+file_path = "simfony-wallet/tests/data/noop.simf"
+commit = "9a1a6b31f55d594099d6bee519fcc342157b917f"
+fetched_at = "2026-03-23T12:25:12.360884700+00:00"
+manual_tags = []
+cmr = "c40a10263f7436b4160acbef1c36fba4be4d95df181a968afeab5eac247adff7"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1p9jcvyzkdwdqtf49kta4xpc5g35xkfcexwfsl8v70w2gwttelncysklq394"
+liquid_testnet_address = "tex1p9jcvyzkdwdqtf49kta4xpc5g35xkfcexwfsl8v70w2gwttelncyshxjk56"
+autodetected_tags = []

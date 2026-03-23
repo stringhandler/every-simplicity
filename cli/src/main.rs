@@ -82,6 +82,11 @@ enum Commands {
         #[arg(long, value_name = "TYPE")]
         transpiler: Option<String>,
 
+        /// Override the script name used for the catalog entry.
+        /// Useful when two scripts in the same repo share a filename.
+        #[arg(long, value_name = "NAME")]
+        name: Option<String>,
+
         /// Overwrite the entry if it already exists
         #[arg(long, short)]
         force: bool,
@@ -426,6 +431,7 @@ fn build_arg_values_json(arg_values: &BTreeMap<String, String>) -> Result<String
 fn write_skeleton_toml(
     path: &Path,
     gh: &GithubFile,
+    name: &str,
     manual_tags: &[String],
     commit: &str,
     example_witnesses: &[(String, String)],
@@ -440,14 +446,7 @@ fn write_skeleton_toml(
     let sv = |s: &str| Item::Value(Value::from(s));
 
     doc["url"] = sv(&gh.original_url);
-    doc["name"] = sv(gh
-        .file_path
-        .split('/')
-        .last()
-        .unwrap_or(&gh.file_path)
-        .trim_end_matches(".simplicityhl")
-        .trim_end_matches(".simf.tmpl")
-        .trim_end_matches(".simf"));
+    doc["name"] = sv(name);
     doc["repo"] = sv(&gh.clone_url);
     doc["branch"] = sv(&gh.branch);
     doc["file_path"] = sv(&gh.file_path);
@@ -736,6 +735,7 @@ fn group_by_repo(paths: &[PathBuf]) -> Result<RepoGroup> {
 
 fn cmd_add(
     url: &str,
+    name_override: Option<&str>,
     manual_tags: &[String],
     example_witnesses: &[(String, String)],
     example_args: &[(String, String)],
@@ -744,7 +744,8 @@ fn cmd_add(
     force: bool,
 ) -> Result<()> {
     let gh = parse_github_url(url)?;
-    let (org, repo, name) = entry_path_parts(&gh);
+    let (org, repo, derived_name) = entry_path_parts(&gh);
+    let name = name_override.unwrap_or(&derived_name);
     let out_path = data_dir()
         .join(&org)
         .join(&repo)
@@ -764,6 +765,7 @@ fn cmd_add(
     write_skeleton_toml(
         &out_path,
         &gh,
+        name,
         manual_tags,
         &commit,
         example_witnesses,
@@ -1014,6 +1016,7 @@ fn main() {
     let result = match cli.command {
         Commands::Add {
             url,
+            name,
             tags,
             example_witnesses,
             example_args,
@@ -1024,8 +1027,8 @@ fn main() {
             let parse_pairs = |v: Vec<String>| -> Vec<(String, String)> {
                 v.into_iter()
                     .map(|s| {
-                        if let Some((name, value)) = s.split_once('=') {
-                            (name.to_string(), value.to_string())
+                        if let Some((k, v)) = s.split_once('=') {
+                            (k.to_string(), v.to_string())
                         } else {
                             ("default".to_string(), s)
                         }
@@ -1035,7 +1038,7 @@ fn main() {
             let witnesses = parse_pairs(example_witnesses);
             let args = parse_pairs(example_args);
             let arg_values = parse_pairs(example_arg_values);
-            cmd_add(&url, &tags, &witnesses, &args, &arg_values, transpiler.as_deref(), force)
+            cmd_add(&url, name.as_deref(), &tags, &witnesses, &args, &arg_values, transpiler.as_deref(), force)
         }
         Commands::Debug { url } => cmd_debug(&url),
         Commands::Preprocess { url } => cmd_preprocess(&url),

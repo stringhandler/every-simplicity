@@ -8,13 +8,7 @@ fetched_at = "2026-03-20T09:51:35.870748600+00:00"
 manual_tags = ["simplicity-unchained"]
 compile_error = "| 12 | let pubkey: Pubkey = jet::get_pubkey_from_script(35); | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Jet `get_pubkey_from_script` does not exist"
 witnesses = ["SIG"]
-comments = [
-    "SIGNATURE VERIFY WITH PUBKEY FROM SCRIPT",
-    "Test that X-only public keys can be extracted from a script",
-    "You can utilize pubkeys embedded in scripts to verify signatures against them.",
-    "Or do other cryptographic operations that require pubkeys.",
-    "Example values",
-]
+comments = ["SIGNATURE VERIFY WITH PUBKEY FROM SCRIPT", "Test that X-only public keys can be extracted from a script", "You can utilize pubkeys embedded in scripts to verify signatures against them.", "Or do other cryptographic operations that require pubkeys.", "Example values"]
 autodetected_tags = []
 
 [example_witnesses]
