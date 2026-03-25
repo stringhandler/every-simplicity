@@ -18,18 +18,23 @@ const ENTRYPOINT_SH: &str = include_str!("../entrypoint.sh");
 const PARSE_PY: &str = include_str!("../parse.py");
 const TRANSPILE_PY: &str = include_str!("../transpile.py");
 
-/// FNV-1a hash of all Docker context files baked in at compile time.
-/// Changes whenever Dockerfile, entrypoint.sh, or parse.py changes,
-/// so the image is automatically rebuilt when the context is updated.
+/// FNV-1a hash of all Docker context files baked in at compile time,
+/// plus the SIMPLICITY_HL_REPO and SIMPLICITY_HL_BRANCH env vars.
+/// Changes whenever the Dockerfile/scripts or the fork/branch changes,
+/// so the image is automatically rebuilt when any of these change.
 fn image_tag() -> String {
     const FNV_OFFSET: u64 = 0xcbf29ce484222325;
     const FNV_PRIME: u64 = 0x100000001b3;
     let mut hash = FNV_OFFSET;
+    let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
+    let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
     for b in DOCKERFILE
         .bytes()
         .chain(ENTRYPOINT_SH.bytes())
         .chain(PARSE_PY.bytes())
         .chain(TRANSPILE_PY.bytes())
+        .chain(repo.bytes())
+        .chain(branch.bytes())
     {
         hash ^= b as u64;
         hash = hash.wrapping_mul(FNV_PRIME);
@@ -315,8 +320,18 @@ fn ensure_docker_image(tag: &str) -> Result<()> {
     fs::write(tmp.join("parse.py"), PARSE_PY)?;
     fs::write(tmp.join("transpile.py"), TRANSPILE_PY)?;
 
-    let status = Command::new("docker")
-        .args(["build", "-t", tag, "."])
+    let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
+    let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
+    let mut build_cmd = Command::new("docker");
+    build_cmd.args(["build", "-t", tag]);
+    if !repo.is_empty() {
+        build_cmd.args(["--build-arg", &format!("SIMPLICITY_HL_REPO={repo}")]);
+    }
+    if !branch.is_empty() {
+        build_cmd.args(["--build-arg", &format!("SIMPLICITY_HL_BRANCH={branch}")]);
+    }
+    build_cmd.arg(".");
+    let status = build_cmd
         .current_dir(&tmp)
         .status()
         .context("failed to run docker build")?;
@@ -340,14 +355,18 @@ where
     let tag = image_tag();
     ensure_docker_image(&tag)?;
 
-    let mut child = Command::new("docker")
-        .arg("run")
-        .arg("--rm")
+    let mut run_cmd = Command::new("docker");
+    run_cmd.args(["run", "--rm"]);
+    if let Ok(flags) = std::env::var("SIMC_FLAGS") {
+        run_cmd.args(["-e", &format!("SIMC_FLAGS={flags}")]);
+    }
+    run_cmd
         .arg(&tag)
         .arg(mode)
         .arg(clone_url)
         .arg(branch)
-        .args(file_paths)
+        .args(file_paths);
+    let mut child = run_cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
@@ -1002,6 +1021,8 @@ fn cmd_debug(url: &str) -> Result<()> {
 }
 
 fn main() {
+    let _ = dotenvy::dotenv();
+
     // Suppress broken pipe errors (e.g. container stdout closing unexpectedly)
     std::panic::set_hook(Box::new(|info| {
         if let Some(s) = info.payload().downcast_ref::<String>() {
