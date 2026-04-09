@@ -18,28 +18,45 @@ const ENTRYPOINT_SH: &str = include_str!("../entrypoint.sh");
 const PARSE_PY: &str = include_str!("../parse.py");
 const TRANSPILE_PY: &str = include_str!("../transpile.py");
 
-/// FNV-1a hash of all Docker context files baked in at compile time,
-/// plus the SIMPLICITY_HL_REPO and SIMPLICITY_HL_BRANCH env vars.
-/// Changes whenever the Dockerfile/scripts or the fork/branch changes,
-/// so the image is automatically rebuilt when any of these change.
+/// FNV-1a hash of all Docker context files baked in at compile time.
+/// Changes whenever Dockerfile, entrypoint.sh, parse.py, or transpile.py changes,
+/// so the image tag changes and triggers a rebuild of the image itself.
 fn image_tag() -> String {
     const FNV_OFFSET: u64 = 0xcbf29ce484222325;
     const FNV_PRIME: u64 = 0x100000001b3;
     let mut hash = FNV_OFFSET;
-    let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
-    let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
     for b in DOCKERFILE
         .bytes()
         .chain(ENTRYPOINT_SH.bytes())
         .chain(PARSE_PY.bytes())
         .chain(TRANSPILE_PY.bytes())
-        .chain(repo.bytes())
-        .chain(branch.bytes())
     {
         hash ^= b as u64;
         hash = hash.wrapping_mul(FNV_PRIME);
     }
     format!("simplicity-catalog-simc:{:016x}", hash)
+}
+
+/// FNV-1a hash of the env vars that affect the Docker build args
+/// (SIMPLICITY_HL_REPO and SIMPLICITY_HL_BRANCH).
+fn env_hash() -> String {
+    const FNV_OFFSET: u64 = 0xcbf29ce484222325;
+    const FNV_PRIME: u64 = 0x100000001b3;
+    let mut hash = FNV_OFFSET;
+    let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
+    let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
+    for b in repo.bytes().chain(std::iter::once(b'|')).chain(branch.bytes()) {
+        hash ^= b as u64;
+        hash = hash.wrapping_mul(FNV_PRIME);
+    }
+    format!("{:016x}", hash)
+}
+
+/// Path to the file that stores the env hash used when the image was last built.
+fn env_hash_file(tag: &str) -> PathBuf {
+    // Sanitise the tag so it's a valid filename component.
+    let safe = tag.replace(['/', ':'], "-");
+    std::env::temp_dir().join(format!("simplicity-catalog-{safe}.envhash"))
 }
 
 // ---------------------------------------------------------------------------
@@ -302,16 +319,26 @@ struct EntryMeta {
 // ---------------------------------------------------------------------------
 
 fn ensure_docker_image(tag: &str) -> Result<()> {
-    let check = Command::new("docker")
+    let current_env_hash = env_hash();
+    let hash_file = env_hash_file(tag);
+    let stored_env_hash = fs::read_to_string(&hash_file).unwrap_or_default();
+
+    let image_exists = Command::new("docker")
         .args(["image", "inspect", tag])
         .output()
-        .context("failed to run docker — is it installed and running?")?;
+        .context("failed to run docker — is it installed and running?")?
+        .status
+        .success();
 
-    if check.status.success() {
+    if image_exists && stored_env_hash == current_env_hash {
         return Ok(());
     }
 
-    println!("Building Docker image '{tag}' …");
+    if image_exists && stored_env_hash != current_env_hash {
+        println!("Env vars changed — rebuilding Docker image '{tag}' …");
+    } else {
+        println!("Building Docker image '{tag}' …");
+    }
 
     let tmp = std::env::temp_dir().join("simplicity-catalog-docker-build");
     fs::create_dir_all(&tmp)?;
@@ -339,6 +366,9 @@ fn ensure_docker_image(tag: &str) -> Result<()> {
     if !status.success() {
         bail!("docker build failed");
     }
+
+    fs::write(&hash_file, &current_env_hash)
+        .context("failed to write env hash file")?;
 
     Ok(())
 }
