@@ -146,6 +146,9 @@ enum Commands {
         #[arg(conflicts_with_all = ["all", "tag"])]
         slugs: Vec<String>,
 
+        /// Force rebuild the Docker image before compiling
+        #[arg(long)]
+        rebuild_docker: bool,
     },
 }
 
@@ -318,7 +321,7 @@ struct EntryMeta {
 // Docker
 // ---------------------------------------------------------------------------
 
-fn ensure_docker_image(tag: &str) -> Result<()> {
+fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     let current_env_hash = env_hash();
     let hash_file = env_hash_file(tag);
     let stored_env_hash = fs::read_to_string(&hash_file).unwrap_or_default();
@@ -330,11 +333,13 @@ fn ensure_docker_image(tag: &str) -> Result<()> {
         .status
         .success();
 
-    if image_exists && stored_env_hash == current_env_hash {
+    if !force && image_exists && stored_env_hash == current_env_hash {
         return Ok(());
     }
 
-    if image_exists && stored_env_hash != current_env_hash {
+    if force {
+        println!("Force-rebuilding Docker image '{tag}' …");
+    } else if image_exists && stored_env_hash != current_env_hash {
         println!("Env vars changed — rebuilding Docker image '{tag}' …");
     } else {
         println!("Building Docker image '{tag}' …");
@@ -378,12 +383,13 @@ fn run_docker<T>(
     clone_url: &str,
     branch: &str,
     file_paths: &[&str],
+    rebuild_docker: bool,
 ) -> Result<Vec<T>>
 where
     T: serde::de::DeserializeOwned,
 {
     let tag = image_tag();
-    ensure_docker_image(&tag)?;
+    ensure_docker_image(&tag, rebuild_docker)?;
 
     let mut run_cmd = Command::new("docker");
     run_cmd.args(["run", "--rm"]);
@@ -831,7 +837,7 @@ fn cmd_add(
     Ok(())
 }
 
-fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
+fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: bool) -> Result<()> {
     if !all && tag.is_none() && slugs.is_empty() {
         bail!("specify --all, --tag <tag>, or one or more slugs");
     }
@@ -890,7 +896,7 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
         println!("  → {clone_url}  ({} item(s))", file_args.len());
 
         let results: Vec<SimcOutput> =
-            match run_docker("compile", clone_url, branch, &file_args) {
+            match run_docker("compile", clone_url, branch, &file_args, rebuild_docker) {
                 Ok(r) => r,
                 Err(e) => {
                     eprintln!("error compiling {clone_url}: {e:#}");
@@ -1011,7 +1017,7 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String]) -> Result<()> {
 fn cmd_preprocess(url: &str) -> Result<()> {
     let gh = parse_github_url(url)?;
     let tag = image_tag();
-    ensure_docker_image(&tag)?;
+    ensure_docker_image(&tag, false)?;
     let status = Command::new("docker")
         .arg("run")
         .arg("--rm")
@@ -1032,7 +1038,7 @@ fn cmd_preprocess(url: &str) -> Result<()> {
 fn cmd_debug(url: &str) -> Result<()> {
     let gh = parse_github_url(url)?;
     let tag = image_tag();
-    ensure_docker_image(&tag)?;
+    ensure_docker_image(&tag, false)?;
     let status = Command::new("docker")
         .arg("run")
         .arg("--rm")
@@ -1093,7 +1099,7 @@ fn main() {
         }
         Commands::Debug { url } => cmd_debug(&url),
         Commands::Preprocess { url } => cmd_preprocess(&url),
-        Commands::Compile { all, tag, slugs } => cmd_compile(all, tag.as_deref(), &slugs),
+        Commands::Compile { all, tag, slugs, rebuild_docker } => cmd_compile(all, tag.as_deref(), &slugs, rebuild_docker),
     };
     if let Err(e) = result {
         eprintln!("error: {e:#}");

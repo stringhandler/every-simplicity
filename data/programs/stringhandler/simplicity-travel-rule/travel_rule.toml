@@ -1,0 +1,50 @@
+url = "https://github.com/stringhandler/simplicity-travel-rule/blob/main/simplicity/travel_rule.simf"
+name = "travel_rule"
+repo = "https://github.com/stringhandler/simplicity-travel-rule.git"
+branch = "main"
+file_path = "simplicity/travel_rule.simf"
+commit = "44c59f6e749596b405e804819682ff646b816b6f"
+fetched_at = "2026-04-09T13:37:04.373946700+00:00"
+manual_tags = []
+compile_error = "Parameter `OBSERVER_PUBKEY` is missing an argument"
+witnesses = ["EPHEMERAL", "C_SENDER", "C_OBSERVER", "DLEQ_CHALLENGE", "DLEQ_RESPONSE", "COMMITMENT", "ENCRYPTED_DATA", "SPEND_SIG"]
+params = ["SENDER_PUBKEY", "OBSERVER_PUBKEY"]
+comments = ["Sender and observer keys are always decompressed with parity=0 (even y, BIP340 convention).", "The Rust ElGamal code normalizes keys to even y to match this convention.", "H = P_sender - P_observer", "Q = C_sender - C_observer", "A1 = s·G + e·R", "A2 = s·H + e·Q", "Recompute DLEQ challenge: e' = SHA256(R || H || Q || A1 || A2)", "Verify: SHA256(encrypted_data) == commitment", "Authorize the spend", "TRAVEL RULE VERIFIABLE ENCRYPTION", "Verifies that the witness contains a valid dual ElGamal encryption", "with a correct DLEQ proof, bound to the parameterized SenderPubKey", "and ObserverPubKey.", "Witness:", "R          — ephemeral point (shared nonce, r·G)", "C_sender   — ciphertext for sender (M + r·P_sender)", "C_observer — ciphertext for observer (M + r·P_observer)", "e, s       — DLEQ challenge and response", "commitment — SHA256(encrypted_data)", "encrypted_data — 512-byte padded symmetric ciphertext ([u256; 16])", "sig        — spending signature", "Verifies:", "1. DLEQ proof: same nonce r used for both encryptions", "2. SHA256(encrypted_data) == commitment", "3. Spending signature is valid"]
+autodetected_tags = []
+
+[jets]
+bip_0340_verify = 1
+complement_1 = 1
+decompress = 5
+eq_256 = 2
+fe_is_odd = 1
+fe_normalize = 1
+ge_negate = 2
+gej_add = 2
+gej_ge_add = 2
+gej_is_infinity = 1
+gej_is_on_curve = 2
+gej_normalize = 4
+generate = 1
+left_pad_low_1_8 = 1
+scalar_normalize = 2
+scale = 3
+sha_256_ctx_8_add_1 = 1
+sha_256_ctx_8_add_32 = 2
+sha_256_ctx_8_finalize = 2
+sha_256_ctx_8_init = 2
+sig_all_hash = 1
+
+[builtins]
+array_fold = 1
+
+[macros]
+"assert!" = 5
+
+[types]
+Ctx8 = 13
+Signature = 1
+bool = 4
+u1 = 1
+u256 = 10
+u8 = 1

@@ -1,0 +1,59 @@
+url = "https://github.com/Resolvr-io/deadcat/blob/master/src-tauri/crates/deadcat-sdk/contract/maker_order.simf"
+name = "maker_order"
+repo = "https://github.com/Resolvr-io/deadcat.git"
+branch = "master"
+file_path = "src-tauri/crates/deadcat-sdk/contract/maker_order.simf"
+commit = "3ab3cb41c1a2abb0be3038ace98e0cfa7489b469"
+fetched_at = "2026-04-14T12:21:51.827034200+00:00"
+manual_tags = []
+compile_error = "Parameter `MIN_FILL_LOTS` is missing an argument"
+witnesses = ["PATH", "COSIGNER_SIGNATURE", "MAKER_CANCEL_SIGNATURE"]
+params = ["MAKER_PUBKEY", "COSIGNER_PUBKEY", "BASE_ASSET_ID", "QUOTE_ASSET_ID", "PRICE", "MIN_FILL_LOTS", "MIN_REMAINDER_LOTS", "MAKER_RECEIVE_SPK_HASH", "IS_SELL_BASE"]
+comments = ["Maker Order Covenant", "SimplicityHL contract for Liquid", "A maker limit order locked as a covenant UTXO.", "Takers fill by constructing transactions that satisfy conservation invariants.", "Partial fills produce a remainder UTXO locked by the same covenant.", "============================================================================", "Boolean helpers", "Utility functions", "Note: jet::output_amount returns (Asset1, Amount1) — both asset and amount", "in a single introspection call. This is an Elements/Simplicity jet convention.", "Same convention: jet::input_amount returns (Asset1, Amount1).", "Arithmetic helpers", "NUMS key constant (for cosigner bypass)", "Cancel check", "Cosigner check", "Skip if COSIGNER_PUBKEY == NUMS (no cosigner configured)", "Build custom sighash: SHA256(prev_outpoint || output_asset || output_amount || output_script_hash)", "input_prev_outpoint(i) = txid (32 bytes) + vout (4 bytes) = 36 bytes", "output asset (32 bytes) + amount (8 bytes) via single introspection", "output_script_hash(i) = 32 bytes", "Direction-specific fill validation", "Maker sells BASE lots, receives QUOTE", "Check if full fill: maker_amount == input_amount * PRICE", "Full fill: all lots consumed", "Partial fill", "Remainder must be locked by the same covenant script", "Maker sells QUOTE, receives BASE lots", "Check if full fill: maker_amount * PRICE == input_amount", "Full fill: all quote consumed", "Conservation: maker_amount * PRICE + rem_amount == input_amount", "Minimum remainder in quote units: MIN_REMAINDER_LOTS * PRICE", "Main entry point", "Fill path (existing logic)", "Cancel path — maker signature authorizes reclaiming funds"]
+autodetected_tags = ["covenant"]
+
+[jets]
+add_32 = 1
+add_64 = 1
+bip_0340_verify = 2
+complement_1 = 1
+current_index = 1
+eq_256 = 10
+eq_64 = 4
+input_amount = 1
+input_prev_outpoint = 2
+input_script_hash = 1
+is_zero_64 = 1
+le_64 = 6
+multiply_64 = 1
+output_amount = 1
+output_script_hash = 1
+sha_256_ctx_8_add_32 = 4
+sha_256_ctx_8_add_4 = 2
+sha_256_ctx_8_add_8 = 1
+sha_256_ctx_8_finalize = 2
+sha_256_ctx_8_init = 2
+subtract_64 = 1
+
+[builtins]
+unwrap_right = 4
+
+[macros]
+"assert!" = 19
+
+[reserved_words]
+Left = 1
+Right = 1
+false = 4
+match = 5
+true = 4
+
+[types]
+Ctx8 = 9
+Signature = 4
+bool = 10
+u1 = 5
+u128 = 2
+u256 = 28
+u32 = 18
+u64 = 31
