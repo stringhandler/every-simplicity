@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pw9xaf867l85gsu0u8pn4jzh9mcuk07xceaupfn457rmpmjvl3nsqhqw95c"
 liquid_testnet_address = "tex1pw9xaf867l85gsu0u8pn4jzh9mcuk07xceaupfn457rmpmjvl3nsqkeuz9h"
+canonical_cmr = "905451e36aa9713a2385760923ecc8303c2f87784956869d0df40ed70386073c"
 witnesses = ["COMPLETE_OR_CANCEL"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#htlc", "sha2([0x00; 32])", "1 * G", "2 * G", "HTLC (Hash Time-Locked Contract)", "The recipient can spend the coins by providing the secret preimage of a hash.", "The sender can cancel the transfer after a fixed block height.", "HTLCs enable two-way payment channels and multi-hop payments,", "such as on the Lightning network.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#htlc"]
 autodetected_tags = []

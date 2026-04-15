@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1p07h7dyyzvqj4qfun7d280dv7feu985dlj0yq8lmnpu0h4esswrxs8gsl4p"
 liquid_testnet_address = "tex1p07h7dyyzvqj4qfun7d280dv7feu985dlj0yq8lmnpu0h4esswrxsx3zcyw"
+canonical_cmr = "a8a502310da66c60657b398fcdc664cee32363356446bd8b243bbaa965fee8b3"
 witnesses = ["STRING1", "STRING2"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealcollision", "REVEAL COLLISION", "The coins move if someone is able to provide a SHA2 collision, e.g.,", "two distinct byte strings that hash to the same value.", "We cannot test this program because no SHA2 collision is known :)", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealcollision"]
 autodetected_tags = []

@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1p704h2xhqfqxc7lst69khhw8jynnvvnlkgykj9g2t8zrm0808px6secmn0v"
 liquid_testnet_address = "tex1p704h2xhqfqxc7lst69khhw8jynnvvnlkgykj9g2t8zrm0808px6scpf57r"
+canonical_cmr = "0b05ce5ae8bbdd83c3bf95d6066ee97bb097b60a68b2151eb32167dfd3beae13"
 witnesses = ["MESSAGE_HASH", "SIGNATURE", "PUBLIC_KEY"]
 autodetected_tags = ["user-defined-type"]
 

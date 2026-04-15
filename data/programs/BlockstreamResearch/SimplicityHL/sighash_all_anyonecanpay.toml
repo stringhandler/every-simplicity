@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1p7wuxp0p8xaandq7ur7m8lseq78mzyxrthk5xsqp5v4d789tyf53q0628ae"
 liquid_testnet_address = "tex1p7wuxp0p8xaandq7ur7m8lseq78mzyxrthk5xsqp5v4d789tyf53qwrcqvk"
+canonical_cmr = "199f5778788b3cf64db7e2ac9b37ad6c3a3b71e41bed4ace730d487dbbb4b8dd"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "Current input", "All outputs", "No current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_ALL | SIGHASH_ANYONECANPAY."]
 autodetected_tags = []

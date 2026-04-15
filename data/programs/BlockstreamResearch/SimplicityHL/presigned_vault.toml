@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23sl0vr03"
 liquid_testnet_address = "tex1pq8gu27f7tyjdyx5dn39j6dt7zn82j5a68uh4lkwhzeu2lqgqq23s7k7y77"
+canonical_cmr = "f903c7ae21b137a80571abf90061e71cb8831d894f7ed57656ee16a895a4c041"
 witnesses = ["HOT_OR_COLD"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend", "1 * G", "2 * G", "PRESIGNED VAULT", "The coins move after a timeout if the hot key signs.", "Alternatively, the cold key can sweep the coins at any time.", "This contract can be used to construct a vault that works without covenants:", "1) The cold key creates a presigned transaction that moves the vaulted coins", "into the contract.", "2) The presigned transaction is kept alongside the hot key.", "3) To unvault the coins, the presigned transaction is broadcast. The coins", "move into the contract. The coins cannot be moved until the timeout.", "4) If the hot key is compromised, then the cold key can cancel the", "unvaulting process and move the coins into a new vault.", "5) After the timeout, the hot key can withdraw the coins.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend"]
 autodetected_tags = []

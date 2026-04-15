@@ -12,6 +12,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pphcc2shlqhzvnavkmq9960umzx94k7jgr6x3gnpkcnc38xyjf9pqc9stus"
 liquid_testnet_address = "tex1pphcc2shlqhzvnavkmq9960umzx94k7jgr6x3gnpkcnc38xyjf9pqeuzvdl"
+canonical_cmr = "e90992e6bfce117cb75f5490e50ed1258c1f901f645c7fc44d9210f1a0c4ab33"
 witnesses = ["TRANSFER_OR_TIMEOUT"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay", "1 * G", "2 * G", "3 * G", "ESCROW WITH DELAY", "An escrow agent can approve the movement of coins in cooperation with the", "sender or the recipient. The escrow agent cannot steal the coins for himself.", "The sender can refund her coins after a timeout.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay"]
 autodetected_tags = []

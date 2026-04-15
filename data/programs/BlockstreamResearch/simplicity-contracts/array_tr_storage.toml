@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pkd04g67er0wmnm5k34nlajrce0a74ak0yz2hjhhf6sxq4pyz4uvstucrnz"
 liquid_testnet_address = "tex1pkd04g67er0wmnm5k34nlajrce0a74ak0yz2hjhhf6sxq4pyz4uvs292yzd"
+canonical_cmr = "b0ed29544e58988d9e2b6b77413f27026aa658d14b81e3e5e1dc0bcc89ff2967"
 witnesses = ["STATE", "CHANGED_INDEX"]
 comments = ["There may be arbitrary logic here", "Segwit v1, length 32", 'Assert that the input is correct, i.e. "load".', 'Assert that the output is correct, i.e. "store".', "Extends `bytes32_tr_storage` using `array_fold` for larger buffers.", "Optimized for small, fixed-size states where linear hashing is more efficient", "than Merkle Trees. By avoiding proof overhead like sibling hashes, we reduce", "witness size and simplify contract logic for small N.", "This approach is particularly advantageous when updating all slots within every transaction."]
 autodetected_tags = ["covenant"]

@@ -1,3 +1,5 @@
+mod canonicalize;
+
 use std::collections::BTreeMap;
 use std::fs;
 use std::io::{BufRead, BufReader};
@@ -150,6 +152,17 @@ enum Commands {
         #[arg(long)]
         rebuild_docker: bool,
     },
+
+    /// Backfill canonical_cmr into all TOML entries without re-running Docker.
+    ///
+    /// Reads the compiled .simb files already sitting next to each TOML,
+    /// decodes them, computes the canonical CMR (all Word values and pruned-branch
+    /// CMRs zeroed out), and writes canonical_cmr into the TOML.
+    ///
+    /// Programs that share the same template but differ only in baked-in
+    /// constants (e.g. different public keys) will get the same canonical_cmr,
+    /// making it possible to match on-chain spends back to a known template.
+    Backfill,
 }
 
 // ---------------------------------------------------------------------------
@@ -604,6 +617,24 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput, auto_tags: &[String
     if let Some(cmr) = &s.cmr {
         doc["cmr"] = sv(cmr);
     }
+
+    // Canonical CMR: CMR recomputed after zeroing all Word values and hidden-branch
+    // CMRs. Programs sharing the same template but different baked-in constants
+    // (e.g. public keys) will have the same canonical_cmr, enabling template matching.
+    doc.remove("canonical_cmr");
+    if let Some(program_b64) = &s.program {
+        if s._error.as_deref().unwrap_or("").is_empty() {
+            match canonicalize::canonical_cmr_from_base64(program_b64) {
+                Ok(c) => {
+                    doc["canonical_cmr"] = sv(&c);
+                }
+                Err(e) => {
+                    eprintln!("  warning: canonical CMR computation failed: {e:#}");
+                }
+            }
+        }
+    }
+
     if let Some(ta) = &s.type_arrow {
         doc["type_arrow"] = sv(ta);
     }
@@ -1056,6 +1087,87 @@ fn cmd_debug(url: &str) -> Result<()> {
     Ok(())
 }
 
+fn cmd_backfill() -> Result<()> {
+    let dir = data_dir();
+    let tomls = collect_tomls(&dir);
+    let total = tomls.len();
+    let mut updated = 0usize;
+    let mut skipped = 0usize;
+
+    for toml_path in &tomls {
+        let stem = toml_path.file_stem().and_then(|s| s.to_str()).unwrap_or("?");
+
+        // Find the best available .simb: prefer the base compile, then any
+        // args/witness variant (they all share the same canonical CMR).
+        let base_simb = toml_path.with_extension("simb");
+        let simb_path = if base_simb.exists() {
+            Some(base_simb)
+        } else {
+            // Walk siblings for <stem>.*.simb
+            let dir = toml_path.parent().unwrap_or(Path::new("."));
+            fs::read_dir(dir)
+                .ok()
+                .and_then(|entries| {
+                    entries
+                        .filter_map(|e| e.ok())
+                        .map(|e| e.path())
+                        .find(|p| {
+                            p.extension().and_then(|e| e.to_str()) == Some("simb")
+                                && p.file_stem()
+                                    .and_then(|s| s.to_str())
+                                    .map(|s| s.starts_with(stem))
+                                    .unwrap_or(false)
+                        })
+                })
+        };
+
+        let Some(simb_path) = simb_path else {
+            skipped += 1;
+            continue;
+        };
+
+        let b64 = match fs::read_to_string(&simb_path) {
+            Ok(s) => s.trim().to_string(),
+            Err(e) => {
+                eprintln!("  warning: cannot read {}: {e}", simb_path.display());
+                skipped += 1;
+                continue;
+            }
+        };
+
+        let canonical_cmr = match canonicalize::canonical_cmr_from_base64(&b64) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("  warning: {stem}: {e:#}");
+                skipped += 1;
+                continue;
+            }
+        };
+
+        let raw = fs::read_to_string(toml_path)
+            .with_context(|| format!("cannot read {}", toml_path.display()))?;
+        let mut doc: DocumentMut = raw
+            .parse()
+            .with_context(|| format!("cannot parse {}", toml_path.display()))?;
+
+        // Skip if canonical_cmr is already correct.
+        if doc.get("canonical_cmr").and_then(|v| v.as_str()) == Some(&canonical_cmr) {
+            continue;
+        }
+
+        doc["canonical_cmr"] = Item::Value(Value::from(canonical_cmr.as_str()));
+        fs::write(toml_path, doc.to_string())
+            .with_context(|| format!("cannot write {}", toml_path.display()))?;
+        updated += 1;
+    }
+
+    println!(
+        "Done: {updated} TOMLs updated, {skipped} skipped (no .simb), {} unchanged",
+        total - updated - skipped
+    );
+    Ok(())
+}
+
 fn main() {
     let _ = dotenvy::dotenv();
 
@@ -1100,6 +1212,7 @@ fn main() {
         Commands::Debug { url } => cmd_debug(&url),
         Commands::Preprocess { url } => cmd_preprocess(&url),
         Commands::Compile { all, tag, slugs, rebuild_docker } => cmd_compile(all, tag.as_deref(), &slugs, rebuild_docker),
+        Commands::Backfill => cmd_backfill(),
     };
     if let Err(e) = result {
         eprintln!("error: {e:#}");

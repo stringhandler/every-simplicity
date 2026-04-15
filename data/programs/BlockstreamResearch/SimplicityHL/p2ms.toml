@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1p8asjc8876dzv7xrpw7rymfygnrdtvtlgmfed2kt4hw4mqwwyxhmqryp5yu"
 liquid_testnet_address = "tex1p8asjc8876dzv7xrpw7rymfygnrdtvtlgmfed2kt4hw4mqwwyxhmqzann4n"
+canonical_cmr = "373cfbca382c6413b6f755facbf2179039f2fa6733e28a2006bb7acc880ae0fa"
 witnesses = ["MAYBE_SIGS"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig", "1 * G", "2 * G", "3 * G", "PAY TO MULTISIG", "The coins move if 2 of 3 people agree to move them. These people provide", "their signatures, of which exactly 2 are required.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig"]
 autodetected_tags = []

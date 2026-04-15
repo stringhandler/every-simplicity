@@ -12,6 +12,7 @@ jet_set = "core"
 liquid_address = "ex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s4thx70"
 liquid_testnet_address = "tex1pcw25hlh6479se9xwjfeup597x9ujzcnv5mnjw08ehwf0qg6v989s5j9p0q"
 is_redeem = false
+canonical_cmr = "01bc069fa67262554f9db7dc87646f96b7c779573b9f5a53470366126d0bedf6"
 comments = ["From https://github.com/BlockstreamResearch/SimplicityHL/issues/153"]
 autodetected_tags = []
 

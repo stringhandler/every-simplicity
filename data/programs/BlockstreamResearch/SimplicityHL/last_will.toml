@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pevv89lzwv26h4dkc888cr4r0dj7wfhc3k9jq2ucmddey6klyplsqaz0haj"
 liquid_testnet_address = "tex1pevv89lzwv26h4dkc888cr4r0dj7wfhc3k9jq2ucmddey6klyplsqumasva"
+canonical_cmr = "62d76ce3a30b969abbe8f0d304b21b9a438746379ff298c9a0d993924ababe66"
 witnesses = ["INHERIT_OR_NOT"]
 comments = ["Enforce the covenant to repeat in the first output.", "Elements has explicit fee outputs, so enforce a fee output in the second output.", "Disallow further outputs.", "1 * G", "2 * G", "3 * G", "LAST WILL", "The inheritor can spend the coins if the owner doesn't move the them for 180", "days. The owner has to repeat the covenant when he moves the coins with his", "hot key. The owner can break out of the covenant with his cold key."]
 autodetected_tags = ["covenant"]

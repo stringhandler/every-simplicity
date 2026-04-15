@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1ppnn2ndy7lqqlh5z3zxa2a26u9ylzemsg9pu3hl024gmg2w8e3q9qzru7u0"
 liquid_testnet_address = "tex1ppnn2ndy7lqqlh5z3zxa2a26u9ylzemsg9pu3hl024gmg2w8e3q9qr6wedq"
+canonical_cmr = "c91f5a78d18a2d70131942af85eb9cc71cc91db249582b7df4a7c99abb71e058"
 witnesses = ["PROOF"]
 autodetected_tags = ["user-defined-type"]
 

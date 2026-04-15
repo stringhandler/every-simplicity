@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqgjzvfe"
 liquid_testnet_address = "tex1pv5qhgjy8r3nu6ad3e7gusmpecs78dztvmk7pazmjrmsj8lv4fsuqftstck"
+canonical_cmr = "4f97abf519ab481f785c202cf8e48b09ea5973e2eb61eaa0d80f3b07c6125e8a"
 witnesses = ["ORACLE_HEIGHT", "ORACLE_PRICE", "ORACLE_SIG", "OWNER_SIG"]
 comments = ["laser eyes until 100k", "1 * G", "2 * G", "HODL VAULT", "Lock your coins until the Bitcoin price exceeds a threshold.", "An oracle signs a message with the current block height and the current", "Bitcoin price. The block height is compared with a minimum height to prevent", "the use of old data. The transaction is timelocked to the oracle height,", "which means that the transaction becomes valid after the oracle height."]
 autodetected_tags = []

@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pr9vxfvdvuln7w0mt9dstnsl5nhd7nkdywvsvqp4kc6wlnk2s8twsfmwahv"
 liquid_testnet_address = "tex1pr9vxfvdvuln7w0mt9dstnsl5nhd7nkdywvsvqp4kc6wlnk2s8twsgzu6xr"
+canonical_cmr = "75abe210981e0c2636cb39956e312f9113fe2afb61e95cd1b195136516767cf2"
 witnesses = ["NEW_VALUE", "USER_SIGNATURE"]
 params = ["SLOT_ID", "USER"]
 comments = ["github.com/ElementsProject/elements/blob/master/src/consensus/amount.h", "github.com/ElementsProject/rust-elements/blob/f6ffc7800df14b81c0f5ae1c94368a78b99612b9/src/blind.rs#L471", "burn", "mint", "Simple Storage Program for Liquid", "Only the owner of the storage can modify the value.", "==== IMPORTANT ====", "Based on the following resources:", "https://github.com/ElementsProject/elements/blob/master/src/consensus/amount.h", "https://github.com/ElementsProject/rust-elements/blob/f6ffc7800df14b81c0f5ae1c94368a78b99612b9/src/blind.rs#L471", "The maximum allowed amount is 2,100,000,000,000,000", "(i.e., 21,000,000 × 10^8), which is approximately 51 bits."]

@@ -12,6 +12,7 @@ jet_set = "core"
 liquid_address = "ex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pq0clqml"
 liquid_testnet_address = "tex1p6mnj7hpa5x9e7vgs82jyu33e79f0kqshfmf0uxx7ey4a0am740pqwpd82s"
 is_redeem = false
+canonical_cmr = "6c25da58ce743ff77ea9bc9ea6df50fc51a5f7d6877d88b0798d455cb7f4eae7"
 autodetected_tags = []
 
 [jets]

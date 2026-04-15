@@ -11,6 +11,7 @@ type_arrow = "1 → 1"
 jet_set = "core"
 liquid_address = "ex1pzp4xccn92zvhh44z9qwh3ap3jnv677ympuaafmyv4urgfrp2lafs6s7k32"
 liquid_testnet_address = "tex1pzp4xccn92zvhh44z9qwh3ap3jnv677ympuaafmyv4urgfrp2lafsmfv3q9"
+canonical_cmr = "dcb49abacef82397279d8425300af4335eeff069a7171779f49945a0a8fa6ba6"
 comments = ["Add counter to streaming hash and finalize when the loop exists", "Hash bytes 0x00 to 0xff", "Hash bytes 0x0000 to 0xffff", "This takes ~10 seconds on my computer", "let ctx: Ctx8 = jet::sha_256_ctx_8_init();", "let out: Either<u256, Ctx8> = for_while::<hash_counter_16>(ctx, ());", "let expected: u256 = 0x281f79f89f0121c31db2bea5d7151db246349b25f5901c114505c18bfaa50ba1;", "assert!(jet::eq_256(expected, unwrap_left::<Ctx8>(out)));"]
 autodetected_tags = []
 

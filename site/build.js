@@ -723,6 +723,7 @@ function buildHtml(programs) {
           <a class="source-link ext-link" href="\${escAttr(p.url)}" data-url="\${escAttr(p.url)}">source ↗</a>
           \${ptags.map(t => \`<span class="prog-tag">\${escHtml(t)}</span>\`).join("")}
           \${p.cmr ? \`<span class="cmr" title="CMR">CMR: \${escHtml(p.cmr)}</span>\` : ""}
+          \${p.canonical_cmr ? \`<span class="cmr" title="Canonical CMR — same for all programs sharing the same template">cCMR: \${escHtml(p.canonical_cmr)}</span>\` : ""}
           \${p.amr ? \`<span class="cmr" title="AMR">AMR: \${escHtml(p.amr)}</span>\` : ""}
           \${p.imr ? \`<span class="cmr" title="IMR">IMR: \${escHtml(p.imr)}</span>\` : ""}
         </div>
@@ -764,7 +765,7 @@ function buildHtml(programs) {
 
     function searchText(p) {
       const parts = [
-        p.name, p._slug, p.cmr, p.url,
+        p.name, p._slug, p.cmr, p.canonical_cmr, p.url,
         ...Object.keys(p.jets || {}),
         ...Object.keys(p.builtins || {}),
         ...Object.keys(p.macros || {}),
