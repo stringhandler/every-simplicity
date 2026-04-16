@@ -6,7 +6,13 @@ file_path = "simplicity/travel_rule.simf"
 commit = "44c59f6e749596b405e804819682ff646b816b6f"
 fetched_at = "2026-04-09T13:37:04.373946700+00:00"
 manual_tags = []
-compile_error = "Parameter `OBSERVER_PUBKEY` is missing an argument"
+cmr = "df3927d8c3d049ec4b34c17737bdda0d2fa42c0a79599727cfc8ebd91db79f02"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1p7qd6dz8pwsnsq055wutcc2pclk057ywnd2lj25hm6csf3n467vtqfj0j7q"
+liquid_testnet_address = "tex1p7qd6dz8pwsnsq055wutcc2pclk057ywnd2lj25hm6csf3n467vtqgta400"
+canonical_cmr = "20c80ab00f711066f6e51468c216829b8d0ab77096bab368b5558278cabaad40"
+canonical_prefix = "e96426d200000000"
 witnesses = ["EPHEMERAL", "C_SENDER", "C_OBSERVER", "DLEQ_CHALLENGE", "DLEQ_RESPONSE", "COMMITMENT", "ENCRYPTED_DATA", "SPEND_SIG"]
 params = ["SENDER_PUBKEY", "OBSERVER_PUBKEY"]
 comments = ["Sender and observer keys are always decompressed with parity=0 (even y, BIP340 convention).", "The Rust ElGamal code normalizes keys to even y to match this convention.", "H = P_sender - P_observer", "Q = C_sender - C_observer", "A1 = s·G + e·R", "A2 = s·H + e·Q", "Recompute DLEQ challenge: e' = SHA256(R || H || Q || A1 || A2)", "Verify: SHA256(encrypted_data) == commitment", "Authorize the spend", "TRAVEL RULE VERIFIABLE ENCRYPTION", "Verifies that the witness contains a valid dual ElGamal encryption", "with a correct DLEQ proof, bound to the parameterized SenderPubKey", "and ObserverPubKey.", "Witness:", "R          — ephemeral point (shared nonce, r·G)", "C_sender   — ciphertext for sender (M + r·P_sender)", "C_observer — ciphertext for observer (M + r·P_observer)", "e, s       — DLEQ challenge and response", "commitment — SHA256(encrypted_data)", "encrypted_data — 512-byte padded symmetric ciphertext ([u256; 16])", "sig        — spending signature", "Verifies:", "1. DLEQ proof: same nonce r used for both encryptions", "2. SHA256(encrypted_data) == commitment", "3. Spending signature is valid"]

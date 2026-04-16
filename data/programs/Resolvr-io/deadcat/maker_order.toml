@@ -6,7 +6,13 @@ file_path = "src-tauri/crates/deadcat-sdk/contract/maker_order.simf"
 commit = "3ab3cb41c1a2abb0be3038ace98e0cfa7489b469"
 fetched_at = "2026-04-14T12:21:51.827034200+00:00"
 manual_tags = []
-compile_error = "Parameter `MIN_FILL_LOTS` is missing an argument"
+cmr = "5884841bb13dda2db0405647370b8bdd815327058ab475a3de60148f1666e4c0"
+type_arrow = "1 → 1"
+jet_set = "core"
+liquid_address = "ex1plckz58uv84jt4lvr7mcgzq8j7zk7a358cy2cqddejyy7zp3e6t4ss2f45c"
+liquid_testnet_address = "tex1plckz58uv84jt4lvr7mcgzq8j7zk7a358cy2cqddejyy7zp3e6t4s3nmj9h"
+canonical_cmr = "0fae8f2a46b7198017d5991a0d972b13a5321d0891aa7be970b7eea8aedae56f"
+canonical_prefix = "e928a7e14108143a"
 witnesses = ["PATH", "COSIGNER_SIGNATURE", "MAKER_CANCEL_SIGNATURE"]
 params = ["MAKER_PUBKEY", "COSIGNER_PUBKEY", "BASE_ASSET_ID", "QUOTE_ASSET_ID", "PRICE", "MIN_FILL_LOTS", "MIN_REMAINDER_LOTS", "MAKER_RECEIVE_SPK_HASH", "IS_SELL_BASE"]
 comments = ["Maker Order Covenant", "SimplicityHL contract for Liquid", "A maker limit order locked as a covenant UTXO.", "Takers fill by constructing transactions that satisfy conservation invariants.", "Partial fills produce a remainder UTXO locked by the same covenant.", "============================================================================", "Boolean helpers", "Utility functions", "Note: jet::output_amount returns (Asset1, Amount1) — both asset and amount", "in a single introspection call. This is an Elements/Simplicity jet convention.", "Same convention: jet::input_amount returns (Asset1, Amount1).", "Arithmetic helpers", "NUMS key constant (for cosigner bypass)", "Cancel check", "Cosigner check", "Skip if COSIGNER_PUBKEY == NUMS (no cosigner configured)", "Build custom sighash: SHA256(prev_outpoint || output_asset || output_amount || output_script_hash)", "input_prev_outpoint(i) = txid (32 bytes) + vout (4 bytes) = 36 bytes", "output asset (32 bytes) + amount (8 bytes) via single introspection", "output_script_hash(i) = 32 bytes", "Direction-specific fill validation", "Maker sells BASE lots, receives QUOTE", "Check if full fill: maker_amount == input_amount * PRICE", "Full fill: all lots consumed", "Partial fill", "Remainder must be locked by the same covenant script", "Maker sells QUOTE, receives BASE lots", "Check if full fill: maker_amount * PRICE == input_amount", "Full fill: all quote consumed", "Conservation: maker_amount * PRICE + rem_amount == input_amount", "Minimum remainder in quote units: MIN_REMAINDER_LOTS * PRICE", "Main entry point", "Fill path (existing logic)", "Cancel path — maker signature authorizes reclaiming funds"]

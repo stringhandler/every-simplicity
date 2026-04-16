@@ -47,6 +47,14 @@ function loadPrograms() {
       });
     data._witness_simbs = witnessSimbs.map(({ name, path }) => ({ name, path }));
 
+    // Derive base64 versions of hex prefixes
+    if (data.program_prefix) {
+      data.program_prefix_b64 = Buffer.from(data.program_prefix, "hex").toString("base64");
+    }
+    if (data.canonical_prefix) {
+      data.canonical_prefix_b64 = Buffer.from(data.canonical_prefix, "hex").toString("base64");
+    }
+
     return {
       _simbSrc: simbSrc,
       _witnessSimbs: witnessSimbs,
@@ -726,8 +734,10 @@ function buildHtml(programs) {
           \${p.canonical_cmr ? \`<span class="cmr" title="Canonical CMR — same for all programs sharing the same template">cCMR: \${escHtml(p.canonical_cmr)}</span>\` : ""}
           \${p.amr ? \`<span class="cmr" title="AMR">AMR: \${escHtml(p.amr)}</span>\` : ""}
           \${p.imr ? \`<span class="cmr" title="IMR">IMR: \${escHtml(p.imr)}</span>\` : ""}
-          \${(params.length === 0 && p.program_prefix) ? \`<span class="cmr" title="First 16 hex chars of compiled program bytes — use to identify this program on-chain">prefix: \${escHtml(p.program_prefix)}</span>\` : ""}
-          \${p.canonical_prefix ? \`<span class="cmr" title="First 16 hex chars of canonical program bytes — same for all programs sharing the same template">cPrefix: \${escHtml(p.canonical_prefix)}</span>\` : ""}
+          \${(params.length === 0 && p.program_prefix) ? \`<span class="cmr" title="First 8 bytes of compiled program (hex) — use to identify this program on-chain">prefix: \${escHtml(p.program_prefix)}</span>\` : ""}
+          \${(params.length === 0 && p.program_prefix_b64) ? \`<span class="cmr" title="First 8 bytes of compiled program (base64)">prefix b64: \${escHtml(p.program_prefix_b64)}</span>\` : ""}
+          \${p.canonical_prefix ? \`<span class="cmr" title="First 8 bytes of canonical program (hex) — same for all programs sharing the same template">cPrefix: \${escHtml(p.canonical_prefix)}</span>\` : ""}
+          \${p.canonical_prefix_b64 ? \`<span class="cmr" title="First 8 bytes of canonical program (base64) — same for all programs sharing the same template">cPrefix b64: \${escHtml(p.canonical_prefix_b64)}</span>\` : ""}
         </div>
         <div class="meta-grid">
           <div class="meta-section">
@@ -768,7 +778,7 @@ function buildHtml(programs) {
     function searchText(p) {
       const parts = [
         p.name, p._slug, p.cmr, p.canonical_cmr,
-        p.program_prefix, p.canonical_prefix,
+        p.program_prefix, p.program_prefix_b64, p.canonical_prefix, p.canonical_prefix_b64,
         p.url,
         ...Object.keys(p.jets || {}),
         ...Object.keys(p.builtins || {}),

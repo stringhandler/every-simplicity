@@ -117,6 +117,19 @@ case "$MODE" in
         TMP_FILE=$(mktemp)
         echo "$ITEM_CONTENT" > "$TMP_FILE"
         SIMC_EXTRA_ARGS=(--wit "$TMP_FILE")
+      elif [[ "$KIND" == "args" && "$ITEM_NAME" == "canonical" && -z "$ITEM_VALUE" ]]; then
+        # Auto-generate all-zero args using simc --default-args, which knows
+        # the exact types from the type checker.
+        TMP_FILE=$(mktemp)
+        if ! simc "$COMPILE_FILE" --default-args > "$TMP_FILE" 2>/tmp/simc_default_stderr; then
+          err=$(cat /tmp/simc_default_stderr | tr '\n' ' ' | xargs)
+          echo "{\"_file_path\":\"$FILE_PATH\",\"_kind\":\"args\",\"_item_name\":\"canonical\",\"_error\":\"default-args failed: $err\"}"
+          [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
+          [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
+          [[ -n "$TMP_TRANSPILED" ]] && rm -f "$TMP_TRANSPILED"
+          continue
+        fi
+        SIMC_EXTRA_ARGS=(--args "$TMP_FILE")
       elif [[ "$KIND" == "args" && -n "$ITEM_VALUE" ]]; then
         ITEM_CONTENT=$(resolve_value "$ITEM_VALUE")
         TMP_FILE=$(mktemp)

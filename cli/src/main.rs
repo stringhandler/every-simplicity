@@ -40,14 +40,24 @@ fn image_tag() -> String {
 }
 
 /// FNV-1a hash of the env vars that affect the Docker build args
-/// (SIMPLICITY_HL_REPO and SIMPLICITY_HL_BRANCH).
+/// (SIMPLICITY_HL_REPO, SIMPLICITY_HL_BRANCH, and SIMPLICITY_HL_LOCAL_PATH).
 fn env_hash() -> String {
     const FNV_OFFSET: u64 = 0xcbf29ce484222325;
     const FNV_PRIME: u64 = 0x100000001b3;
     let mut hash = FNV_OFFSET;
     let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
     let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
-    for b in repo.bytes().chain(std::iter::once(b'|')).chain(branch.bytes()) {
+    let local_path = std::env::var("SIMPLICITY_HL_LOCAL_PATH").unwrap_or_default();
+    let binary_path = std::env::var("SIMPLICITY_HL_BINARY_PATH").unwrap_or_default();
+    for b in repo
+        .bytes()
+        .chain(std::iter::once(b'|'))
+        .chain(branch.bytes())
+        .chain(std::iter::once(b'|'))
+        .chain(local_path.bytes())
+        .chain(std::iter::once(b'|'))
+        .chain(binary_path.bytes())
+    {
         hash ^= b as u64;
         hash = hash.wrapping_mul(FNV_PRIME);
     }
@@ -334,6 +344,28 @@ struct EntryMeta {
 // Docker
 // ---------------------------------------------------------------------------
 
+/// Recursively copy `src` into `dst`, skipping `target/` and `.git/` directories.
+fn copy_dir_skip_target(src: &Path, dst: &Path) -> Result<()> {
+    fs::create_dir_all(dst)?;
+    for entry in fs::read_dir(src).with_context(|| format!("reading {}", src.display()))? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let name_str = name.to_string_lossy();
+        if name_str == "target" || name_str == ".git" {
+            continue;
+        }
+        let src_path = entry.path();
+        let dst_path = dst.join(&name);
+        if src_path.is_dir() {
+            copy_dir_skip_target(&src_path, &dst_path)?;
+        } else {
+            fs::copy(&src_path, &dst_path)
+                .with_context(|| format!("copying {}", src_path.display()))?;
+        }
+    }
+    Ok(())
+}
+
 fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     let current_env_hash = env_hash();
     let hash_file = env_hash_file(tag);
@@ -365,6 +397,50 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     fs::write(tmp.join("parse.py"), PARSE_PY)?;
     fs::write(tmp.join("transpile.py"), TRANSPILE_PY)?;
 
+    // simc_binary: non-empty only when SIMPLICITY_HL_BINARY_PATH is set.
+    match std::env::var("SIMPLICITY_HL_BINARY_PATH") {
+        Ok(bin_path) if !bin_path.is_empty() => {
+            let bin_path_resolved = {
+                let p = Path::new(&bin_path);
+                if p.is_dir() {
+                    // Resolve directory to the Linux binary inside it.
+                    let candidate = p.join("simc");
+                    if candidate.is_file() {
+                        candidate
+                    } else {
+                        bail!(
+                            "SIMPLICITY_HL_BINARY_PATH points to a directory ({bin_path}) \
+                             with no 'simc' binary inside. \
+                             Note: the binary must be a Linux executable, not a Windows .exe."
+                        );
+                    }
+                } else {
+                    p.to_path_buf()
+                }
+            };
+            println!("Using pre-built simc binary from: {}", bin_path_resolved.display());
+            fs::copy(&bin_path_resolved, &tmp.join("simc_binary"))
+                .with_context(|| format!("failed to copy simc binary from {}", bin_path_resolved.display()))?;
+        }
+        _ => {
+            fs::write(tmp.join("simc_binary"), [])?;
+        }
+    }
+
+    // SimplicityHL/: source tree for local builds, or empty placeholder for GitHub clone.
+    let simc_ctx_dir = tmp.join("SimplicityHL");
+    fs::create_dir_all(&simc_ctx_dir)?;
+    match std::env::var("SIMPLICITY_HL_LOCAL_PATH") {
+        Ok(local_path) if !local_path.is_empty() => {
+            println!("Using local SimplicityHL source from: {local_path}");
+            copy_dir_skip_target(Path::new(&local_path), &simc_ctx_dir)
+                .with_context(|| format!("failed to copy SimplicityHL source from {local_path}"))?;
+        }
+        _ => {
+            fs::write(simc_ctx_dir.join(".use_github"), "")?;
+        }
+    }
+
     let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
     let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
     let mut build_cmd = Command::new("docker");
@@ -378,6 +454,7 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     build_cmd.arg(".");
     let status = build_cmd
         .current_dir(&tmp)
+        .env("DOCKER_BUILDKIT", "1")
         .status()
         .context("failed to run docker build")?;
 
@@ -477,17 +554,6 @@ fn data_dir() -> PathBuf {
     PathBuf::from("data/programs")
 }
 
-/// Build a JSON args file with every param set to `0`.
-///
-/// Used when a program declares params but no example values are provided,
-/// so we can still get a canonical CMR.
-fn build_zero_args_json(params: &[String]) -> String {
-    let mut map = serde_json::Map::new();
-    for name in params {
-        map.insert(name.clone(), JsonValue::Number(serde_json::Number::from(0)));
-    }
-    serde_json::to_string(&JsonValue::Object(map)).expect("valid JSON")
-}
 
 /// Build a JSON args file from inline `name → "value::Type"` pairs.
 ///
@@ -935,10 +1001,9 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
 
             if args.is_empty() && arg_values.is_empty() {
                 if !params.is_empty() {
-                    // No explicit args supplied: compile with all params zeroed so we
-                    // can still derive a canonical CMR for the template.
-                    let zero_json = build_zero_args_json(params);
-                    encoded.push(format!("{xpile_prefix}{fp}:::args:::canonical:::{zero_json}"));
+                    // No explicit args supplied: signal entrypoint to auto-extract
+                    // param types from the source and compile with all-zero values.
+                    encoded.push(format!("{xpile_prefix}{fp}:::args:::canonical"));
                 } else {
                     encoded.push(format!("{xpile_prefix}{fp}"));
                 }
