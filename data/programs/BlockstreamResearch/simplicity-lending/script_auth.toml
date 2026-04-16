@@ -1,0 +1,23 @@
+url = "https://github.com/BlockstreamResearch/simplicity-lending/blob/main/crates/contracts/simf/script_auth.simf"
+name = "script_auth"
+repo = "https://github.com/BlockstreamResearch/simplicity-lending.git"
+branch = "main"
+file_path = "crates/contracts/simf/script_auth.simf"
+commit = "d82d4a9a06132e7eb50230ab53157a7041795cf4"
+fetched_at = "2026-04-16T13:06:23.704503500+00:00"
+manual_tags = []
+compile_error = "Parameter `SCRIPT_HASH` is missing an argument"
+witnesses = ["INPUT_SCRIPT_INDEX"]
+params = ["SCRIPT_HASH"]
+autodetected_tags = []
+
+[jets]
+eq_256 = 1
+input_script_hash = 1
+
+[macros]
+"assert!" = 1
+
+[types]
+u256 = 2
+u32 = 2

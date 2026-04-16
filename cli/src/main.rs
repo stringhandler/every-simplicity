@@ -477,6 +477,18 @@ fn data_dir() -> PathBuf {
     PathBuf::from("data/programs")
 }
 
+/// Build a JSON args file with every param set to `0`.
+///
+/// Used when a program declares params but no example values are provided,
+/// so we can still get a canonical CMR.
+fn build_zero_args_json(params: &[String]) -> String {
+    let mut map = serde_json::Map::new();
+    for name in params {
+        map.insert(name.clone(), JsonValue::Number(serde_json::Number::from(0)));
+    }
+    serde_json::to_string(&JsonValue::Object(map)).expect("valid JSON")
+}
+
 /// Build a JSON args file from inline `name → "value::Type"` pairs.
 ///
 /// Each entry becomes `{ "NAME": { "value": "...", "type": "..." } }`.
@@ -622,6 +634,8 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput, auto_tags: &[String
     // CMRs. Programs sharing the same template but different baked-in constants
     // (e.g. public keys) will have the same canonical_cmr, enabling template matching.
     doc.remove("canonical_cmr");
+    doc.remove("program_prefix");
+    doc.remove("canonical_prefix");
     if let Some(program_b64) = &s.program {
         if s._error.as_deref().unwrap_or("").is_empty() {
             match canonicalize::canonical_cmr_from_base64(program_b64) {
@@ -630,6 +644,30 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput, auto_tags: &[String
                 }
                 Err(e) => {
                     eprintln!("  warning: canonical CMR computation failed: {e:#}");
+                }
+            }
+            // program_prefix: first 16 hex chars of the compiled program bytes.
+            // Only written for base compiles (not witness/args variants), so the
+            // prefix corresponds to the specific instantiation seen on-chain.
+            if s._kind.is_empty() {
+                match canonicalize::program_prefix_from_base64(program_b64) {
+                    Ok(p) => {
+                        doc["program_prefix"] = sv(&p);
+                    }
+                    Err(e) => {
+                        eprintln!("  warning: program prefix computation failed: {e:#}");
+                    }
+                }
+            }
+            // canonical_prefix: first 16 hex chars of the canonical program bytes
+            // (Word values and pruned-branch CMRs zeroed). Same for all programs
+            // sharing the same template, regardless of baked-in constants.
+            match canonicalize::canonical_prefix_from_base64(program_b64) {
+                Ok(p) => {
+                    doc["canonical_prefix"] = sv(&p);
+                }
+                Err(e) => {
+                    eprintln!("  warning: canonical prefix computation failed: {e:#}");
                 }
             }
         }
@@ -895,15 +933,12 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                 _ => String::new(),
             };
 
-            // Only do a base (no-args) compile if the program has no example_args/arg_values.
-            // Programs that require args cannot be compiled without them.
             if args.is_empty() && arg_values.is_empty() {
                 if !params.is_empty() {
-                    let stem = toml_path
-                        .file_stem()
-                        .and_then(|s| s.to_str())
-                        .unwrap_or("?");
-                    eprintln!("  skipped:  {stem}  — requires params but no example_arg_values defined");
+                    // No explicit args supplied: compile with all params zeroed so we
+                    // can still derive a canonical CMR for the template.
+                    let zero_json = build_zero_args_json(params);
+                    encoded.push(format!("{xpile_prefix}{fp}:::args:::canonical:::{zero_json}"));
                 } else {
                     encoded.push(format!("{xpile_prefix}{fp}"));
                 }
@@ -936,7 +971,7 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                 }
             };
 
-        for (toml_path, file_path, witnesses, args, arg_values, _params, transpiler) in entries {
+        for (toml_path, file_path, witnesses, args, arg_values, params, transpiler) in entries {
             let stem = toml_path
                 .file_stem()
                 .and_then(|s| s.to_str())
@@ -951,7 +986,7 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                 .find(|r| &r._file_path == file_path && r._kind.is_empty());
 
             let meta_result = base_result.or_else(|| {
-                if !args.is_empty() || !arg_values.is_empty() {
+                if !args.is_empty() || !arg_values.is_empty() || !params.is_empty() {
                     results
                         .iter()
                         .find(|r| &r._file_path == file_path && r._kind == "args")
@@ -980,9 +1015,15 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                             failed += 1;
                         }
                     } else {
-                        // Only write a base .simb for programs that don't require args
                         if simc_out._kind.is_empty() {
+                            // Base compile: write <name>.simb
                             write_simb(&toml_path.with_extension("simb"), simc_out)?;
+                        } else if simc_out._item_name == "canonical" {
+                            // Zero-args canonical compile: write <name>.args.canonical.simb
+                            write_simb(
+                                &toml_path.with_file_name(format!("{stem}.args.canonical.simb")),
+                                simc_out,
+                            )?;
                         }
                         println!("  compiled: {stem}");
                         compiled += 1;
@@ -1097,13 +1138,13 @@ fn cmd_backfill() -> Result<()> {
     for toml_path in &tomls {
         let stem = toml_path.file_stem().and_then(|s| s.to_str()).unwrap_or("?");
 
-        // Find the best available .simb: prefer the base compile, then any
-        // args/witness variant (they all share the same canonical CMR).
+        // Base .simb (used for program_prefix and canonical data).
         let base_simb = toml_path.with_extension("simb");
-        let simb_path = if base_simb.exists() {
-            Some(base_simb)
-        } else {
-            // Walk siblings for <stem>.*.simb
+        let base_simb_opt = if base_simb.exists() { Some(base_simb) } else { None };
+
+        // Best available .simb for canonical data: prefer base, fall back to
+        // any args/witness variant (they all share the same canonical CMR/prefix).
+        let canon_simb_path = base_simb_opt.clone().or_else(|| {
             let dir = toml_path.parent().unwrap_or(Path::new("."));
             fs::read_dir(dir)
                 .ok()
@@ -1119,23 +1160,23 @@ fn cmd_backfill() -> Result<()> {
                                     .unwrap_or(false)
                         })
                 })
-        };
+        });
 
-        let Some(simb_path) = simb_path else {
+        let Some(canon_simb_path) = canon_simb_path else {
             skipped += 1;
             continue;
         };
 
-        let b64 = match fs::read_to_string(&simb_path) {
+        let canon_b64 = match fs::read_to_string(&canon_simb_path) {
             Ok(s) => s.trim().to_string(),
             Err(e) => {
-                eprintln!("  warning: cannot read {}: {e}", simb_path.display());
+                eprintln!("  warning: cannot read {}: {e}", canon_simb_path.display());
                 skipped += 1;
                 continue;
             }
         };
 
-        let canonical_cmr = match canonicalize::canonical_cmr_from_base64(&b64) {
+        let canonical_cmr = match canonicalize::canonical_cmr_from_base64(&canon_b64) {
             Ok(c) => c,
             Err(e) => {
                 eprintln!("  warning: {stem}: {e:#}");
@@ -1144,18 +1185,63 @@ fn cmd_backfill() -> Result<()> {
             }
         };
 
+        let canonical_prefix = match canonicalize::canonical_prefix_from_base64(&canon_b64) {
+            Ok(p) => Some(p),
+            Err(e) => {
+                eprintln!("  warning: {stem}: canonical prefix: {e:#}");
+                None
+            }
+        };
+
+        // program_prefix only from the base .simb (specific instantiation).
+        let program_prefix = if let Some(base_path) = &base_simb_opt {
+            let base_b64 = fs::read_to_string(base_path)
+                .map(|s| s.trim().to_string())
+                .unwrap_or_default();
+            if !base_b64.is_empty() {
+                match canonicalize::program_prefix_from_base64(&base_b64) {
+                    Ok(p) => Some(p),
+                    Err(e) => {
+                        eprintln!("  warning: {stem}: program prefix: {e:#}");
+                        None
+                    }
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         let raw = fs::read_to_string(toml_path)
             .with_context(|| format!("cannot read {}", toml_path.display()))?;
         let mut doc: DocumentMut = raw
             .parse()
             .with_context(|| format!("cannot parse {}", toml_path.display()))?;
 
-        // Skip if canonical_cmr is already correct.
-        if doc.get("canonical_cmr").and_then(|v| v.as_str()) == Some(&canonical_cmr) {
+        // Check if everything is already up to date.
+        let cmr_ok = doc.get("canonical_cmr").and_then(|v| v.as_str()) == Some(&canonical_cmr);
+        let cprefix_ok = canonical_prefix.as_deref()
+            == doc.get("canonical_prefix").and_then(|v| v.as_str());
+        let pprefix_ok = program_prefix.as_deref()
+            == doc.get("program_prefix").and_then(|v| v.as_str());
+
+        if cmr_ok && cprefix_ok && pprefix_ok {
             continue;
         }
 
         doc["canonical_cmr"] = Item::Value(Value::from(canonical_cmr.as_str()));
+        if let Some(ref p) = canonical_prefix {
+            doc["canonical_prefix"] = Item::Value(Value::from(p.as_str()));
+        } else {
+            doc.remove("canonical_prefix");
+        }
+        if let Some(ref p) = program_prefix {
+            doc["program_prefix"] = Item::Value(Value::from(p.as_str()));
+        } else {
+            doc.remove("program_prefix");
+        }
+
         fs::write(toml_path, doc.to_string())
             .with_context(|| format!("cannot write {}", toml_path.display()))?;
         updated += 1;

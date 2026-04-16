@@ -12,4 +12,6 @@ jet_set = "core"
 liquid_address = "ex1p9jcvyzkdwdqtf49kta4xpc5g35xkfcexwfsl8v70w2gwttelncysklq394"
 liquid_testnet_address = "tex1p9jcvyzkdwdqtf49kta4xpc5g35xkfcexwfsl8v70w2gwttelncyshxjk56"
 canonical_cmr = "c40a10263f7436b4160acbef1c36fba4be4d95df181a968afeab5eac247adff7"
+program_prefix = "24"
+canonical_prefix = "24"
 autodetected_tags = []

@@ -726,6 +726,8 @@ function buildHtml(programs) {
           \${p.canonical_cmr ? \`<span class="cmr" title="Canonical CMR — same for all programs sharing the same template">cCMR: \${escHtml(p.canonical_cmr)}</span>\` : ""}
           \${p.amr ? \`<span class="cmr" title="AMR">AMR: \${escHtml(p.amr)}</span>\` : ""}
           \${p.imr ? \`<span class="cmr" title="IMR">IMR: \${escHtml(p.imr)}</span>\` : ""}
+          \${(params.length === 0 && p.program_prefix) ? \`<span class="cmr" title="First 16 hex chars of compiled program bytes — use to identify this program on-chain">prefix: \${escHtml(p.program_prefix)}</span>\` : ""}
+          \${p.canonical_prefix ? \`<span class="cmr" title="First 16 hex chars of canonical program bytes — same for all programs sharing the same template">cPrefix: \${escHtml(p.canonical_prefix)}</span>\` : ""}
         </div>
         <div class="meta-grid">
           <div class="meta-section">
@@ -765,7 +767,9 @@ function buildHtml(programs) {
 
     function searchText(p) {
       const parts = [
-        p.name, p._slug, p.cmr, p.canonical_cmr, p.url,
+        p.name, p._slug, p.cmr, p.canonical_cmr,
+        p.program_prefix, p.canonical_prefix,
+        p.url,
         ...Object.keys(p.jets || {}),
         ...Object.keys(p.builtins || {}),
         ...Object.keys(p.macros || {}),

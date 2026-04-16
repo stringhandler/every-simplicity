@@ -1,0 +1,70 @@
+url = "https://github.com/BlockstreamResearch/simplicity-lending/blob/main/crates/contracts/simf/lending.simf"
+name = "lending"
+repo = "https://github.com/BlockstreamResearch/simplicity-lending.git"
+branch = "main"
+file_path = "crates/contracts/simf/lending.simf"
+commit = "d82d4a9a06132e7eb50230ab53157a7041795cf4"
+fetched_at = "2026-04-16T13:05:52.067153400+00:00"
+manual_tags = []
+compile_error = "Parameter `LENDER_PRINCIPAL_COV_HASH` is missing an argument"
+witnesses = ["PATH"]
+params = ["COLLATERAL_AMOUNT", "PRINCIPAL_AMOUNT", "LOAN_EXPIRATION_TIME", "PRINCIPAL_INTEREST_RATE", "COLLATERAL_ASSET_ID", "FIRST_PARAMETERS_NFT_ASSET_ID", "SECOND_PARAMETERS_NFT_ASSET_ID", "BORROWER_NFT_ASSET_ID", "PRINCIPAL_ASSET_ID", "LENDER_PRINCIPAL_COV_HASH", "LENDER_NFT_ASSET_ID"]
+comments = ["Helper getters", "Check helpers", "Lending parameters functions", "Extracting parameter values from the first parameters amount", "Extracting parameter values from the second parameters amount", "Interest logic", "TODO: Handle case when hi > 0", "Main paths logic"]
+autodetected_tags = ["covenant"]
+
+[jets]
+add_64 = 1
+add_8 = 1
+and_64 = 1
+check_lock_height = 1
+current_index = 2
+divide_64 = 1
+eq_1 = 1
+eq_256 = 2
+eq_32 = 2
+eq_64 = 2
+eq_8 = 1
+input_amount = 1
+input_script_hash = 1
+left_pad_low_16_64 = 3
+left_pad_low_32_64 = 3
+left_shift_64 = 1
+left_shift_with_64 = 1
+multiply_64 = 3
+output_amount = 1
+output_null_datum = 1
+output_script_hash = 1
+right_shift_64 = 1
+rightmost_64_16 = 1
+rightmost_64_32 = 3
+rightmost_64_4 = 2
+
+[builtins]
+for_while = 1
+unwrap_left = 1
+unwrap_right = 2
+
+[macros]
+"assert!" = 7
+"panic!" = 1
+
+[reserved_words]
+Left = 2
+Right = 2
+false = 7
+match = 5
+true = 5
+
+[types]
+Either = 3
+Option = 1
+bool = 8
+u1 = 3
+u128 = 6
+u16 = 7
+u2 = 1
+u256 = 21
+u32 = 17
+u4 = 7
+u64 = 63
+u8 = 17

@@ -13,6 +13,8 @@ liquid_address = "ex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegq9x8cf3
 liquid_testnet_address = "tex1p0xyxkr84prhfaykcu88k6z2mu2k42xlmjydjwdtdpvtxjvuajegqyl4lc7"
 is_redeem = false
 canonical_cmr = "823d2b98c7d6423cc6d48f0473c5ac4d11f18360859fcf44836685499fef68f1"
+program_prefix = "e55275640840a106"
+canonical_prefix = "e55275640840a106"
 comments = ["This program is an emulation of CTV using simplicity", "Instead of specifying the template hash as in BIP CTV,", "we require the user to specify all the components of the sighash", "that they want to commit."]
 autodetected_tags = []
 
