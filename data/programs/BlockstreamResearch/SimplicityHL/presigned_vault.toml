@@ -17,6 +17,10 @@ canonical_prefix = "e3c740a10626c400"
 witnesses = ["HOT_OR_COLD"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend", "1 * G", "2 * G", "PRESIGNED VAULT", "The coins move after a timeout if the hot key signs.", "Alternatively, the cold key can sweep the coins at any time.", "This contract can be used to construct a vault that works without covenants:", "1) The cold key creates a presigned transaction that moves the vaulted coins", "into the contract.", "2) The presigned transaction is kept alongside the hot key.", "3) To unvault the coins, the presigned transaction is broadcast. The coins", "move into the contract. The coins cannot be moved until the timeout.", "4) If the hot key is compromised, then the cold key can cancel the", "unvaulting process and move the coins into a new vault.", "5) After the timeout, the hot key can withdraw the coins.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#vaultspend"]
 autodetected_tags = []
+debug_cmr = "f47fc80c0ef250b0abe58c7e0b0786d0bc33624f2b857393ed120e4811b7edcf"
+debug_canonical_cmr = "43b2ec57fdd96946125c1756031094cb7f47fe299995c93cfc9a9496e4c9f2ab"
+debug_program_prefix = "e45ba05083136207"
+debug_canonical_prefix = "e44ba05083136200"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/presigned_vault.complete.wit"

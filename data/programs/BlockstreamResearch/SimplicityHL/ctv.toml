@@ -17,6 +17,10 @@ program_prefix = "e55275640840a106"
 canonical_prefix = "e55275640840a106"
 comments = ["This program is an emulation of CTV using simplicity", "Instead of specifying the template hash as in BIP CTV,", "we require the user to specify all the components of the sighash", "that they want to commit."]
 autodetected_tags = []
+debug_cmr = "69471cbe37642502afd94af57e9ebe521cbab2582bf5ffdd912eb51bc72ed3a9"
+debug_canonical_cmr = "5ad5aee91d29ef7ebf21f24cd96c310fd8e624603ce9bf2a27303ebb4cf85375"
+debug_program_prefix = "e701240935647338"
+debug_canonical_prefix = "e6b5240935647300"
 
 [jets]
 current_index = 1

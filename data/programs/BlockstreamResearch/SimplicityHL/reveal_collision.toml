@@ -17,6 +17,10 @@ canonical_prefix = "e3b740a1d0284187"
 witnesses = ["STRING1", "STRING2"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealcollision", "REVEAL COLLISION", "The coins move if someone is able to provide a SHA2 collision, e.g.,", "two distinct byte strings that hash to the same value.", "We cannot test this program because no SHA2 collision is known :)", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealcollision"]
 autodetected_tags = []
+debug_cmr = "9f2c73ddede7a7c0636034aa614f7d7a339806a1054756c6e0202747a8a6b08c"
+debug_canonical_cmr = "214615a0a5baec6631ee738e0ce14a4480a49417d0db5711fcd30545d7261552"
+debug_program_prefix = "e51ba050e8142484"
+debug_canonical_prefix = "e4e3a050e8142484"
 
 [jets]
 complement_1 = 1

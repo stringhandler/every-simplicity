@@ -17,6 +17,10 @@ canonical_prefix = "e80d740a10624815"
 witnesses = ["STATE", "CHANGED_INDEX"]
 comments = ["There may be arbitrary logic here", "Segwit v1, length 32", 'Assert that the input is correct, i.e. "load".', 'Assert that the output is correct, i.e. "store".', "Extends `bytes32_tr_storage` using `array_fold` for larger buffers.", "Optimized for small, fixed-size states where linear hashing is more efficient", "than Merkle Trees. By avoiding proof overhead like sibling hashes, we reduce", "witness size and simplify contract logic for small N.", "This approach is particularly advantageous when updating all slots within every transaction."]
 autodetected_tags = ["covenant"]
+debug_cmr = "1a98cb847d9260cc4ae247ba5b50506fcdbaa4cfe9cafa996cdf0078aca539ab"
+debug_canonical_cmr = "c07323323adba2df9fef9c320117f8483dc44c619ce76238aff9072387a81e5d"
+debug_program_prefix = "e882740a12420c26"
+debug_canonical_prefix = "e869740a12420c26"
 
 [jets]
 build_tapbranch = 1

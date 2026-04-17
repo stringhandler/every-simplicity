@@ -17,6 +17,10 @@ canonical_prefix = "e56ba05083102841"
 witnesses = ["COMPLETE_OR_CANCEL"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#htlc", "sha2([0x00; 32])", "1 * G", "2 * G", "HTLC (Hash Time-Locked Contract)", "The recipient can spend the coins by providing the secret preimage of a hash.", "The sender can cancel the transfer after a fixed block height.", "HTLCs enable two-way payment channels and multi-hop payments,", "such as on the Lightning network.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#htlc"]
 autodetected_tags = []
+debug_cmr = "761e484756699490097da05acbe70e2e7d9cb8ce2a765b0d9144f6f75619af07"
+debug_canonical_cmr = "3036972300f889b80ebe9f4e538f782015f0b26bf760296e127e107731e25a6a"
+debug_program_prefix = "e659d02841881420"
+debug_canonical_prefix = "e63dd02841881420"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/htlc.complete.wit"

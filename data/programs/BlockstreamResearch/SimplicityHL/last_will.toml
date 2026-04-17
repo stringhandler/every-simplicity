@@ -17,6 +17,10 @@ canonical_prefix = "e61dd0284189b100"
 witnesses = ["INHERIT_OR_NOT"]
 comments = ["Enforce the covenant to repeat in the first output.", "Elements has explicit fee outputs, so enforce a fee output in the second output.", "Disallow further outputs.", "1 * G", "2 * G", "3 * G", "LAST WILL", "The inheritor can spend the coins if the owner doesn't move the them for 180", "days. The owner has to repeat the covenant when he moves the coins with his", "hot key. The owner can break out of the covenant with his cold key."]
 autodetected_tags = ["covenant"]
+debug_cmr = "6eafc6a32a49f7b8582f1fc3f38c609affc659cc70c92ebbf36486f4ebfb429d"
+debug_canonical_cmr = "dbf8ebd3ac7e09e41b43fb1e96f9d53ce48ace2dfcc884b6f15d039525e04c1b"
+debug_program_prefix = "e709d0284189b165"
+debug_canonical_prefix = "e6d1d0284189b100"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/last_will.inherit.wit"

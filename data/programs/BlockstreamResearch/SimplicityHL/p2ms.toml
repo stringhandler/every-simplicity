@@ -17,6 +17,10 @@ canonical_prefix = "e659369000000000"
 witnesses = ["MAYBE_SIGS"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig", "1 * G", "2 * G", "3 * G", "PAY TO MULTISIG", "The coins move if 2 of 3 people agree to move them. These people provide", "their signatures, of which exactly 2 are required.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithmultisig"]
 autodetected_tags = []
+debug_cmr = "c731efbe9e817756068863d6ad1f688ddad5cdcdbb0841c346cfa0a168582554"
+debug_canonical_cmr = "f38df3872c67a4575aa6ef11d9c808e0ad485277bd62d023b8a7ad70f5eb848c"
+debug_program_prefix = "e6e936979be667ef"
+debug_canonical_prefix = "e6d1369000000000"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2ms.wit"

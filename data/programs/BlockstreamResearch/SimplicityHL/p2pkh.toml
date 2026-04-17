@@ -17,6 +17,10 @@ canonical_prefix = "e3b740a136900000"
 witnesses = ["PK", "SIG"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickeyhash", "sha2(1 * G)", "PAY TO PUBLIC KEY HASH", "The coins move if the person with the public key that matches the given hash", "signs the transaction.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickeyhash"]
 autodetected_tags = []
+debug_cmr = "7994aa98a641fbb594d984c4eebfe2568cc0afb57cd5257e244df0409512b222"
+debug_canonical_cmr = "a6fa76e8610b58201e07bfff7b12894b57471a2ebe80c619dd82b52811600da4"
+debug_program_prefix = "e4fba0509b489979"
+debug_canonical_prefix = "e4cba0509b480000"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2pkh.wit"

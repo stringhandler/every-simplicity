@@ -16,6 +16,10 @@ canonical_cmr = "0b809a8c6f73c06e13eef8a8b76bcd90909cb5d70cd13967e5785620e90518c
 program_prefix = "e354d808022c0041"
 canonical_prefix = "e354d800022c0001"
 autodetected_tags = []
+debug_cmr = "9a1dae47401fecf1abf8b40886804f306f02d7a6a4c83d1810ea7b138644e962"
+debug_canonical_cmr = "e6f1b624e97b5982ccc8786bf99b6e9f3a521273f7d162ba31dd2e1829b74d61"
+debug_program_prefix = "e4326c0401160020"
+debug_canonical_prefix = "e41a6c0001160000"
 
 [jets]
 eq_16 = 1

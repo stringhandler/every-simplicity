@@ -17,6 +17,10 @@ canonical_prefix = "e826740a1d028740"
 witnesses = ["KEY", "LEAF", "PATH_BITS", "MERKLE_DATA"]
 comments = ["Segwit v1, length 32", "Path and hash", "Load", "There may be arbitrary logic here", "Store", "Extends `bytes32_tr_storage` using `array_fold` for larger buffers.", "Optimized for small, fixed-size states where linear hashing is more efficient", "than Merkle Trees. By avoiding proof overhead like sibling hashes, we reduce", "witness size and simplify contract logic for small N."]
 autodetected_tags = ["covenant"]
+debug_cmr = "a43499ba32711e285f8e395473c02a110ec9eb2d636009b6c26ac04cec18ee81"
+debug_canonical_cmr = "7da69e6eb6e173e72287d496a96010805016059dc0c0191039b121b4e997e817"
+debug_program_prefix = "e8a7740a1d028740"
+debug_canonical_prefix = "e88b740a1d028740"
 
 [jets]
 build_tapbranch = 1

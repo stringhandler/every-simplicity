@@ -17,6 +17,10 @@ canonical_prefix = "e6413ab204205083"
 witnesses = ["SIG"]
 comments = ["Blockchain", "Transaction", "Current input without outpoint", "All outputs", "No current index", "Message", "This program verifies a Schnorr signature based on", "SIGHASH_ALL | SIGHASH_ANYPREVOUT."]
 autodetected_tags = []
+debug_cmr = "93d5fa8f263059f317dcd92ecc97273f6826cc2855e309cff5ec9f502b8ae445"
+debug_canonical_cmr = "1fad5e68347db7838a9897b815c8dff6a65014a8c49147c17ca7a3f1b88c88d8"
+debug_program_prefix = "e80649024d591cce"
+debug_canonical_prefix = "e7a9240935647300"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/sighash_all_anyprevout.wit"

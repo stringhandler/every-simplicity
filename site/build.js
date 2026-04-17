@@ -54,6 +54,12 @@ function loadPrograms() {
     if (data.canonical_prefix) {
       data.canonical_prefix_b64 = Buffer.from(data.canonical_prefix, "hex").toString("base64");
     }
+    if (data.debug_program_prefix) {
+      data.debug_program_prefix_b64 = Buffer.from(data.debug_program_prefix, "hex").toString("base64");
+    }
+    if (data.debug_canonical_prefix) {
+      data.debug_canonical_prefix_b64 = Buffer.from(data.debug_canonical_prefix, "hex").toString("base64");
+    }
 
     return {
       _simbSrc: simbSrc,
@@ -814,6 +820,12 @@ function buildHtml(programs) {
           \${(params.length === 0 && p.program_prefix_b64) ? \`<span class="cmr" title="First 8 bytes of compiled program (base64)">prefix b64: \${escHtml(p.program_prefix_b64)}</span>\` : ""}
           \${p.canonical_prefix ? \`<span class="cmr" title="First 8 bytes of canonical program (hex) — same for all programs sharing the same template">cPrefix: \${escHtml(p.canonical_prefix)}</span>\` : ""}
           \${p.canonical_prefix_b64 ? \`<span class="cmr" title="First 8 bytes of canonical program (base64) — same for all programs sharing the same template">cPrefix b64: \${escHtml(p.canonical_prefix_b64)}</span>\` : ""}
+          \${p.debug_cmr ? \`<span class="cmr" title="CMR of debug-symbol build">dbg CMR: \${escHtml(p.debug_cmr)}</span>\` : ""}
+          \${p.debug_canonical_cmr ? \`<span class="cmr" title="Canonical CMR of debug-symbol build">dbg cCMR: \${escHtml(p.debug_canonical_cmr)}</span>\` : ""}
+          \${p.debug_program_prefix ? \`<span class="cmr" title="First 8 bytes of debug-symbol program (hex)">dbg prefix: \${escHtml(p.debug_program_prefix)}</span>\` : ""}
+          \${p.debug_program_prefix_b64 ? \`<span class="cmr" title="First 8 bytes of debug-symbol program (base64)">dbg prefix b64: \${escHtml(p.debug_program_prefix_b64)}</span>\` : ""}
+          \${p.debug_canonical_prefix ? \`<span class="cmr" title="First 8 bytes of canonical debug-symbol program (hex)">dbg cPrefix: \${escHtml(p.debug_canonical_prefix)}</span>\` : ""}
+          \${p.debug_canonical_prefix_b64 ? \`<span class="cmr" title="First 8 bytes of canonical debug-symbol program (base64)">dbg cPrefix b64: \${escHtml(p.debug_canonical_prefix_b64)}</span>\` : ""}
         </div>
         <div class="meta-grid">
           <div class="meta-section">
@@ -855,6 +867,9 @@ function buildHtml(programs) {
       const parts = [
         p.name, p._slug, p.cmr, p.canonical_cmr,
         p.program_prefix, p.program_prefix_b64, p.canonical_prefix, p.canonical_prefix_b64,
+        p.debug_cmr, p.debug_canonical_cmr,
+        p.debug_program_prefix, p.debug_program_prefix_b64,
+        p.debug_canonical_prefix, p.debug_canonical_prefix_b64,
         p.url,
         ...Object.keys(p.jets || {}),
         ...Object.keys(p.builtins || {}),
@@ -1236,12 +1251,22 @@ function buildHtml(programs) {
 
           // Look up matching scripts by canonical CMR (exact) then canonical prefix (fallback).
           const cmrMatches = PROGRAMS.filter(p => p.canonical_cmr && p.canonical_cmr === result.cmr);
-          const prefixMatches = cmrMatches.length === 0
+          const debugCmrMatches = cmrMatches.length === 0
+            ? PROGRAMS.filter(p => p.debug_canonical_cmr && p.debug_canonical_cmr === result.cmr)
+            : [];
+          const prefixMatches = cmrMatches.length === 0 && debugCmrMatches.length === 0
             ? PROGRAMS.filter(p => p.canonical_prefix && p.canonical_prefix === result.canonical_prefix)
+            : [];
+          const debugPrefixMatches = cmrMatches.length === 0 && debugCmrMatches.length === 0 && prefixMatches.length === 0
+            ? PROGRAMS.filter(p => p.debug_canonical_prefix && p.debug_canonical_prefix === result.canonical_prefix)
             : [];
           const matches = cmrMatches.length > 0
             ? cmrMatches.map(p => ({ p, how: "canonical CMR" }))
-            : prefixMatches.map(p => ({ p, how: "canonical prefix" }));
+            : debugCmrMatches.length > 0
+              ? debugCmrMatches.map(p => ({ p, how: "debug canonical CMR" }))
+              : prefixMatches.length > 0
+                ? prefixMatches.map(p => ({ p, how: "canonical prefix" }))
+                : debugPrefixMatches.map(p => ({ p, how: "debug canonical prefix" }));
 
           const matchesEl = document.getElementById("tools-matches");
           const listEl = document.getElementById("tools-matches-list");

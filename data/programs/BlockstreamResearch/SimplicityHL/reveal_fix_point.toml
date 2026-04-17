@@ -17,6 +17,10 @@ canonical_prefix = "e26740a106275640"
 witnesses = ["STRING"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealfixedpoint", "REVEAL FIX POINT", "The coins move if someone is able to provide a SHA2 fix point, e.g.,", "a byte string that hashes to itself.", "We cannot test this program because no SHA2 fix point is known :)", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#revealfixedpoint"]
 autodetected_tags = []
+debug_cmr = "e4dc0406daa111ecab454222b1748f16d6ab6b69bbff993290cde7ec5911dcd1"
+debug_canonical_cmr = "3bbb702cd24583281604ccf97b7d3c55152b07cdafd4a34c5d340be4e7f99f4d"
+debug_program_prefix = "e403a05083124093"
+debug_canonical_prefix = "e3c740a106248126"
 
 [jets]
 eq_256 = 1

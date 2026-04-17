@@ -15,3 +15,7 @@ canonical_cmr = "c40a10263f7436b4160acbef1c36fba4be4d95df181a968afeab5eac247adff
 program_prefix = "24"
 canonical_prefix = "24"
 autodetected_tags = []
+debug_cmr = "c40a10263f7436b4160acbef1c36fba4be4d95df181a968afeab5eac247adff7"
+debug_canonical_cmr = "c40a10263f7436b4160acbef1c36fba4be4d95df181a968afeab5eac247adff7"
+debug_program_prefix = "24"
+debug_canonical_prefix = "24"

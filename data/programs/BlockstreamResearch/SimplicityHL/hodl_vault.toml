@@ -17,6 +17,10 @@ canonical_prefix = "e699364000000000"
 witnesses = ["ORACLE_HEIGHT", "ORACLE_PRICE", "ORACLE_SIG", "OWNER_SIG"]
 comments = ["laser eyes until 100k", "1 * G", "2 * G", "HODL VAULT", "Lock your coins until the Bitcoin price exceeds a threshold.", "An oracle signs a message with the current block height and the current", "Bitcoin price. The block height is compared with a minimum height to prevent", "the use of old data. The transaction is timelocked to the oracle height,", "which means that the transaction becomes valid after the oracle height."]
 autodetected_tags = []
+debug_cmr = "107b51f2b39d25cac89960101062b1187426751026954c7b9be32bfe031be0c6"
+debug_canonical_cmr = "aa0a5f68062173968d3c2f64088e1b56bdb7266fb8a5d03326ff1d69c1c5339f"
+debug_program_prefix = "e779364000007d00"
+debug_canonical_prefix = "e74d364000000000"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/hodl_vault.wit"

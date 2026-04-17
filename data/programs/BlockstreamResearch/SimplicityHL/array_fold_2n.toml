@@ -17,6 +17,10 @@ program_prefix = "e4226c8000000041"
 canonical_prefix = "e4226c8000000001"
 comments = ["From https://github.com/BlockstreamResearch/SimplicityHL/issues/153"]
 autodetected_tags = []
+debug_cmr = "da29484b229b0d7a8dd941fa068bc8aa9c628d04476c0244237fa3b24af9420a"
+debug_canonical_cmr = "4d6faf2fe73fc41e73ce845ad168ad3775272b38a55e35b42436f3ad2950efd7"
+debug_program_prefix = "e49a6c8000000041"
+debug_canonical_prefix = "e48a6c8000000001"
 
 [jets]
 add_32 = 1

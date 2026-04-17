@@ -16,6 +16,10 @@ program_prefix = "e8224eac81081420"
 canonical_prefix = "e8224eac81081420"
 comments = ["Add counter to streaming hash and finalize when the loop exists", "Hash bytes 0x00 to 0xff", "Hash bytes 0x0000 to 0xffff", "This takes ~10 seconds on my computer", "let ctx: Ctx8 = jet::sha_256_ctx_8_init();", "let out: Either<u256, Ctx8> = for_while::<hash_counter_16>(ctx, ());", "let expected: u256 = 0x281f79f89f0121c31db2bea5d7151db246349b25f5901c114505c18bfaa50ba1;", "assert!(jet::eq_256(expected, unwrap_left::<Ctx8>(out)));"]
 autodetected_tags = []
+debug_cmr = "fb61bc0bb65051c54e06cc1d06bf65a7e4a91f6fe545c670951004d3001cffbd"
+debug_canonical_cmr = "3a3368e365e093c92cda84f30e95fc72cee08cce4684c9d9cf16588126490810"
+debug_program_prefix = "e84649024d591cdd"
+debug_canonical_prefix = "e83f49024d591cc0"
 
 [jets]
 all_16 = 1

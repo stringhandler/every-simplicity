@@ -232,6 +232,34 @@ merged['_item_name']  = sys.argv[6]
 print(json.dumps(merged))
 PYEOF
       rm -f "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL"
+
+      # Debug-symbol compile — base compiles only, no witness/args variants.
+      if [[ -z "$KIND" && -n "$program" ]]; then
+        debug_simc_out=$(simc "$COMPILE_FILE" --debug ${SIMC_FLAGS} --json 2>/dev/null || echo '{}')
+        debug_program=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$debug_simc_out")
+        if [[ -n "$debug_program" ]]; then
+          debug_hal_out=$(hal-simplicity simplicity info "$debug_program" 2>/dev/null || echo '{}')
+        else
+          debug_hal_out='{}'
+        fi
+        TMP_DSIMC=$(mktemp); TMP_DHAL=$(mktemp)
+        echo "$debug_simc_out" > "$TMP_DSIMC"
+        echo "$debug_hal_out"  > "$TMP_DHAL"
+        python3 - "$TMP_DSIMC" "$TMP_DHAL" "$FILE_PATH" <<'PYEOF'
+import json, sys
+simc = json.loads(open(sys.argv[1]).read())
+hal  = json.loads(open(sys.argv[2]).read())
+for d in (simc, hal):
+    if 'jets' in d and isinstance(d['jets'], str):
+        d['jet_set'] = d.pop('jets')
+merged = {**simc, **hal}
+merged['_file_path'] = sys.argv[3]
+merged['_kind']      = 'debug'
+merged['_item_name'] = ''
+print(json.dumps(merged))
+PYEOF
+        rm -f "$TMP_DSIMC" "$TMP_DHAL"
+      fi
     done
     ;;
   *)

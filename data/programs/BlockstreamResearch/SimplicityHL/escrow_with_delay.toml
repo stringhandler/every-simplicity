@@ -18,6 +18,10 @@ canonical_prefix = "e701d0284189b480"
 witnesses = ["TRANSFER_OR_TIMEOUT"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay", "1 * G", "2 * G", "3 * G", "ESCROW WITH DELAY", "An escrow agent can approve the movement of coins in cooperation with the", "sender or the recipient. The escrow agent cannot steal the coins for himself.", "The sender can refund her coins after a timeout.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#escrowwithdelay"]
 autodetected_tags = []
+debug_cmr = "b86b02874bf8f97449e6c4ced7f460acb5481fa938dd96a9d3c1e23c6aba894d"
+debug_canonical_cmr = "e31004dc10c91d490d074391cbae1debbed179afe4df5c0d7620ade85e706c96"
+debug_program_prefix = "e7a5d0284189b4bc"
+debug_canonical_prefix = "e789d0284189b480"
 [example_witnesses]
 default = ""
 

@@ -897,6 +897,36 @@ fn apply_simc_to_toml(doc: &mut DocumentMut, s: &SimcOutput, auto_tags: &[String
     doc["autodetected_tags"] = Item::Value(Value::Array(arr));
 }
 
+fn apply_debug_to_toml(doc: &mut DocumentMut, d: &SimcOutput) {
+    let sv = |v: &str| Item::Value(Value::from(v));
+
+    doc.remove("debug_cmr");
+    doc.remove("debug_canonical_cmr");
+    doc.remove("debug_program_prefix");
+    doc.remove("debug_canonical_prefix");
+
+    if let Some(cmr) = &d.cmr {
+        doc["debug_cmr"] = sv(cmr);
+    }
+
+    if let Some(program_b64) = &d.program {
+        if d._error.as_deref().unwrap_or("").is_empty() {
+            match canonicalize::canonical_cmr_from_base64(program_b64) {
+                Ok(c) => { doc["debug_canonical_cmr"] = sv(&c); }
+                Err(e) => { eprintln!("  warning: debug canonical CMR failed: {e:#}"); }
+            }
+            match canonicalize::program_prefix_from_base64(program_b64) {
+                Ok(p) => { doc["debug_program_prefix"] = sv(&p); }
+                Err(e) => { eprintln!("  warning: debug program prefix failed: {e:#}"); }
+            }
+            match canonicalize::canonical_prefix_from_base64(program_b64) {
+                Ok(p) => { doc["debug_canonical_prefix"] = sv(&p); }
+                Err(e) => { eprintln!("  warning: debug canonical prefix failed: {e:#}"); }
+            }
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Shared: group TOMLs by repo and run Docker for each group
 // ---------------------------------------------------------------------------
@@ -1141,6 +1171,10 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                 }
             });
 
+            let debug_result = results
+                .iter()
+                .find(|r| &r._file_path == file_path && r._kind == "debug");
+
             match meta_result {
                 None => {
                     eprintln!("warning: no simc result for {file_path}");
@@ -1150,6 +1184,9 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                     let raw = fs::read_to_string(toml_path)?;
                     let mut doc: DocumentMut = raw.parse()?;
                     apply_simc_to_toml(&mut doc, simc_out, &auto_tags);
+                    if let Some(dbg) = debug_result {
+                        apply_debug_to_toml(&mut doc, dbg);
+                    }
                     fs::write(toml_path, doc.to_string())?;
 
                     if let Some(err) = &simc_out._error {
@@ -1164,6 +1201,15 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                         if simc_out._kind.is_empty() {
                             // Base compile: write <name>.simb
                             write_simb(&toml_path.with_extension("simb"), simc_out)?;
+                            // Debug compile: write <name>.debug.simb
+                            if let Some(dbg) = debug_result {
+                                if dbg._error.as_deref().unwrap_or("").is_empty() {
+                                    write_simb(
+                                        &toml_path.with_file_name(format!("{stem}.debug.simb")),
+                                        dbg,
+                                    )?;
+                                }
+                            }
                         } else if simc_out._item_name == "canonical" {
                             // Zero-args canonical compile: write <name>.args.canonical.simb
                             write_simb(
@@ -1359,6 +1405,29 @@ fn cmd_backfill() -> Result<()> {
             None
         };
 
+        // Debug .simb — backfill debug_canonical_cmr, debug_program_prefix, debug_canonical_prefix.
+        let debug_simb = toml_path.with_file_name(format!("{stem}.debug.simb"));
+        let debug_b64 = if debug_simb.exists() {
+            fs::read_to_string(&debug_simb).map(|s| s.trim().to_string()).ok()
+        } else {
+            None
+        };
+        let debug_canonical_cmr = debug_b64.as_deref().and_then(|b64| {
+            canonicalize::canonical_cmr_from_base64(b64)
+                .map_err(|e| eprintln!("  warning: {stem}: debug canonical CMR: {e:#}"))
+                .ok()
+        });
+        let debug_program_prefix = debug_b64.as_deref().and_then(|b64| {
+            canonicalize::program_prefix_from_base64(b64)
+                .map_err(|e| eprintln!("  warning: {stem}: debug program prefix: {e:#}"))
+                .ok()
+        });
+        let debug_canonical_prefix = debug_b64.as_deref().and_then(|b64| {
+            canonicalize::canonical_prefix_from_base64(b64)
+                .map_err(|e| eprintln!("  warning: {stem}: debug canonical prefix: {e:#}"))
+                .ok()
+        });
+
         let raw = fs::read_to_string(toml_path)
             .with_context(|| format!("cannot read {}", toml_path.display()))?;
         let mut doc: DocumentMut = raw
@@ -1371,8 +1440,14 @@ fn cmd_backfill() -> Result<()> {
             == doc.get("canonical_prefix").and_then(|v| v.as_str());
         let pprefix_ok = program_prefix.as_deref()
             == doc.get("program_prefix").and_then(|v| v.as_str());
+        let debug_cmr_ok = debug_canonical_cmr.as_deref()
+            == doc.get("debug_canonical_cmr").and_then(|v| v.as_str());
+        let debug_pp_ok = debug_program_prefix.as_deref()
+            == doc.get("debug_program_prefix").and_then(|v| v.as_str());
+        let debug_cp_ok = debug_canonical_prefix.as_deref()
+            == doc.get("debug_canonical_prefix").and_then(|v| v.as_str());
 
-        if cmr_ok && cprefix_ok && pprefix_ok {
+        if cmr_ok && cprefix_ok && pprefix_ok && debug_cmr_ok && debug_pp_ok && debug_cp_ok {
             continue;
         }
 
@@ -1386,6 +1461,23 @@ fn cmd_backfill() -> Result<()> {
             doc["program_prefix"] = Item::Value(Value::from(p.as_str()));
         } else {
             doc.remove("program_prefix");
+        }
+
+        // Debug fields
+        if let Some(ref c) = debug_canonical_cmr {
+            doc["debug_canonical_cmr"] = Item::Value(Value::from(c.as_str()));
+        } else {
+            doc.remove("debug_canonical_cmr");
+        }
+        if let Some(ref p) = debug_program_prefix {
+            doc["debug_program_prefix"] = Item::Value(Value::from(p.as_str()));
+        } else {
+            doc.remove("debug_program_prefix");
+        }
+        if let Some(ref p) = debug_canonical_prefix {
+            doc["debug_canonical_prefix"] = Item::Value(Value::from(p.as_str()));
+        } else {
+            doc.remove("debug_canonical_prefix");
         }
 
         fs::write(toml_path, doc.to_string())

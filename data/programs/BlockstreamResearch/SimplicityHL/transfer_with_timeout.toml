@@ -17,6 +17,10 @@ canonical_prefix = "e4a3a050e81420c3"
 witnesses = ["SENDER_SIG", "TRANSFER_OR_TIMEOUT"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout", "1 * G", "2 * G", "TRANSFER WITH TIMEOUT", "The coins move if the sender and recipient agree to move them.", "If the recipient fails to cooperate, then the sender can recover", "the coins unilaterally after a timeout.", "This contract can be used to construct a one-way payment channel:", "The sender keeps increasing the amount of coins to the recipient,", "signing updated transactions with each channel update. The recipient", "broadcasts the transaction on the blockchain when they are ready.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#transferwithtimeout"]
 autodetected_tags = []
+debug_cmr = "c9897f7ae201ba12589e1678e8455e7a8a30e3719bc4d2247fc06fe287ba0368"
+debug_canonical_cmr = "d71e91bf8ba70bcb850129bc131b5666bcb71cfc53227433533fc52ac14f4b26"
+debug_program_prefix = "e51ba050e81420c3"
+debug_canonical_prefix = "e50ba050e81420c3"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/transfer_with_timeout.transfer.wit"
