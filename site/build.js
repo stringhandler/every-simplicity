@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "fs";
+import { readFileSync, readdirSync, statSync, writeFileSync, mkdirSync, copyFileSync, existsSync, cpSync } from "fs";
 import { join, relative, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 import { parse } from "smol-toml";
@@ -482,6 +482,12 @@ function buildHtml(programs) {
     .filter-btn:hover { color: #e6edf3; border-color: #8b949e; }
     .filter-btn.active { color: #f0f6fc; border-color: #58a6ff; background: #1c2d3f; }
 
+    .tools-field { padding: 0.6rem 0.85rem; background: #161b22; border: 1px solid #21262d; border-radius: 6px; }
+    .tools-field-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #8b949e; margin-bottom: 0.35rem; }
+    .tools-field-value { font-size: 0.8rem; color: #e6edf3; font-family: monospace; }
+    .tools-copy-btn { background: none; border: 1px solid #30363d; border-radius: 4px; color: #8b949e; cursor: pointer; font-size: 0.7rem; padding: 0.15rem 0.5rem; flex-shrink: 0; }
+    .tools-copy-btn:hover { color: #e6edf3; border-color: #8b949e; }
+
     .cloud-section { border-bottom: 1px solid #21262d; }
 
     .cloud-label {
@@ -537,6 +543,7 @@ function buildHtml(programs) {
     <button class="tab-btn" data-tab="macros">Macros</button>
     <button class="tab-btn" data-tab="reserved">Reserved Words</button>
     <button class="tab-btn" data-tab="tags">Tags</button>
+    <button class="tab-btn" data-tab="tools">Tools</button>
   </div>
 
   <div id="tab-programs" class="tab-panel active">
@@ -653,6 +660,75 @@ function buildHtml(programs) {
         <thead><tr><th>Tag</th><th></th><th>Scripts</th></tr></thead>
         <tbody id="tags-tbody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <div id="tab-tools" class="tab-panel">
+    <div style="padding:1.5rem 2rem;max-width:860px">
+      <h2 style="font-size:1rem;font-weight:600;color:#f0f6fc;margin-bottom:0.5rem">Canonicalize</h2>
+      <p style="font-size:0.875rem;color:#8b949e;margin-bottom:1.25rem;line-height:1.6">
+        Paste a compiled Simplicity program (base64, e.g. from a <code style="font-size:0.8rem">.simb</code> file)
+        to obtain its canonical form — all embedded Word constants zeroed — giving a stable
+        CMR and prefix shared by every instantiation of the same template.
+      </p>
+      <div id="tools-wasm-unavailable" style="display:none;margin-bottom:1rem;padding:0.6rem 0.85rem;background:#2d1b1b;border:1px solid #f8514940;border-radius:6px;font-size:0.8rem;color:#f85149">
+        WASM module not available. Run the catalog command once to build and extract it automatically
+        (the Docker image will rebuild on first run), then rebuild the site.
+      </div>
+      <textarea id="tools-source"
+        style="width:100%;height:220px;background:#161b22;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-family:monospace;font-size:0.8rem;padding:0.75rem;resize:vertical;outline:none;line-height:1.5;"
+        placeholder="Paste base64-encoded compiled program here…" spellcheck="false"></textarea>
+      <div style="margin-top:0.75rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+        <button id="tools-btn"
+          style="background:#1c2d3f;border:1px solid #388bfd;border-radius:6px;color:#58a6ff;cursor:pointer;font-size:0.875rem;padding:0.45rem 1.25rem;font-family:inherit"
+          onclick="runCanonicalizer()">Canonicalize</button>
+        <span id="tools-status" style="font-size:0.8rem;color:#8b949e"></span>
+      </div>
+      <div id="tools-output" style="margin-top:1.25rem;display:none;display:flex;flex-direction:column;gap:0.6rem">
+        <div id="tools-error" style="display:none;padding:0.6rem 0.85rem;background:#2d1b1b;border:1px solid #f8514940;border-radius:6px;font-size:0.8rem;color:#f85149;font-family:monospace;white-space:pre-wrap"></div>
+        <div id="tools-fields" style="display:none;display:flex;flex-direction:column;gap:0.6rem">
+          <div class="tools-field">
+            <div class="tools-field-label">Canonical program (base64)</div>
+            <div style="display:flex;gap:0.5rem;align-items:flex-start">
+              <code id="tools-program" class="tools-field-value" style="word-break:break-all;flex:1"></code>
+              <button class="tools-copy-btn" onclick="toolsCopy('tools-program',this)">copy</button>
+            </div>
+          </div>
+          <div class="tools-field">
+            <div class="tools-field-label">CMR</div>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <code id="tools-cmr" class="tools-field-value"></code>
+              <button class="tools-copy-btn" onclick="toolsCopy('tools-cmr',this)">copy</button>
+            </div>
+          </div>
+          <div class="tools-field">
+            <div class="tools-field-label">Canonical prefix (hex)</div>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <code id="tools-prefix-hex" class="tools-field-value"></code>
+              <button class="tools-copy-btn" onclick="toolsCopy('tools-prefix-hex',this)">copy</button>
+            </div>
+          </div>
+          <div class="tools-field">
+            <div class="tools-field-label">Canonical prefix (base64)</div>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <code id="tools-prefix-b64" class="tools-field-value"></code>
+              <button class="tools-copy-btn" onclick="toolsCopy('tools-prefix-b64',this)">copy</button>
+            </div>
+          </div>
+          <div id="tools-jets-field" class="tools-field" style="display:none">
+            <div class="tools-field-label">Jets used</div>
+            <div id="tools-jets" class="tools-field-value" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.25rem"></div>
+          </div>
+          <div id="tools-readable-field" class="tools-field" style="display:none">
+            <div class="tools-field-label">Disassembly</div>
+            <pre id="tools-readable" class="tools-field-value" style="white-space:pre;overflow-x:auto;margin:0;font-size:0.75rem;line-height:1.5;max-height:300px;overflow-y:auto"></pre>
+          </div>
+          <div id="tools-matches" style="display:none">
+            <div class="tools-field-label" style="margin-bottom:0.4rem">Matching scripts</div>
+            <div id="tools-matches-list" style="display:flex;flex-direction:column;gap:0.35rem"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1100,6 +1176,125 @@ function buildHtml(programs) {
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") { closeExtModal(); }
     });
+
+    // Tools tab — canonicalize via WASM
+    window.runCanonicalizer = function() {
+      const source = document.getElementById("tools-source").value.trim();
+      if (!source) return;
+      const statusEl = document.getElementById("tools-status");
+      const outputEl = document.getElementById("tools-output");
+      const errorEl  = document.getElementById("tools-error");
+      const fieldsEl = document.getElementById("tools-fields");
+
+      if (!window._simc_canonicalize) {
+        statusEl.textContent = "WASM not loaded yet — try again in a moment.";
+        statusEl.style.color = "#f85149";
+        return;
+      }
+
+      statusEl.textContent = "Compiling…";
+      statusEl.style.color = "#8b949e";
+      outputEl.style.display = "flex";
+      errorEl.style.display = "none";
+      fieldsEl.style.display = "none";
+      document.getElementById("tools-matches").style.display = "none";
+      document.getElementById("tools-jets-field").style.display = "none";
+      document.getElementById("tools-readable-field").style.display = "none";
+
+      // Run asynchronously so the browser can repaint the "Compiling…" state.
+      setTimeout(() => {
+        let result;
+        try {
+          result = JSON.parse(window._simc_canonicalize(source));
+        } catch (e) {
+          result = { ok: false, error: String(e) };
+        }
+
+        if (result.ok) {
+          document.getElementById("tools-program").textContent = result.program;
+          document.getElementById("tools-cmr").textContent = result.cmr;
+          document.getElementById("tools-prefix-hex").textContent = result.canonical_prefix;
+          document.getElementById("tools-prefix-b64").textContent = result.canonical_prefix_b64;
+
+          const jets = result.jets || [];
+          const jetsField = document.getElementById("tools-jets-field");
+          if (jets.length > 0) {
+            document.getElementById("tools-jets").innerHTML = jets
+              .map(j => \`<span class="tag">\${escHtml(j)}</span>\`).join("");
+            jetsField.style.display = "block";
+          } else {
+            jetsField.style.display = "none";
+          }
+
+          const readableField = document.getElementById("tools-readable-field");
+          if (result.readable) {
+            document.getElementById("tools-readable").textContent = result.readable;
+            readableField.style.display = "block";
+          } else {
+            readableField.style.display = "none";
+          }
+
+          // Look up matching scripts by canonical CMR (exact) then canonical prefix (fallback).
+          const cmrMatches = PROGRAMS.filter(p => p.canonical_cmr && p.canonical_cmr === result.cmr);
+          const prefixMatches = cmrMatches.length === 0
+            ? PROGRAMS.filter(p => p.canonical_prefix && p.canonical_prefix === result.canonical_prefix)
+            : [];
+          const matches = cmrMatches.length > 0
+            ? cmrMatches.map(p => ({ p, how: "canonical CMR" }))
+            : prefixMatches.map(p => ({ p, how: "canonical prefix" }));
+
+          const matchesEl = document.getElementById("tools-matches");
+          const listEl = document.getElementById("tools-matches-list");
+          if (matches.length > 0) {
+            listEl.innerHTML = matches.map(({ p, how }) => {
+              const name = escHtml(p.name || p._slug);
+              const label = escHtml(how);
+              const href = escAttr(p.url || "#");
+              return \`<div style="display:flex;align-items:center;gap:0.5rem;padding:0.45rem 0.7rem;background:#161b22;border:1px solid #21262d;border-radius:6px;font-size:0.8rem">
+                <span style="color:#3fb950;font-size:0.7rem">✓ \${label}</span>
+                <a href="\${href}" target="_blank" rel="noopener" style="color:#58a6ff;text-decoration:none;font-family:monospace">\${name}</a>
+                <span style="color:#8b949e;font-size:0.7rem">\${escHtml(p._slug)}</span>
+              </div>\`;
+            }).join("");
+            matchesEl.style.display = "block";
+          } else {
+            listEl.innerHTML = \`<div style="padding:0.45rem 0.7rem;background:#161b22;border:1px solid #21262d;border-radius:6px;font-size:0.8rem;color:#8b949e">No matching scripts found in the catalog.</div>\`;
+            matchesEl.style.display = "block";
+          }
+
+          fieldsEl.style.display = "flex";
+          statusEl.textContent = "Done.";
+          statusEl.style.color = "#3fb950";
+        } else {
+          errorEl.textContent = result.error || "Unknown error";
+          errorEl.style.display = "block";
+          statusEl.textContent = "Compile error.";
+          statusEl.style.color = "#f85149";
+        }
+      }, 0);
+    };
+
+    window.toolsCopy = function(id, btn) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = "copied!";
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    };
+  </script>
+
+  <script type="module">
+    // Load the WASM canonicalizer built from simplicityhl/wasm/.
+    // Build: cd simplicityhl/wasm && wasm-pack build --target web --out-dir ../../every-simplicity/site/wasm
+    try {
+      const m = await import('./wasm/simplicityhl_wasm.js');
+      await m.default('./wasm/simplicityhl_wasm_bg.wasm');
+      window._simc_canonicalize = m.canonicalize;
+      document.getElementById("tools-wasm-unavailable").style.display = "none";
+    } catch (_) {
+      document.getElementById("tools-wasm-unavailable").style.display = "block";
+    }
   </script>
 </body>
 </html>`;
@@ -1129,6 +1324,20 @@ for (const p of programs) {
   delete p._witnessSimbs;
 }
 
+// Copy wasm output files if present (built by: cd wasm && wasm-pack build --target web --out-dir ../../every-simplicity/site/wasm)
+const WASM_SRC = join(__dirname, "wasm");
+const WASM_DEST = join(OUT_DIR, "wasm");
+let wasmCopied = false;
+if (existsSync(WASM_SRC)) {
+  mkdirSync(WASM_DEST, { recursive: true });
+  for (const f of readdirSync(WASM_SRC)) {
+    if (f.endsWith(".js") || f.endsWith(".wasm")) {
+      copyFileSync(join(WASM_SRC, f), join(WASM_DEST, f));
+    }
+  }
+  wasmCopied = true;
+}
+
 const html = buildHtml(programs);
 writeFileSync(join(OUT_DIR, "index.html"), html, "utf8");
-console.log(`Built dist/index.html with ${programs.length} program(s), ${simbCount} .simb file(s).`);
+console.log(`Built dist/index.html with ${programs.length} program(s), ${simbCount} .simb file(s)${wasmCopied ? ", wasm module" : " (no wasm — run wasm-pack first)"}.`);

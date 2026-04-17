@@ -19,6 +19,8 @@ const DOCKERFILE: &str = include_str!("../Dockerfile");
 const ENTRYPOINT_SH: &str = include_str!("../entrypoint.sh");
 const PARSE_PY: &str = include_str!("../parse.py");
 const TRANSPILE_PY: &str = include_str!("../transpile.py");
+const WASM_SRC_CARGO_TOML: &str = include_str!("../wasm-src/Cargo.toml");
+const WASM_SRC_LIB_RS: &str = include_str!("../../wasm/src/lib.rs");
 
 /// FNV-1a hash of all Docker context files baked in at compile time.
 /// Changes whenever Dockerfile, entrypoint.sh, parse.py, or transpile.py changes,
@@ -379,6 +381,10 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
         .success();
 
     if !force && image_exists && stored_env_hash == current_env_hash {
+        // Image is up to date — still sync WASM files if they are missing locally.
+        if let Err(e) = ensure_wasm_files(tag) {
+            eprintln!("Warning: could not extract WASM files from image: {e}");
+        }
         return Ok(());
     }
 
@@ -396,6 +402,10 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     fs::write(tmp.join("entrypoint.sh"), ENTRYPOINT_SH)?;
     fs::write(tmp.join("parse.py"), PARSE_PY)?;
     fs::write(tmp.join("transpile.py"), TRANSPILE_PY)?;
+    let wasm_src_dir = tmp.join("wasm-src").join("src");
+    fs::create_dir_all(&wasm_src_dir)?;
+    fs::write(tmp.join("wasm-src").join("Cargo.toml"), WASM_SRC_CARGO_TOML)?;
+    fs::write(wasm_src_dir.join("lib.rs"), WASM_SRC_LIB_RS)?;
 
     // simc_binary: non-empty only when SIMPLICITY_HL_BINARY_PATH is set.
     match std::env::var("SIMPLICITY_HL_BINARY_PATH") {
@@ -465,6 +475,77 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
     fs::write(&hash_file, &current_env_hash)
         .context("failed to write env hash file")?;
 
+    if let Err(e) = ensure_wasm_files(tag) {
+        eprintln!("Warning: could not extract WASM files from image: {e}");
+    }
+
+    Ok(())
+}
+
+/// Copy `/wasm/` from the Docker image to the local site directory so the
+/// site's Tools tab can load the canonicalizer without a separate manual step.
+///
+/// The destination defaults to `site/wasm` (relative to cwd) and can be
+/// overridden with the `WASM_OUT_DIR` environment variable.
+///
+/// Skips if the WASM binary already exists at the destination.
+/// Returns the `site/wasm` directory under the project root (same root
+/// search as `data_dir()` — walks up looking for `data/programs`).
+fn wasm_out_dir() -> PathBuf {
+    if let Ok(v) = std::env::var("WASM_OUT_DIR") {
+        return PathBuf::from(v);
+    }
+    // Walk up from cwd the same way data_dir() does.
+    let mut dir = std::env::current_dir().unwrap_or_default();
+    loop {
+        if dir.join("data/programs").is_dir() {
+            return dir.join("site/wasm");
+        }
+        if !dir.pop() {
+            break;
+        }
+    }
+    PathBuf::from("site/wasm")
+}
+
+fn ensure_wasm_files(tag: &str) -> Result<()> {
+    let dest = wasm_out_dir();
+
+    if dest.join("simplicityhl_wasm_bg.wasm").exists() {
+        return Ok(()); // already present, nothing to do
+    }
+
+    println!("Extracting WASM files from image to '{}'…", dest.display());
+
+    // Create a temporary stopped container so we can docker cp from it.
+    let create_out = Command::new("docker")
+        .args(["create", tag])
+        .output()
+        .context("docker create failed")?;
+    if !create_out.status.success() {
+        let stderr = String::from_utf8_lossy(&create_out.stderr);
+        bail!("docker create failed: {stderr}");
+    }
+    let container_id = String::from_utf8(create_out.stdout)
+        .context("docker create output was not valid UTF-8")?
+        .trim()
+        .to_string();
+
+    fs::create_dir_all(&dest)?;
+
+    let cp_status = Command::new("docker")
+        .args(["cp", &format!("{container_id}:/wasm/."), dest.to_str().unwrap_or(".")])
+        .status()
+        .context("docker cp failed")?;
+
+    // Always clean up the temporary container.
+    let _ = Command::new("docker").args(["rm", &container_id]).output();
+
+    if !cp_status.success() {
+        bail!("docker cp /wasm/ → {} failed", dest.display());
+    }
+
+    println!("  → extracted to {}", dest.display());
     Ok(())
 }
 
