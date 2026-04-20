@@ -1216,6 +1216,15 @@ fn cmd_compile(all: bool, tag: Option<&str>, slugs: &[String], rebuild_docker: b
                                 &toml_path.with_file_name(format!("{stem}.args.canonical.simb")),
                                 simc_out,
                             )?;
+                            // Debug compile for canonical args: write <name>.args.canonical.debug.simb
+                            if let Some(dbg) = debug_result {
+                                if dbg._error.as_deref().unwrap_or("").is_empty() {
+                                    write_simb(
+                                        &toml_path.with_file_name(format!("{stem}.args.canonical.debug.simb")),
+                                        dbg,
+                                    )?;
+                                }
+                            }
                         }
                         println!("  compiled: {stem}");
                         compiled += 1;

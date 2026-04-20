@@ -17,6 +17,10 @@ witnesses = ["EPHEMERAL", "C_SENDER", "C_OBSERVER", "DLEQ_CHALLENGE", "DLEQ_RESP
 params = ["SENDER_PUBKEY", "OBSERVER_PUBKEY"]
 comments = ["Sender and observer keys are always decompressed with parity=0 (even y, BIP340 convention).", "The Rust ElGamal code normalizes keys to even y to match this convention.", "H = P_sender - P_observer", "Q = C_sender - C_observer", "A1 = s·G + e·R", "A2 = s·H + e·Q", "Recompute DLEQ challenge: e' = SHA256(R || H || Q || A1 || A2)", "Verify: SHA256(encrypted_data) == commitment", "Authorize the spend", "TRAVEL RULE VERIFIABLE ENCRYPTION", "Verifies that the witness contains a valid dual ElGamal encryption", "with a correct DLEQ proof, bound to the parameterized SenderPubKey", "and ObserverPubKey.", "Witness:", "R          — ephemeral point (shared nonce, r·G)", "C_sender   — ciphertext for sender (M + r·P_sender)", "C_observer — ciphertext for observer (M + r·P_observer)", "e, s       — DLEQ challenge and response", "commitment — SHA256(encrypted_data)", "encrypted_data — 512-byte padded symmetric ciphertext ([u256; 16])", "sig        — spending signature", "Verifies:", "1. DLEQ proof: same nonce r used for both encryptions", "2. SHA256(encrypted_data) == commitment", "3. Spending signature is valid"]
 autodetected_tags = []
+debug_cmr = "ab6e69846c789750105112a4032093175570ea1e3a9cced0bdaf89f9b02ba2e4"
+debug_canonical_cmr = "1b3b3c8fc23d6992899ff9f72cdff55270226e92390fb6762a43786630e7b5da"
+debug_program_prefix = "e9dba6d200000000"
+debug_canonical_prefix = "e9c126d200000000"
 
 [jets]
 bip_0340_verify = 1

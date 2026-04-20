@@ -17,6 +17,10 @@ witnesses = ["PATH", "SIGNATURE"]
 params = ["COLLATERAL_AMOUNT", "PRINCIPAL_AMOUNT", "LOAN_EXPIRATION_TIME", "PRINCIPAL_INTEREST_RATE", "COLLATERAL_ASSET_ID", "FIRST_PARAMETERS_NFT_ASSET_ID", "SECOND_PARAMETERS_NFT_ASSET_ID", "BORROWER_NFT_ASSET_ID", "LENDER_NFT_ASSET_ID", "PRINCIPAL_ASSET_ID", "LENDING_COV_HASH", "PRINCIPAL_OUTPUT_SCRIPT_HASH", "PARAMETERS_NFT_OUTPUT_SCRIPT_HASH", "BORROWER_NFT_OUTPUT_SCRIPT_HASH", "BORROWER_PUB_KEY"]
 comments = ["Helper getters", "Check helpers", "Lending parameters functions", "Extracting parameter values from the first parameters amount", "Extracting parameter values from the second parameters amount", "Main paths logic", "Lending covenant script hash", "P2PKH script created with the BORROWER_PUB_KEY", "ScriptAuth covenant script hash with the LENDING_COV_HASH as auth script"]
 autodetected_tags = ["covenant"]
+debug_cmr = "9fbaa91b1ecf74e453c6e8696592b9c40a65662dc2fbb4a086db7fb3e3c335be"
+debug_canonical_cmr = "c06287d89d4fc745bf313b15fc8e52cb4529ec810205446975287b80527e4eb5"
+debug_program_prefix = "ea3d5d0284a48127"
+debug_canonical_prefix = "ea30dd0284a48127"
 
 [jets]
 add_8 = 1

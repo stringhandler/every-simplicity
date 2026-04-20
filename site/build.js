@@ -104,6 +104,25 @@ function buildHtml(programs) {
       margin-top: 0.25rem;
     }
 
+    .disclaimer {
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-left: 3px solid #d29922;
+      border-radius: 4px;
+      font-size: 0.775rem;
+      color: #8b949e;
+      max-width: 780px;
+    }
+
+    .disclaimer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    .disclaimer a:hover { text-decoration: underline; }
+
     .search-bar {
       padding: 1.25rem 2rem;
       border-bottom: 1px solid #21262d;
@@ -539,6 +558,7 @@ function buildHtml(programs) {
   <header>
     <h1>Every Simplicity</h1>
     <p>A catalog of every SimplicityHL program found on the internet</p>
+    <p class="disclaimer"><strong>Disclaimer:</strong> This is an independent, community project and is not officially endorsed by, affiliated with, or associated with Blockstream. Simplicity programs indexed here are sourced from public third-party repositories and have not been audited. This is not financial advice. Use at your own risk. See <a href="DISCLAIMER.md">DISCLAIMER.md</a> for full details.</p>
   </header>
 
   <div class="tabs">

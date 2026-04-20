@@ -16,6 +16,10 @@ canonical_prefix = "e297426d20000000"
 witnesses = ["INPUT_SCRIPT_INDEX"]
 params = ["SCRIPT_HASH"]
 autodetected_tags = []
+debug_cmr = "56e17cbb8ff5ee455dab2ffe711d7f3184334b4aff0d65e8e194a096723488f5"
+debug_canonical_cmr = "8912cd39ca9f148324f2577ea4543b9eaf53dc612e9a96c60fa6bdeee41605a7"
+debug_program_prefix = "e3c7426d20000000"
+debug_canonical_prefix = "e387426d20000000"
 
 [jets]
 eq_256 = 1

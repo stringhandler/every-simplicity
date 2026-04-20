@@ -16,6 +16,10 @@ canonical_prefix = "e635dc5083130081"
 witnesses = ["INPUT_ASSET_INDEX", "OUTPUT_ASSET_INDEX"]
 params = ["ASSET_ID", "ASSET_AMOUNT", "WITH_ASSET_BURN"]
 autodetected_tags = []
+debug_cmr = "de8134933958339ab120cc01d46ee6d496b39c82b350f5d72698502842b9975f"
+debug_canonical_cmr = "453771c80229b4a09370d9b37b1ac62413195a85d55015d7a100874707170ee4"
+debug_program_prefix = "e70ddc5083132081"
+debug_canonical_prefix = "e6dddc5083130081"
 
 [jets]
 eq_256 = 1

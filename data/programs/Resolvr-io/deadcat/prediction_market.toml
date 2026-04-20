@@ -17,6 +17,10 @@ witnesses = ["SLOT", "BUDGET_PAD_A", "BUDGET_PAD_B", "BUDGET_PAD_C", "BUDGET_PAD
 params = ["YES_TOKEN_ASSET", "NO_TOKEN_ASSET", "ORACLE_PUBLIC_KEY", "COLLATERAL_PER_TOKEN", "YES_REISSUANCE_TOKEN", "NO_REISSUANCE_TOKEN", "COLLATERAL_ASSET_ID", "EXPIRY_TIME"]
 comments = ["Binary Prediction Market Covenant", "SimplicityHL contract for Liquid", "============================================================================", "Type aliases", "17-way PATH dispatch tree", "Blinding factor groupings", "Boolean helpers", "Utility functions", "Pedersen commitment verification", "Taproot address computation", "Slot ids", "Arithmetic helpers", "Market-specific functions", "Spending paths", "Main entry point", "Budget padding: these witnesses increase the serialized witness size so that", "the Simplicity execution budget (witness_stack_bytes + 50 WU) covers the", "program's cost."]
 autodetected_tags = ["covenant", "user-defined-type"]
+debug_cmr = "5b6b6c6cae2df62db9d4e74e3221ae11583fe7e68f439e93b0020d9ca463cbee"
+debug_canonical_cmr = "811f06871abd32a8119316e11d192098ccbae53f4ac22f005875427515eb2a8d"
+debug_program_prefix = "ebb44e81420c4902"
+debug_canonical_prefix = "eb93ee81420c4902"
 
 [jets]
 add_64 = 1

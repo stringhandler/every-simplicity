@@ -180,8 +180,6 @@ PYEOF
         rm -f "$TMP_PARSE"
         continue
       }
-      [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
-
       # Use cached parse.py result if available
       if [[ -n "${PARSE_CACHE[$FILE_PATH]+x}" ]]; then
         parse_out="${PARSE_CACHE[$FILE_PATH]}"
@@ -233,19 +231,25 @@ print(json.dumps(merged))
 PYEOF
       rm -f "$TMP_PARSE" "$TMP_SIMC" "$TMP_HAL"
 
-      # Debug-symbol compile — base compiles only, no witness/args variants.
-      if [[ -z "$KIND" && -n "$program" ]]; then
-        debug_simc_out=$(simc "$COMPILE_FILE" --debug ${SIMC_FLAGS} --json 2>/dev/null || echo '{}')
-        debug_program=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$debug_simc_out")
-        if [[ -n "$debug_program" ]]; then
-          debug_hal_out=$(hal-simplicity simplicity info "$debug_program" 2>/dev/null || echo '{}')
+      # Debug-symbol compile — base compiles and canonical args compiles.
+      _do_debug_compile() {
+        local compile_file="$1"
+        local file_path="$2"
+        shift 2
+        local extra_args=("$@")
+        local dbg_out dbg_prog dbg_hal
+        dbg_out=$(simc "$compile_file" "${extra_args[@]}" --debug ${SIMC_FLAGS} --json 2>/dev/null || echo '{}')
+        dbg_prog=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$dbg_out")
+        if [[ -n "$dbg_prog" ]]; then
+          dbg_hal=$(hal-simplicity simplicity info "$dbg_prog" 2>/dev/null || echo '{}')
         else
-          debug_hal_out='{}'
+          dbg_hal='{}'
         fi
+        local TMP_DSIMC TMP_DHAL
         TMP_DSIMC=$(mktemp); TMP_DHAL=$(mktemp)
-        echo "$debug_simc_out" > "$TMP_DSIMC"
-        echo "$debug_hal_out"  > "$TMP_DHAL"
-        python3 - "$TMP_DSIMC" "$TMP_DHAL" "$FILE_PATH" <<'PYEOF'
+        echo "$dbg_out"  > "$TMP_DSIMC"
+        echo "$dbg_hal"  > "$TMP_DHAL"
+        python3 - "$TMP_DSIMC" "$TMP_DHAL" "$file_path" <<'PYEOF'
 import json, sys
 simc = json.loads(open(sys.argv[1]).read())
 hal  = json.loads(open(sys.argv[2]).read())
@@ -259,7 +263,15 @@ merged['_item_name'] = ''
 print(json.dumps(merged))
 PYEOF
         rm -f "$TMP_DSIMC" "$TMP_DHAL"
+      }
+
+      if [[ -z "$KIND" && -n "$program" ]]; then
+        _do_debug_compile "$COMPILE_FILE" "$FILE_PATH"
+      elif [[ "$KIND" == "args" && -n "$program" ]]; then
+        # Args compile: debug with same args (TMP_FILE still present).
+        _do_debug_compile "$COMPILE_FILE" "$FILE_PATH" "${SIMC_EXTRA_ARGS[@]}"
       fi
+      [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
     done
     ;;
   *)
