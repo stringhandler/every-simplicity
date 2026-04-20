@@ -17,6 +17,10 @@ witnesses = ["ALICE_SIGNATURE"]
 params = ["ALICE_PUBLIC_KEY"]
 comments = ["docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickey", "PAY TO PUBLIC KEY", "The coins move if the person with the given public key signs the transaction.", "https://docs.ivylang.org/bitcoin/language/ExampleContracts.html#lockwithpublickey"]
 autodetected_tags = []
+debug_cmr = "b580b76a0ac98888dd62e8fc7b6865c400e1f4b06410627deae1054ca3f4dd07"
+debug_canonical_cmr = "fa6da905a965a067370fefc01a826b7b604d872ea4a2a0f8b799eb5d009221c8"
+debug_program_prefix = "e06922d2f37cccfd"
+debug_canonical_prefix = "e04922d200000000"
 
 [example_witnesses]
 default = "https://github.com/BlockstreamResearch/SimplicityHL/blob/master/examples/p2pk.wit"
