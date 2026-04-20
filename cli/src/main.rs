@@ -231,6 +231,12 @@ fn parse_github_url(url: &str) -> Result<GithubFile> {
         bail!("URL must point to a file — use the 'blob' URL, not 'tree'");
     }
 
+    for (label, val) in [("owner", owner), ("repo", repo), ("branch", branch), ("file path", file_path)] {
+        if val.contains("..") || val.bytes().any(|b| b < 0x20) {
+            bail!("invalid {label} in URL");
+        }
+    }
+
     Ok(GithubFile {
         clone_url: format!("https://github.com/{owner}/{repo}.git"),
         owner: owner.to_string(),
@@ -453,6 +459,18 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
 
     let repo = std::env::var("SIMPLICITY_HL_REPO").unwrap_or_default();
     let branch = std::env::var("SIMPLICITY_HL_BRANCH").unwrap_or_default();
+
+    if !repo.is_empty()
+        && (!repo.starts_with("https://") || repo.bytes().any(|b| b == b'\n' || b == b'\r' || b == 0))
+    {
+        bail!("SIMPLICITY_HL_REPO must be a valid https:// URL");
+    }
+    if !branch.is_empty()
+        && !branch.chars().all(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | '/'))
+    {
+        bail!("SIMPLICITY_HL_BRANCH contains invalid characters (allowed: alphanumeric, -, _, ., /)");
+    }
+
     let mut build_cmd = Command::new("docker");
     build_cmd.args(["build", "-t", tag]);
     if !repo.is_empty() {
@@ -493,7 +511,11 @@ fn ensure_docker_image(tag: &str, force: bool) -> Result<()> {
 /// search as `data_dir()` — walks up looking for `data/programs`).
 fn wasm_out_dir() -> PathBuf {
     if let Ok(v) = std::env::var("WASM_OUT_DIR") {
-        return PathBuf::from(v);
+        if v.contains("..") {
+            eprintln!("Warning: WASM_OUT_DIR contains '..', ignoring");
+        } else {
+            return PathBuf::from(v);
+        }
     }
     // Walk up from cwd the same way data_dir() does.
     let mut dir = std::env::current_dir().unwrap_or_default();

@@ -778,7 +778,7 @@ function buildHtml(programs) {
   </div>
 
   <script>
-    const PROGRAMS = ${dataJson.replace(/<\/script>/gi, '<\\/script>')};
+    const PROGRAMS = ${dataJson.replace(/<\//g, '<\\/')};
 
     // Pre-compute combined tag list on each program for the Tags tab index.
     for (const p of PROGRAMS) {

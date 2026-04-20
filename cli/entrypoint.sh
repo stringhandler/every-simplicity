@@ -57,6 +57,8 @@ case "$MODE" in
   compile)
     # Cache parse.py output per unique file path
     declare -A PARSE_CACHE
+    # Split SIMC_FLAGS into an array to prevent word-splitting shell injection.
+    read -r -a SIMC_FLAGS_ARR <<< "${SIMC_FLAGS:-}"
 
     for ENCODED in "${FILE_PATHS[@]}"; do
       # Check for explicit transpiler prefix:  T:type:::rest
@@ -121,14 +123,17 @@ case "$MODE" in
         # Auto-generate all-zero args using simc --default-args, which knows
         # the exact types from the type checker.
         TMP_FILE=$(mktemp)
-        if ! simc "$COMPILE_FILE" --default-args > "$TMP_FILE" 2>/tmp/simc_default_stderr; then
-          err=$(cat /tmp/simc_default_stderr | tr '\n' ' ' | xargs)
-          echo "{\"_file_path\":\"$FILE_PATH\",\"_kind\":\"args\",\"_item_name\":\"canonical\",\"_error\":\"default-args failed: $err\"}"
+        TMP_DEFAULT_STDERR=$(mktemp)
+        if ! simc "$COMPILE_FILE" --default-args > "$TMP_FILE" 2>"$TMP_DEFAULT_STDERR"; then
+          err=$(tr '\n' ' ' < "$TMP_DEFAULT_STDERR" | xargs)
+          rm -f "$TMP_DEFAULT_STDERR"
+          python3 -c "import json,sys; print(json.dumps({'_file_path':sys.argv[1],'_kind':'args','_item_name':'canonical','_error':'default-args failed: '+sys.argv[2]}))" "$FILE_PATH" "$err"
           [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
           [[ -n "$TMP_PREPROCESSED" ]] && rm -f "$TMP_PREPROCESSED"
           [[ -n "$TMP_TRANSPILED" ]] && rm -f "$TMP_TRANSPILED"
           continue
         fi
+        rm -f "$TMP_DEFAULT_STDERR"
         SIMC_EXTRA_ARGS=(--args "$TMP_FILE")
       elif [[ "$KIND" == "args" && -n "$ITEM_VALUE" ]]; then
         ITEM_CONTENT=$(resolve_value "$ITEM_VALUE")
@@ -139,21 +144,23 @@ case "$MODE" in
         TMP_FILE=""
       fi
 
-      simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" ${SIMC_FLAGS} --json 2>/tmp/simc_stderr) || {
+      TMP_SIMC_STDERR=$(mktemp)
+      simc_out=$(simc "$COMPILE_FILE" "${SIMC_EXTRA_ARGS[@]}" "${SIMC_FLAGS_ARR[@]}" --json 2>"$TMP_SIMC_STDERR") || {
         # 1. Try JSON error field from stdout
         err=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('error',''))" "$simc_out" 2>/dev/null || true)
         # 2. Fall back to full stderr content
         if [[ -z "$err" ]]; then
-          err=$(cat /tmp/simc_stderr | tr '"\\' "''" | tr '\n' ' ' | xargs)
+          err=$(tr '\n' ' ' < "$TMP_SIMC_STDERR" | xargs)
         fi
         # 3. Fall back to raw stdout (simc may print errors there without --json structure)
         if [[ -z "$err" && -n "$simc_out" ]]; then
-          err=$(echo "$simc_out" | tr '"\\' "''" | head -3 | tr '\n' ' ' | xargs)
+          err=$(echo "$simc_out" | head -3 | tr '\n' ' ' | xargs)
         fi
         # 4. Last resort
         if [[ -z "$err" ]]; then
           err="simc exited with no output (check docker image has correct simc version)"
         fi
+        rm -f "$TMP_SIMC_STDERR"
         [[ -n "$TMP_FILE" ]] && rm -f "$TMP_FILE"
 
         # On simc failure: still run parse.py so jets/types/etc are captured,
@@ -180,6 +187,7 @@ PYEOF
         rm -f "$TMP_PARSE"
         continue
       }
+      rm -f "$TMP_SIMC_STDERR"
       # Use cached parse.py result if available
       if [[ -n "${PARSE_CACHE[$FILE_PATH]+x}" ]]; then
         parse_out="${PARSE_CACHE[$FILE_PATH]}"
@@ -238,7 +246,7 @@ PYEOF
         shift 2
         local extra_args=("$@")
         local dbg_out dbg_prog dbg_hal
-        dbg_out=$(simc "$compile_file" "${extra_args[@]}" --debug ${SIMC_FLAGS} --json 2>/dev/null || echo '{}')
+        dbg_out=$(simc "$compile_file" "${extra_args[@]}" --debug "${SIMC_FLAGS_ARR[@]}" --json 2>/dev/null || echo '{}')
         dbg_prog=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d.get('program',''))" "$dbg_out")
         if [[ -n "$dbg_prog" ]]; then
           dbg_hal=$(hal-simplicity simplicity info "$dbg_prog" 2>/dev/null || echo '{}')
